@@ -1,0 +1,33 @@
+effect_name: Rain
+spawn_relative: true
+render_relative: false
+emitters: [
+{
+	emitter_name: Rain,
+	seed: random,
+	duration: -1,
+	max_particles: 2048,
+	offset: {x: 0, y: 0, z: 0},
+	blend_mode: standard,
+	texture: data/textures/particles/shapes/circle_6.png,
+	spawn_mode: continuous,
+	spawn_rate: 512,
+
+	particle_properties: {
+		position: {type: random_min_max, min: {x: -32, y: 64, z: -32}, max: {x: 32, y: 64, z: 32}},
+		velocity: {type: random_min_max, min: {x: -4, y: -64, z: -4}, max: {x: 4, y: -64, z: 4}, damping: 0},
+		color: {type: constant, value: {r: 0.153955, g: 0.34045, b: 0.730392}},
+		size: {type: random_min_max, min: {x: 0.25, y: 0.25}, max: {x: 0.5, y: 0.5}},
+		opacity: {type: constant, value: 1},
+		lifespan: {type: constant, value: 15},
+	},
+
+	affectors: {
+		add_velocity: true,
+		gravity: true,
+	},
+
+	attractors: [
+	]
+},
+]

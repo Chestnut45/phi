@@ -1,0 +1,165 @@
+effect_name: Fireworks
+spawn_relative: false
+render_relative: false
+emitters: [
+{
+	emitter_name: Random Color Firework,
+	seed: random,
+	duration: -1,
+	max_particles: 512,
+	offset: {x: 0, y: 0, z: 0},
+	blend_mode: additive,
+	texture: data/textures/particles/star/star_6.png,
+	spawn_mode: random_burst,
+	spawn_rate_min: 0.5,
+	spawn_rate_max: 1,
+	burst_count_min: 128,
+	burst_count_max: 256,
+
+	particle_properties: {
+		position: {type: random_sphere, center: {x: 0, y: 0, z: 0}, radius: 0.5},
+		velocity: {type: constant, value: {x: 0, y: 0, z: 0}, damping: 0.5},
+		color: {type: random_min_max, min: {r: 0, g: 0, b: 0}, max: {r: 1, g: 1, b: 1}},
+		size: {type: lerp_over_lifetime, start_size: {x: 1, y: 1}, end_size: {x: 0.1, y: 0.1}},
+		opacity: {type: lerp_over_lifetime, start_opacity: 1, end_opacity: 0},
+		lifespan: {type: random_min_max, min: 1, max: 3},
+	},
+
+	affectors: {
+		add_velocity: true,
+		gravity: true,
+	},
+
+	attractors: [
+		{position: {x: 0, y: 0, z: 0}, radius: 2, strength: -45, relative: false},
+	]
+},
+{
+	emitter_name: Yellow to Red Fade Firework,
+	seed: random,
+	duration: -1,
+	max_particles: 512,
+	offset: {x: 8, y: 6, z: 0},
+	blend_mode: additive,
+	texture: data/textures/particles/star/star_6.png,
+	spawn_mode: random_burst,
+	spawn_rate_min: 0.25,
+	spawn_rate_max: 0.5,
+	burst_count_min: 128,
+	burst_count_max: 256,
+
+	particle_properties: {
+		position: {type: random_sphere, center: {x: 0, y: 0, z: 0}, radius: 0.5},
+		velocity: {type: constant, value: {x: 0, y: 0, z: 0}, damping: 0.5},
+		color: {type: lerp_over_lifetime, start_color: {r: 1, g: 1, b: 0}, end_color: {r: 1, g: 0, b: 0}},
+		size: {type: lerp_over_lifetime, start_size: {x: 1, y: 1}, end_size: {x: 0.1, y: 0.1}},
+		opacity: {type: lerp_over_lifetime, start_opacity: 1, end_opacity: 0.5},
+		lifespan: {type: random_min_max, min: 1, max: 3},
+	},
+
+	affectors: {
+		add_velocity: true,
+		gravity: true,
+	},
+
+	attractors: [
+		{position: {x: 8, y: 6, z: 0}, radius: 2, strength: -128, relative: false},
+	]
+},
+{
+	emitter_name: Blue and Green Firework,
+	seed: random,
+	duration: -1,
+	max_particles: 512,
+	offset: {x: -4, y: 8, z: 0},
+	blend_mode: additive,
+	texture: data/textures/particles/star/star_6.png,
+	spawn_mode: random_burst,
+	spawn_rate_min: 0.5,
+	spawn_rate_max: 1,
+	burst_count_min: 128,
+	burst_count_max: 256,
+
+	particle_properties: {
+		position: {type: random_sphere, center: {x: 0, y: 0, z: 0}, radius: 0.5},
+		velocity: {type: constant, value: {x: 0, y: 0, z: 0}, damping: 0.5},
+		color: {type: random_lerp, color_a: {r: 0, g: 0.235294, b: 1}, color_b: {r: 0, g: 1, b: 0}},
+		size: {type: lerp_over_lifetime, start_size: {x: 1, y: 1}, end_size: {x: 0.1, y: 0.1}},
+		opacity: {type: lerp_over_lifetime, start_opacity: 1, end_opacity: 0},
+		lifespan: {type: random_min_max, min: 1, max: 3},
+	},
+
+	affectors: {
+		add_velocity: true,
+		gravity: true,
+	},
+
+	attractors: [
+		{position: {x: -4, y: 8, z: 0}, radius: 2, strength: -45, relative: false},
+	]
+},
+{
+	emitter_name: Red and Green Firework,
+	seed: random,
+	duration: -1,
+	max_particles: 512,
+	offset: {x: 4, y: 10, z: -2},
+	blend_mode: additive,
+	texture: data/textures/particles/star/star_6.png,
+	spawn_mode: random_burst,
+	spawn_rate_min: 0.5,
+	spawn_rate_max: 1,
+	burst_count_min: 128,
+	burst_count_max: 256,
+
+	particle_properties: {
+		position: {type: random_sphere, center: {x: 0, y: 0, z: 0}, radius: 0.5},
+		velocity: {type: constant, value: {x: 0, y: 0, z: 0}, damping: 0.5},
+		color: {type: random_lerp, color_a: {r: 1, g: 0, b: 0}, color_b: {r: 0, g: 1, b: 0}},
+		size: {type: lerp_over_lifetime, start_size: {x: 1, y: 1}, end_size: {x: 0.1, y: 0.1}},
+		opacity: {type: lerp_over_lifetime, start_opacity: 1, end_opacity: 0},
+		lifespan: {type: random_min_max, min: 1, max: 3},
+	},
+
+	affectors: {
+		add_velocity: true,
+		gravity: true,
+	},
+
+	attractors: [
+		{position: {x: 4, y: 10, z: -2}, radius: 2, strength: -32, relative: false},
+	]
+},
+{
+	emitter_name: Red to Blue Fade Firework,
+	seed: random,
+	duration: -1,
+	max_particles: 512,
+	offset: {x: 0, y: 4, z: 0},
+	blend_mode: additive,
+	texture: data/textures/particles/star/star_6.png,
+	spawn_mode: random_burst,
+	spawn_rate_min: 0.25,
+	spawn_rate_max: 0.5,
+	burst_count_min: 128,
+	burst_count_max: 256,
+
+	particle_properties: {
+		position: {type: random_sphere, center: {x: 0, y: 0, z: 0}, radius: 0.5},
+		velocity: {type: constant, value: {x: 0, y: 0, z: 0}, damping: 0.5},
+		color: {type: lerp_over_lifetime, start_color: {r: 1, g: 0, b: 0}, end_color: {r: 0, g: 0, b: 1}},
+		size: {type: lerp_over_lifetime, start_size: {x: 1, y: 1}, end_size: {x: 0.1, y: 0.1}},
+		opacity: {type: lerp_over_lifetime, start_opacity: 1, end_opacity: 0.5},
+		lifespan: {type: random_min_max, min: 1, max: 3},
+	},
+
+	affectors: {
+		add_velocity: true,
+		gravity: true,
+	},
+
+	attractors: [
+		{position: {x: 0, y: 4, z: 0}, radius: 2, strength: -32, relative: false},
+	]
+},
+]

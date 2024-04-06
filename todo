@@ -1,0 +1,72 @@
+School TODO:
+
+research paper
+--------------------------------
+- alternate voxel pipelines (benchmark and compare)
+- VoxelMeshRayTraced / VoxelMeshInstanced
+    - element buffer to index same voxel multiple times?
+    - or build optimized cube mesh for each voxel on construction?
+- draw diagrams for ray marching / splatting
+- test vs cube generation bithack
+
+
+Engine TODO:
+
+
+design / features
+--------------------------------
+
+high priority:
+
+// Generic engine additions
+- make transforms not a component (part of every scene node) ...?
+- use Texture2D::FilterMode as argument in Texture2D constructors
+- add disclaimer about OpenGL context versions for Phi::App (each module should have a minimum version listed)
+- point light components
+- move shader loading to resource manager?
+- input buffering
+- pbr pipeline (PBRMaterial, PBRMesh)
+    - stencil buffer for selecting lighting method for fragments?
+
+// Voxels (after research paper)
+- terrain, flora, fluid sim (in that order)
+- design voxel editor gui
+- raycasting mouse to select voxel on grid for edit / painting
+- loading voxel models into simulation (stamp to world grid or instantiate object)
+
+mid priority:
+- decide material tags from sketchbook list (ferromagnetic (magnetizable, attracted to / repelled by magnets), immovable?)
+- decide per-voxel / per-object flags (asleep, onFire, etc.)
+- plasma (make a sheet of which tags influence which engine behaviours (if you want x behaviour, make a material with x tag))
+- ^ {scripting language for custom behaviour / interactions (anything that needs more data than a flag)}
+- is organic growth a separate column, or part of the scriptable behaviour?
+- core engine simulation systems:
+    - fire (spread, burn, smoke, ignite, damage, melt, extinguish)
+    - electricity (voltage from sources, current flows through voxels depending on conductivity, can magnetize ferromagnetic materials)
+    - magnets (monopoles, materials can have base charge, ferromagnetic voxels can be magnetized either by an electromagnet, or impulse charge)
+    - gravity (affects all particles / objects)
+    - fluid simulation (Particle-based or Cellular Automata?) Likely hybrid, voxelGrid does simulation as CA
+    - particles (voxel physics particles vs visual-only particles?)
+    - waves / effects (static / dynamic hitboxes that interact [apply force, adjust state, etc.] with entities or voxels)
+    - explosions
+    - acid
+    - weather
+
+low priority:
+- extend quadtree to octree (may be useful for speeding up raycast queries in voxel editor?)
+- implement rehash / resize + write unit tests for HashMap
+- design world building workflow (gui app? text format? biomes, landmasses, structures, models, entities, stamps...)
+- physics bodies (rigidbody.cpp, etc.)
+- icosphere flat normals
+
+bugs / fixes
+--------------------------------
+
+high priority:
+- possible missing buffer sync in Scene::Render()
+
+mid priority:
+- move glew dll in windows from system32 to executable folder?
+
+low priority:
+- 
