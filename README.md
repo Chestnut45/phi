@@ -44,6 +44,8 @@ Currently, features are mostly being added in the order I need them for testing 
 
 Current version: 0.3.2
 
+NOTE: Wondering where the commit history went? I had to recreate the repo due to many changed texture files bloating the .git pack files and history. Since it's early in the project's life, losing this history is fine, and well worth reducing the repo size by ~150mb. Internal engine data such as textures may eventually be stored entirely separately from the repo and downloaded as part of an installation process to optimize size further.
+
 ### Math Modules
 - [ ] RNG
     - [x] Basic float / int distributions
@@ -113,7 +115,7 @@ Current version: 0.3.2
             - [x] Loading / Saving from YAML files
             - [x] Effect controls
             - [x] Effect editor application
-            - [ ] Expanded emitter API
+            - [ ] Expanded emitter API (support procedural generation not just YAML files)
         - [ ] GPU Particle Effect
             - [ ] Compute shader simulation
         - [ ] Basic Mesh
