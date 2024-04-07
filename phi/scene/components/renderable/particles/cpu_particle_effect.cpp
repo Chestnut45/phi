@@ -444,7 +444,7 @@ namespace Phi
                 {
                     // No extension given
                     auto rel = std::filesystem::path(filePath).generic_string();
-                    auto dataPath = std::filesystem::current_path().native() + std::filesystem::path::preferred_separator;
+                    auto dataPath = (std::filesystem::current_path() / "").generic_string();
                     size_t p = 0;
                     while ((p = rel.find(dataPath, p)) != std::string::npos)
                     {
@@ -456,7 +456,7 @@ namespace Phi
                 {
                     // Extension supplied from user choice
                     auto rel = std::filesystem::path(filePath.substr(0, pos)).generic_string();
-                    auto dataPath = std::filesystem::current_path().native() + std::filesystem::path::preferred_separator;
+                    auto dataPath = (std::filesystem::current_path() / "").generic_string();
                     size_t p = 0;
                     while ((p = rel.find(dataPath, p)) != std::string::npos)
                     {
