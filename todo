@@ -1,5 +1,6 @@
 School TODO:
 
+
 research paper
 --------------------------------
 - alternate voxel pipelines (benchmark and compare)
@@ -17,22 +18,17 @@ design / features
 --------------------------------
 
 high priority:
-
-// Generic engine additions
-- make transforms not a component (part of every scene node) ...?
-- use Texture2D::FilterMode as argument in Texture2D constructors
-- add disclaimer about OpenGL context versions for Phi::App (each module should have a minimum version listed)
+- restructure filesystem, setup per-project folders, make engine installer
 - point light components
-- move shader loading to resource manager?
 - input buffering
 - pbr pipeline (PBRMaterial, PBRMesh)
     - stencil buffer for selecting lighting method for fragments?
-
-// Voxels (after research paper)
 - terrain, flora, fluid sim (in that order)
 - design voxel editor gui
 - raycasting mouse to select voxel on grid for edit / painting
 - loading voxel models into simulation (stamp to world grid or instantiate object)
+- make transforms not a component (part of every scene node) ...?
+- use Texture2D::FilterMode as argument in Texture2D constructors
 
 mid priority:
 - decide material tags from sketchbook list (ferromagnetic (magnetizable, attracted to / repelled by magnets), immovable?)

@@ -71,6 +71,9 @@ NOTE: Wondering where the commit history went? I had to recreate the repo due to
     - [ ] Hash Grid 3D
 ### Core Modules
 - [x] App
+- [ ] File Management
+    - [ ] File wrapper class
+    - [ ] Document valid special paths (data://, user://, etc.)
 - [ ] Input
     - [x] Keyboard input
     - [x] Mouse input
@@ -80,7 +83,6 @@ NOTE: Wondering where the commit history went? I had to recreate the repo due to
 - [ ] Resource Manager
     - [x] Texture2D management
     - [ ] Shader management
-    - [ ] Enforce use of per-project data folder
 ### Graphics Modules
 - [x] Indirect draw command structures
 - [x] Internal vertex formats
