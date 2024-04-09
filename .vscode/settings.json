@@ -2,8 +2,9 @@
     "files.associations": {
         "todo": "text",
         "*.effect": "yaml",
-        "*.yaml": "yaml",
         "*.emitter": "yaml",
+        "*.yaml": "yaml",
+        "*.pvox": "yaml",
         "any": "cpp",
         "array": "cpp",
         "atomic": "cpp",
