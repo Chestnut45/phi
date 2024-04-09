@@ -450,41 +450,38 @@ namespace Phi
 
     void Scene::LoadMaterials(const std::string& filepath)
     {
-        std::ifstream file(filepath);
-        if (!file.is_open())
+        try
         {
-            Error("Couldn't open materials file");
-            return;
-        }
+            // Load YAML file (TODO: Globalize path so can be sourced from data://, user://, if wanted)
+            YAML::Node node = YAML::LoadFile(filepath);
 
-        // Container for adding materials
-        BasicMaterial m;
-
-        // Process each line in the file
-        for (std::string line; std::getline(file, line);)
-        {
-            // Ignore comment lines
-            if (line[0] == '#') continue;
-            
-            // Parse a single material
-            if (line[0] == '.')
+            // Process basic materials
+            if (node["basic_materials"])
             {
-                // Read name
-                std::string name = line.substr(1);
-                
-                // Read color
-                std::getline(file, line);
-                std::istringstream aIn(line);
-                aIn >> m.color.r >> m.color.g >> m.color.b;
+                const auto& mats = node["basic_materials"];
+                for (int i = 0; i < mats.size(); ++i)
+                {
+                    // Grab the specific material
+                    const auto& mat = mats[i];
 
-                // Read shininess
-                std::getline(file, line);
-                std::istringstream shIn(line);
-                shIn >> m.shininess;
+                    // Create the basic material
+                    BasicMaterial m{};
 
-                // Add the material to the registry
-                AddMaterial(name, m);
+                    // Load properties from node
+                    std::string name = mat["name"] ? mat["name"].as<std::string>() : "Unnamed Material";
+                    m.color.r = mat["color"]["r"] ? mat["color"]["r"].as<float>() : m.color.r;
+                    m.color.g = mat["color"]["g"] ? mat["color"]["g"].as<float>() : m.color.g;
+                    m.color.b = mat["color"]["b"] ? mat["color"]["b"].as<float>() : m.color.b;
+                    m.shininess = mat["shininess"] ? mat["shininess"].as<float>() : m.shininess;
+
+                    // Add the material to the scene
+                    AddMaterial(name, m);
+                }
             }
+        }
+        catch (YAML::Exception e)
+        {
+            Error("YAML Parser Error: ", filepath);
         }
     }
 

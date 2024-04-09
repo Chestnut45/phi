@@ -44,10 +44,3 @@
 #include "scene/components/renderable/voxel_mesh.hpp"
 #include "scene/components/renderable/particles/cpu_particle_effect.hpp"
 #include "scene/components/renderable/particles/cpu_particle_emitter.hpp"
-
-// Voxel simulation components
-#include "voxel/voxel_material.hpp"
-#include "voxel/voxel_object.hpp"
-#include "voxel/voxel_particle.hpp"
-#include "voxel/voxel_world.hpp"
-#include "voxel/voxel.hpp"
