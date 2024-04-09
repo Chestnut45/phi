@@ -1,0 +1,49 @@
+# YAML Format?
+
+material_ids: {
+    name1: 0,
+    name2: 1,
+    name3: 2
+}
+
+voxels: [
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+    {x: 0, y: 0, z: 0, material: 0},
+]
+
+# Custom Format?
+
+.material_ids
+name1: 0
+name2: 1
+name3: 2
+
+.voxels
+0 0 0 0
+0 0 0 0
+0 0 0 0
+0 0 0 0
+0 0 0 0
+0 0 0 0
+0 0 0 0
+0 0 0 0
+0 0 0 0
+0 0 0 0
+0 0 0 0
+0 0 0 0
