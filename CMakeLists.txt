@@ -92,8 +92,8 @@ add_executable(particle_effect_editor ${PHI_SOURCE} ${PHI_HEADERS} ${IMGUI_SOURC
 target_link_libraries(particle_effect_editor yaml-cpp::yaml-cpp assimp glfw glew ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
 
 # Voxel test app
-set(VOXEL_TEST_SOURCE ${CMAKE_SOURCE_DIR}/src/voxel_test.cpp)
-set(VOXEL_TEST_HEADER ${CMAKE_SOURCE_DIR}/src/voxel_test.hpp)
+set(VOXEL_TEST_SOURCE ${CMAKE_SOURCE_DIR}/tools/voxel_test.cpp)
+set(VOXEL_TEST_HEADER ${CMAKE_SOURCE_DIR}/tools/voxel_test.hpp)
 add_executable(voxel_test ${PHI_SOURCE} ${PHI_HEADERS} ${IMGUI_SOURCES} ${VOXEL_TEST_SOURCE} ${VOXEL_TEST_HEADER})
 target_link_libraries(voxel_test yaml-cpp::yaml-cpp assimp glfw glew ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
 
