@@ -18,7 +18,6 @@ design / features
 --------------------------------
 
 high priority:
-- restructure filesystem, setup per-project folders, make engine installer
 - point light components
 - input buffering
 - pbr pipeline (PBRMaterial, PBRMesh)
@@ -59,7 +58,7 @@ bugs / fixes
 --------------------------------
 
 high priority:
-- possible missing buffer sync in Scene::Render()
+- 
 
 mid priority:
 - move glew dll in windows from system32 to executable folder?
