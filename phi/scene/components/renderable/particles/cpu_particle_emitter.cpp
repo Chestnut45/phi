@@ -4,6 +4,7 @@
 #include <chrono>
 #include <glm/gtx/norm.hpp>
 
+#include <phi/core/file.hpp>
 #include <phi/core/logging.hpp>
 
 namespace Phi
@@ -777,7 +778,7 @@ namespace Phi
         try
         {
             // Load the file using yaml-cpp
-            YAML::Node emitter = YAML::LoadFile(filePath);
+            YAML::Node emitter = YAML::LoadFile(File::GlobalizePath(filePath));
 
             // Check validity
             if (!emitter) return false;

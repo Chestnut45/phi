@@ -1,5 +1,6 @@
 #include "skybox.hpp"
 
+#include <phi/core/file.hpp>
 #include <phi/scene/scene.hpp>
 
 namespace Phi
@@ -50,21 +51,26 @@ namespace Phi
     };
 
     Skybox::Skybox(const std::string& dayMapPath, const std::string& nightMapPath)
-        :
-        dayMap({dayMapPath + "/right.png",
-                dayMapPath + "/left.png",
-                dayMapPath + "/top.png",
-                dayMapPath + "/bottom.png",
-                dayMapPath + "/front.png",
-                dayMapPath + "/back.png"}),
-        
-        nightMap({nightMapPath + "/right.png",
-                  nightMapPath + "/left.png",
-                  nightMapPath + "/top.png",
-                  nightMapPath + "/bottom.png",
-                  nightMapPath + "/front.png",
-                  nightMapPath + "/back.png"})
     {
+        // Generate globalized paths
+        std::string dayPath = File::GlobalizePath(dayMapPath);
+        std::string nightPath = File::GlobalizePath(nightMapPath);
+
+        // Initialize day and night cubemaps
+        dayMap = new Cubemap({  dayPath + "/right.png",
+                                dayPath + "/left.png",
+                                dayPath + "/top.png",
+                                dayPath + "/bottom.png",
+                                dayPath + "/front.png",
+                                dayPath + "/back.png"});
+        
+        nightMap = new Cubemap({nightPath + "/right.png",
+                                nightPath + "/left.png",
+                                nightPath + "/top.png",
+                                nightPath + "/bottom.png",
+                                nightPath + "/front.png",
+                                nightPath + "/back.png"});
+
         // If first instance, initialize static resources
         if (refCount == 0)
         {
@@ -72,6 +78,8 @@ namespace Phi
             skyboxVBO = new Phi::GPUBuffer(Phi::BufferType::Static, sizeof(SKYBOX_VERTICES), SKYBOX_VERTICES);
             skyboxVAO = new Phi::VertexAttributes(Phi::VertexFormat::POS, skyboxVBO);
             skyboxShader = new Phi::Shader();
+
+            // TODO: Use local paths hardcoded so that global paths can be generated at runtime
             skyboxShader->LoadShaderSource(GL_VERTEX_SHADER, "phi/graphics/shaders/skybox.vs");
             skyboxShader->LoadShaderSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/skybox.fs");
             skyboxShader->Link();
@@ -83,6 +91,10 @@ namespace Phi
     Skybox::~Skybox()
     {
         refCount--;
+
+        // Delete cubemaps
+        delete dayMap;
+        delete nightMap;
 
         // Safely remove ourselves from any active scene
         if (activeScene) activeScene->RemoveSkybox();
@@ -101,8 +113,8 @@ namespace Phi
         // Bind resources
         skyboxShader->Use();
         skyboxVAO->Bind();
-        dayMap.Bind(0);
-        nightMap.Bind(1);
+        dayMap->Bind(0);
+        nightMap->Bind(1);
 
         // Write normalized time uniform to interpolate skyboxes
         skyboxShader->SetUniform("timeOfDay", timeOfDay);

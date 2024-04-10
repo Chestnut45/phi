@@ -7,7 +7,11 @@
 namespace Phi
 {
     // Wrapper class to access files in the filesystem
-    // Uses UNIX-style file separators ('/')
+    // Uses _ONLY_ UNIX-style file separators ('/')
+    // There are special tokens that refer to implicit paths:
+    // 1. "data://" - The project's data folder (e.g. resources, should be copied to program install location)
+    // 2. "user://" - The user's persistent folder for the project (e.g. save file location)
+    // 3. "phi://" - Internal engine data (e.g. built-in resources, should be read-only)
     class File
     {
         // Interface
@@ -22,7 +26,7 @@ namespace Phi
             };
 
             // Opens the file at the given path in the given mode
-            File(const std::string& filepath, Mode mode);
+            File(const std::string& path, Mode mode);
             ~File();
 
             // Delete copy constructor/assignment
@@ -33,9 +37,13 @@ namespace Phi
             File(File&& other) = delete;
             void operator=(File&& other) = delete;
 
-            // TODO: Initialization and engine / project paths setup
+            // Path globalization / localization
 
-            // Global / Local conversions
+            // Converts a local path using any special tokens to a fully qualified global path
+            static std::string GlobalizePath(const std::string& path);
+
+            // Converts a fully qualified global path to a local path using special tokens
+            static std::string LocalizePath(const std::string& path);
 
             // Cursor / seeking
 
@@ -43,13 +51,14 @@ namespace Phi
         private:
 
             // Path to the file
-            std::string path;
+            std::string pathToFile;
 
             // Stream object for the file's data
-            std::fstream file;
+            std::fstream fileStream;
 
             // Special file paths (set during app initialization)
-            static std::string USER_PATH;
-            static std::string DATA_PATH;
+            static inline std::string DATA_PATH = "data/"; // DEBUG
+            static inline std::string USER_PATH;
+            static inline std::string PHI_PATH;
     };
 }

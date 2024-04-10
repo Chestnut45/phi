@@ -4,6 +4,7 @@
 #include <sstream>
 #include <imgui/imgui.h>
 
+#include <phi/core/file.hpp>
 #include <phi/scene/node.hpp>
 #include <phi/scene/components/collision/bounding_sphere.hpp>
 #include <phi/scene/components/renderable/particles/cpu_particle_effect.hpp>
@@ -452,8 +453,8 @@ namespace Phi
     {
         try
         {
-            // Load YAML file (TODO: Globalize path so can be sourced from data://, user://, if wanted)
-            YAML::Node node = YAML::LoadFile(filepath);
+            // Load YAML file
+            YAML::Node node = YAML::LoadFile(File::GlobalizePath(filepath));
 
             // Process basic materials
             if (node["basic_materials"])

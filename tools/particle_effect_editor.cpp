@@ -29,7 +29,7 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     scene.SetActiveCamera(camera);
 
     // Add a skybox
-    Phi::Skybox& skybox = camera.GetNode()->AddComponent<Phi::Skybox>("data/textures/skybox_day", "data/textures/skybox_night_old");
+    Phi::Skybox& skybox = camera.GetNode()->AddComponent<Phi::Skybox>("data://textures/skybox_day", "data://textures/skybox_night_old");
     scene.SetActiveSkybox(skybox);
 
     // Add a directional light
@@ -38,10 +38,10 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     scene.AttachLight(light, Phi::Scene::LightSlot::SLOT_0);
 
     // Load default fire effect
-    currentEffect = &node->AddComponent<Phi::CPUParticleEffect>("data/effects/fire.effect");
+    currentEffect = &node->AddComponent<Phi::CPUParticleEffect>("data://effects/fire.effect");
 
     // Load materials
-    scene.LoadMaterials("data/basic_materials.yaml");
+    scene.LoadMaterials("data://basic_materials.yaml");
 
     // Create mesh
     Phi::BasicMesh& mesh = node->AddComponent<Phi::BasicMesh>();

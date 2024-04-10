@@ -43,8 +43,8 @@ namespace Phi
         private:
 
             // Skybox textures
-            Phi::Cubemap dayMap;
-            Phi::Cubemap nightMap;
+            Phi::Cubemap* dayMap = nullptr;
+            Phi::Cubemap* nightMap = nullptr;
 
             // Blend factor between textures
             // 0 = noon, 1 = midnight

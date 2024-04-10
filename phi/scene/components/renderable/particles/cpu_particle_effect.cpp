@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include <yaml-cpp/yaml.h>
+#include <phi/core/file.hpp>
 #include <phi/core/logging.hpp>
 #include <phi/scene/node.hpp>
 
@@ -114,7 +115,7 @@ namespace Phi
         try
         {
             // Load the file using yaml-cpp
-            YAML::Node effect = YAML::LoadFile(filePath);
+            YAML::Node effect = YAML::LoadFile(File::GlobalizePath(filePath));
 
             // Check validity
             if (!effect) return false;
@@ -141,7 +142,7 @@ namespace Phi
                     std::string emitterFile = emitters[i]["file"].as<std::string>();
 
                     // Construct the emitter in place
-                    loadedEmitters.emplace_back(emitterFile);
+                    loadedEmitters.emplace_back(File::GlobalizePath(emitterFile));
                 }
                 else
                 {
@@ -164,6 +165,8 @@ namespace Phi
 
     void CPUParticleEffect::Save(const std::string& filePath, bool singleFile) const
     {
+        // TODO: Change saving to use Phi::File and globalize / localize paths where necessary
+        
         if (singleFile)
         {
             // Output the entire effect contents to a single file
