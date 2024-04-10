@@ -3,7 +3,7 @@ spawn_relative: false
 render_relative: false
 emitters: [
 {
-	emitter_name: Random Color Firework,
+	emitter_name: Rainbow Firework,
 	seed: random,
 	duration: -1,
 	max_particles: 512,
