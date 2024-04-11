@@ -223,7 +223,7 @@ namespace Phi
             // Simulation
 
             // Simulates all active particles
-            void Update(float delta, bool updateSpawns = true, const glm::mat4& transform = glm::mat4(1.0f));
+            void Update(float delta, bool updateSpawns = true, bool spawnRelative = false, const glm::mat4& transform = glm::mat4(1.0f));
 
             // Removes all active particles and resets counters
             void Reset();

@@ -349,7 +349,7 @@ void ParticleEffectEditor::ShowEditorWindow()
                 // Display global properties
                 ImGui::SeparatorText("Emitter Properties");
                 ImGui::InputText("Name", &emitter.name);
-                ImGui::DragFloat("Duration", &emitter.duration, 0.001f, -1.0f, 65'536.0f, "%.1f");
+                ImGui::DragFloat("Duration", &emitter.duration, 0.001f, -1.0f, 65'536.0f);
                 if (ImGui::DragInt("Max Particles", &emitter.maxActiveParticles, 1, 0, Phi::CPUParticleEmitter::MAX_PARTICLES))
                 {
                     // Adjust particle pool and ensure stable simulation

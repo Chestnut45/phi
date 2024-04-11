@@ -170,7 +170,7 @@ namespace Phi
         }
     }
 
-    void CPUParticleEmitter::Update(float delta, bool updateSpawns, const glm::mat4& transform)
+    void CPUParticleEmitter::Update(float delta, bool updateSpawns, bool spawnRelative, const glm::mat4& transform)
     {
         // Only update counters if updating spawns and below duration or infinite duration
         if (updateSpawns)
@@ -282,7 +282,7 @@ namespace Phi
                 }
 
                 // Transform position if requested
-                if (transform != glm::mat4(1.0f))
+                if (spawnRelative)
                 {
                     spawned.position = glm::vec3(transform * glm::vec4(spawned.position, 1.0f)) + offset;
                 }
@@ -390,8 +390,7 @@ namespace Phi
                 activeParticles--;
 
                 // Validate oldest
-                // TODO: This is taking not the oldest particle sometimes. Switching to linked lists
-                // is not worth the performance trade-off, so another solution must be found
+                // TODO: Cleanup this logic, very rare chance to take newer particles for recycling (investigation needed)
                 if (i == oldest)
                 {
                     if (oldest < activeParticles - 1)

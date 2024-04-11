@@ -29,13 +29,10 @@ namespace Phi
 
     void CPUParticleEffect::Update(float delta)
     {
-        // Grab transform if requested
+        // Grab sibling transform component
         glm::mat4 transform = glm::mat4(1.0f);
-        if (spawnRelativeTransform)
-        {
-            Transform* t = GetNode()->GetComponent<Transform>();
-            if (t) transform = t->GetGlobalMatrix();
-        }
+        Transform* t = GetNode()->GetComponent<Transform>();
+        if (t) transform = t->GetGlobalMatrix();
 
         switch (state)
         {
@@ -44,7 +41,7 @@ namespace Phi
                 // Update all emitters
                 for (auto& emitter : loadedEmitters)
                 {
-                    emitter.Update(delta, true, transform);
+                    emitter.Update(delta, true, spawnRelativeTransform, transform);
                 }
 
                 break;
@@ -54,7 +51,7 @@ namespace Phi
                 // Update all emitters
                 for (auto& emitter : loadedEmitters)
                 {
-                    emitter.Update(delta, false);
+                    emitter.Update(delta, false, spawnRelativeTransform, transform);
                 }
 
                 break;

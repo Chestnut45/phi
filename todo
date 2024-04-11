@@ -1,9 +1,12 @@
 School TODO:
 
+- full pass of File::GlobalizePath() usage
+- note which files need to be changed to account for special path tokens
+- File datapath setup (localize texture paths while saving, globalize while loading)
 
 research paper
 --------------------------------
-- alternate voxel pipelines (benchmark and compare)
+- VoxelObject component to abstract voxel rendering methods
 - VoxelMeshRayTraced / VoxelMeshInstanced
     - element buffer to index same voxel multiple times?
     - or build optimized cube mesh for each voxel on construction?
