@@ -34,11 +34,13 @@ namespace Phi
 
             // Loads a 2D texture from disk, increasing an internal reference counter
             // Does not create copies if the same file is loaded multiple times
-            Texture2D* LoadTexture2D(const std::string& filepath, Texture2D::FilterMode filterMode = Texture2D::FilterMode::Nearest);
+            // Accepts local paths like data:// and user://
+            Texture2D* LoadTexture2D(const std::string& path, Texture2D::FilterMode filterMode = Texture2D::FilterMode::Nearest);
 
             // Decreases the reference counter for the given texture filepath
             // Fully unloads the resource if the reference counter reaches 0 or force is given the value of true
-            void UnloadTexture2D(const std::string& filepath, bool force = false);
+            // Accepts local paths like data:// and user://
+            void UnloadTexture2D(const std::string& path, bool force = false);
 
         // Data / implementation
         private:

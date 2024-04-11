@@ -17,13 +17,13 @@ namespace Phi
 
             // Load shaders
             untexturedShader = new Shader();
-            untexturedShader->LoadShaderSource(GL_VERTEX_SHADER, "phi/graphics/shaders/untextured_particle_emitter.vs");
-            untexturedShader->LoadShaderSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/untextured_particle_emitter.fs");
+            untexturedShader->LoadSource(GL_VERTEX_SHADER, "phi/graphics/shaders/untextured_particle_emitter.vs");
+            untexturedShader->LoadSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/untextured_particle_emitter.fs");
             untexturedShader->Link();
 
             texturedShader = new Shader();
-            texturedShader->LoadShaderSource(GL_VERTEX_SHADER, "phi/graphics/shaders/textured_particle_emitter.vs");
-            texturedShader->LoadShaderSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/textured_particle_emitter.fs");
+            texturedShader->LoadSource(GL_VERTEX_SHADER, "phi/graphics/shaders/textured_particle_emitter.vs");
+            texturedShader->LoadSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/textured_particle_emitter.fs");
             texturedShader->Link();
 
             // Create buffers
@@ -73,14 +73,14 @@ namespace Phi
         particlePool.resize(maxActiveParticles);
     }
 
-    CPUParticleEmitter::CPUParticleEmitter(const std::string& filePath)
+    CPUParticleEmitter::CPUParticleEmitter(const std::string& path)
     {
         // Reference counter update
         IncreaseReferences();
 
-        if (!Load(filePath))
+        if (!Load(path))
         {
-            Error("Invalid Emitter File: ", filePath);
+            Error("Invalid Emitter File: ", path);
         }
     }
 
@@ -771,13 +771,13 @@ namespace Phi
         }
     }
 
-    bool CPUParticleEmitter::Load(const std::string& filePath)
+    bool CPUParticleEmitter::Load(const std::string& path)
     {
         // YAML parsing library throws exceptions... catch and handle
         try
         {
             // Load the file using yaml-cpp
-            YAML::Node emitter = YAML::LoadFile(File::GlobalizePath(filePath));
+            YAML::Node emitter = YAML::LoadFile(File::GlobalizePath(path));
 
             // Check validity
             if (!emitter) return false;
@@ -788,7 +788,7 @@ namespace Phi
 
         catch (YAML::Exception& e)
         {
-            Error("YAML parser exception: ", filePath, ": ", e.msg);
+            Error("YAML parser exception: ", path, ": ", e.msg);
             Reset();
             return false;
         }
@@ -1162,14 +1162,14 @@ namespace Phi
         }
     }
 
-    void CPUParticleEmitter::SetTexture(const std::string& texPath)
+    void CPUParticleEmitter::SetTexture(const std::string& path)
     {
-        Texture2D* newTex = ResourceManager::Instance().LoadTexture2D(texPath);
+        Texture2D* newTex = ResourceManager::Instance().LoadTexture2D(path);
         if (newTex)
         {
-            if (this->texture) ResourceManager::Instance().UnloadTexture2D(this->texPath);
-            this->texPath = texPath;
-            this->texture = newTex;
+            if (texture) ResourceManager::Instance().UnloadTexture2D(texPath);
+            texPath = path;
+            texture = newTex;
         }
     }
 

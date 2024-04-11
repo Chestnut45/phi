@@ -3,6 +3,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#include <phi/core/file.hpp>
+
 namespace Phi
 {
     void ErrorCallback(int error, const char* const description)
@@ -50,6 +52,9 @@ namespace Phi
 
         // Setup input
         Input::Setup(pWindow);
+
+        // Setup filesystem (generate user and data folder paths)
+        File::Init();
 
         // Set user pointer and make context current
         glfwSetWindowUserPointer(pWindow, this);

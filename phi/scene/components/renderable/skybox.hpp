@@ -19,6 +19,7 @@ namespace Phi
         public:
 
             // Loads a skybox from 2 folders containing all the images for day / night cubemaps
+            // Accepts local paths like data:// and user://
             Skybox(const std::string& dayMapPath, const std::string& nightMapPath);
             ~Skybox();
 
@@ -43,8 +44,8 @@ namespace Phi
         private:
 
             // Skybox textures
-            Phi::Cubemap* dayMap = nullptr;
-            Phi::Cubemap* nightMap = nullptr;
+            Phi::Cubemap dayMap;
+            Phi::Cubemap nightMap;
 
             // Blend factor between textures
             // 0 = noon, 1 = midnight

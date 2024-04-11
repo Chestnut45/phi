@@ -33,8 +33,4 @@ class VoxelTest : public Phi::App
 
         // DEBUG: Transform for test voxel mesh
         Phi::Transform* voxelMeshTransform = nullptr;
-
-        // Settings
-        bool vsync = false;
-        bool fullscreen = false;
 };

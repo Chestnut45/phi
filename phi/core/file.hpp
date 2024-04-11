@@ -37,6 +37,11 @@ namespace Phi
             File(File&& other) = delete;
             void operator=(File&& other) = delete;
 
+            // Initialization
+            // Called by Phi::App automatically on construction
+            // Engine users should not have to call this unless changing the default user:// or data:// paths
+            static void Init();
+
             // Path globalization / localization
 
             // Converts a local path using any special tokens to a fully qualified global path
@@ -61,7 +66,7 @@ namespace Phi
             std::fstream fileStream;
 
             // Special file paths (set during app initialization)
-            static inline std::string DATA_PATH = "data/"; // DEBUG
+            static inline std::string DATA_PATH;
             static inline std::string USER_PATH;
             static inline std::string PHI_PATH;
     };

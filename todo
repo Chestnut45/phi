@@ -1,9 +1,7 @@
 School TODO:
 
-- full pass of File::GlobalizePath() usage
-- note which files need to be changed to account for special path tokens
-- File datapath setup (localize texture paths while saving, globalize while loading)
 - File operator<< / >> overloading for stream IO
+- Texture2D better constructors
 
 research paper
 --------------------------------

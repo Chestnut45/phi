@@ -22,13 +22,16 @@ namespace Phi
                 Linear
             };
 
+            // Creates an empty texture with the given formats and parameters
             Texture2D(int width, int height,
                       GLint internalFormat, GLint format, GLenum type,
                       GLint wrapU, GLint wrapV,
                       GLenum minFilter, GLenum magFilter,
                       bool mipmap = false);
             
-            Texture2D(const std::string& texPath,
+            // Loads a texture from disk with the given formats and parameters
+            // Accepts local paths like data:// and user://
+            Texture2D(const std::string& path,
                       GLint wrapU, GLint wrapV,
                       GLenum minFilter, GLenum magFilter,
                       bool mipmap = false);

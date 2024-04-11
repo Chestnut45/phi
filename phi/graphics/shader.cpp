@@ -1,5 +1,7 @@
 #include "shader.hpp"
 
+#include <phi/core/file.hpp>
+
 namespace Phi
 {
     // Initialize the shader program
@@ -20,17 +22,16 @@ namespace Phi
     {
         glUseProgram(programID);
     }
-
-    // Loads a shader stage source file from disk
-    // Call this for each stage you want to add to a shader program
-    bool Shader::LoadShaderSource(GLenum stage, const std::string& sourcePath)
+    
+    // TODO: Use Phi::File for reading the file!
+    bool Shader::LoadSource(GLenum stage, const std::string& path)
     {
         // Verification vars
         GLint success;
         GLchar infoLog[512];
         
         // Read the file stream
-        std::ifstream ifs(sourcePath);
+        std::ifstream ifs(File::GlobalizePath(path));
         std::string shaderSourceString((std::istreambuf_iterator<char>(ifs)),
                                         (std::istreambuf_iterator<char>()));
         

@@ -164,12 +164,14 @@ void ParticleEffectEditor::ShowEditorWindow()
                     auto effectFile = pfd::open_file("Load Effect File", "", {"Effect Files (.effect)", "*.effect"}, pfd::opt::none);
                     if (effectFile.result().size() > 0)
                     {
-                        auto effectFileString = effectFile.result()[0];
-                        if (!currentEffect)
-                        {
-                            currentEffect = &node->AddComponent<Phi::CPUParticleEffect>();
-                        }
-                        currentEffect->Load(effectFileString);
+                        // Grab the effect path, and convert it to the proper format
+                        auto effectPath = std::filesystem::path(effectFile.result()[0]).generic_string();
+
+                        // Ensure an effect is loaded
+                        if (!currentEffect) currentEffect = &node->AddComponent<Phi::CPUParticleEffect>();
+
+                        // Load from the file
+                        currentEffect->Load(effectPath);
                     }
                     lastTime = glfwGetTime();
                 }
@@ -181,14 +183,11 @@ void ParticleEffectEditor::ShowEditorWindow()
                 if (emitterFile.result().size() > 0)
                 {
                     // Ensure there is an effect loaded
-                    if (!currentEffect)
-                    {
-                        currentEffect = &node->AddComponent<Phi::CPUParticleEffect>();
-                    }
+                    if (!currentEffect) currentEffect = &node->AddComponent<Phi::CPUParticleEffect>();
 
                     // Load the file
-                    auto emitterFileString = emitterFile.result()[0];
-                    if (emitterFileString.size() > 0) currentEffect->loadedEmitters.emplace_back(emitterFileString);
+                    auto emitterPath = std::filesystem::path(emitterFile.result()[0]).generic_string();
+                    currentEffect->loadedEmitters.emplace_back(emitterPath);
                 }
                 lastTime = glfwGetTime();
             }
@@ -198,7 +197,13 @@ void ParticleEffectEditor::ShowEditorWindow()
                 {
                     // Save the current effect to a single interleaved effect file containing emitter data
                     auto saveFile = pfd::save_file("Save Interleaved Effect File", "", {"Effect Files (.effect)", "*.effect"}, pfd::opt::none);
-                    if (saveFile.result().size() > 0) currentEffect->Save(saveFile.result(), true);
+                    
+                    if (saveFile.result().size() > 0)
+                    {
+                        // Grab the path in proper format
+                        auto savePath = std::filesystem::path(saveFile.result()).generic_string();
+                        currentEffect->Save(savePath, true);
+                    }
                     lastTime = glfwGetTime();
                 }
             }
@@ -208,7 +213,13 @@ void ParticleEffectEditor::ShowEditorWindow()
                 {
                     // Save the current effect to a file that references separate emitter files
                     auto saveFile = pfd::save_file("Save Effect", "", {"Effect Files (.effect)", "*.effect"}, pfd::opt::none);
-                    if (saveFile.result().size() > 0) currentEffect->Save(saveFile.result(), false);
+
+                    if (saveFile.result().size() > 0)
+                    {
+                        // Grab the path in proper format
+                        auto savePath = std::filesystem::path(saveFile.result()).generic_string();
+                        currentEffect->Save(savePath, false);
+                    }
                     lastTime = glfwGetTime();
                 }
             }
@@ -281,12 +292,15 @@ void ParticleEffectEditor::ShowEditorWindow()
         {
             // Load a new effect from disk
             auto effectFile = pfd::open_file("Select Effect File", "", {"Effect Files (.effect)", "*.effect"}, pfd::opt::none);
+
+            // Grab the path in proper format and load
             if (effectFile.result().size() > 0)
             {
-                auto effectFileString = effectFile.result()[0];
-                lastTime = glfwGetTime();
-                currentEffect->Load(effectFileString);
+                auto effectPath = std::filesystem::path(effectFile.result()[0]).generic_string();
+                currentEffect->Load(effectPath);
             }
+
+            // Account for time lost and close popup
             lastTime = glfwGetTime();
             ImGui::CloseCurrentPopup();
         }
@@ -392,19 +406,14 @@ void ParticleEffectEditor::ShowEditorWindow()
                     // Load a new texture
                     auto startingPath = (std::filesystem::current_path() / "data/textures/particles").generic_string();
                     auto texFile = pfd::open_file("Select Texture File", startingPath, {"Textures (.png)", "*.png"}, pfd::opt::none);
-                    const auto& result = texFile.result();
-                    if (result.size() > 0)
+                    
+                    if (texFile.result().size() > 0)
                     {
-                        // Remove current path from file if found (make data paths relative)
-                        auto path = std::filesystem::path(result[0]).generic_string();
-                        auto dataPath = (std::filesystem::current_path() / "").generic_string();
-                        size_t pos = 0;
-                        while ((pos = path.find(dataPath, pos)) != std::string::npos)
-                        {
-                            path.replace(pos, dataPath.length(), "");
-                        }
-                        emitter.SetTexture(path);
+                        // Grab the path in proper format, localize if possible, and set the texture
+                        auto texPath = Phi::File::LocalizePath(std::filesystem::path(texFile.result()[0]).generic_string());
+                        emitter.SetTexture(texPath);
                     }
+
                     lastTime = glfwGetTime();
                 }
                 ImGui::SameLine();

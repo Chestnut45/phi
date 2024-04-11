@@ -23,7 +23,10 @@ namespace Phi
             ~Shader();
 
             // Loading / compiling
-            bool LoadShaderSource(GLenum stage, const std::string& sourcePath);
+
+            // Loads shader source code from a file
+            // Accepts local paths like data:// and user://
+            bool LoadSource(GLenum stage, const std::string& path);
             bool Link() const;
 
             // Delete copy constructor/assignment

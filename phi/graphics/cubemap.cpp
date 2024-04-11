@@ -1,10 +1,9 @@
 #include "cubemap.hpp"
 
+#include <phi/core/file.hpp>
+
 namespace Phi
 {
-    // Constructor
-    // faces should contain 6 file paths (relative to project directory)
-    // to image files in the order: right, left, top, bottom, front, back
     Cubemap::Cubemap(const std::vector<std::string>& faces)
     {
         // Generate resources
@@ -18,7 +17,7 @@ namespace Phi
         for (unsigned int i = 0; i < faces.size(); i++)
         {
             // Load the face image data
-            unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &channelCount, STBI_rgb_alpha);
+            unsigned char* data = stbi_load(File::GlobalizePath(faces[i]).c_str(), &width, &height, &channelCount, STBI_rgb_alpha);
 
             if (data)
             {

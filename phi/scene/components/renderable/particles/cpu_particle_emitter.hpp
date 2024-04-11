@@ -203,7 +203,8 @@ namespace Phi
             CPUParticleEmitter();
             
             // Loads an emitter from a YAML file
-            CPUParticleEmitter(const std::string& filePath);
+            // Accepts local paths like data:// and user://
+            CPUParticleEmitter(const std::string& path);
 
             // Loads an emitter from a YAML node containing the emitter data
             CPUParticleEmitter(const YAML::Node& node);
@@ -240,8 +241,9 @@ namespace Phi
 
             // Serialization
 
-            // Loads the emitter data from a file
-            bool Load(const std::string& filePath);
+            // Loads the emitter data from a YAML file
+            // Accepts local paths like data:// and user://
+            bool Load(const std::string& path);
 
             // Loads the emitter data from a YAML node
             bool Load(const YAML::Node& node);
@@ -252,7 +254,8 @@ namespace Phi
             void SetOffset(const glm::vec3& offset) { this->offset = offset; }
 
             // Sets this emitter's texture
-            void SetTexture(const std::string& texPath);
+            // Accepts local paths like data:// and user://
+            void SetTexture(const std::string& path);
 
             // Removes any existing texture
             void RemoveTexture();

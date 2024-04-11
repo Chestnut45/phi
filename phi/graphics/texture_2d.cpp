@@ -1,5 +1,7 @@
 #include "texture_2d.hpp"
 
+#include <phi/core/file.hpp>
+
 namespace Phi
 {
     // Generate texture constructor
@@ -29,7 +31,7 @@ namespace Phi
     }
 
     // Load from file constructor
-    Texture2D::Texture2D(const std::string& texPath,
+    Texture2D::Texture2D(const std::string& path,
                          GLint wrapU, GLint wrapV,
                          GLenum minFilter, GLenum magFilter,
                          bool mipmap)
@@ -47,7 +49,7 @@ namespace Phi
         // Load the image data
         int width, height, channelCount;
         stbi_set_flip_vertically_on_load(true);
-        unsigned char* data = stbi_load(texPath.c_str(), &width, &height, &channelCount, STBI_rgb_alpha);
+        unsigned char* data = stbi_load(File::GlobalizePath(path).c_str(), &width, &height, &channelCount, STBI_rgb_alpha);
         if (data)
         {
             // Send image data to texture target
@@ -60,7 +62,7 @@ namespace Phi
         }
         else
         {
-            std::cout << "ERROR: Couldn't load file: " << texPath.c_str() << std::endl;
+            std::cout << "ERROR: Couldn't load file: " << path.c_str() << std::endl;
         }
 
         // Free the image data

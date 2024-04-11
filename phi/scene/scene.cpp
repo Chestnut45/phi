@@ -40,13 +40,13 @@ namespace Phi
         // Load shaders
 
         // Global lighting (Blinn-Phong)
-        globalLightShader.LoadShaderSource(GL_VERTEX_SHADER, "phi/graphics/shaders/global_light_pass_blinn_phong.vs");
-        globalLightShader.LoadShaderSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/global_light_pass_blinn_phong.fs");
+        globalLightShader.LoadSource(GL_VERTEX_SHADER, "phi/graphics/shaders/global_light_pass_blinn_phong.vs");
+        globalLightShader.LoadSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/global_light_pass_blinn_phong.fs");
         globalLightShader.Link();
 
         // Wireframes
-        wireframeShader.LoadShaderSource(GL_VERTEX_SHADER, "phi/graphics/shaders/wireframe.vs");
-        wireframeShader.LoadShaderSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/wireframe.fs");
+        wireframeShader.LoadSource(GL_VERTEX_SHADER, "phi/graphics/shaders/wireframe.vs");
+        wireframeShader.LoadSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/wireframe.fs");
         wireframeShader.Link();
 
         // Initialize the framebuffers

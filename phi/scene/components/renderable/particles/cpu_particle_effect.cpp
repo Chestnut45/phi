@@ -15,11 +15,11 @@ namespace Phi
     {
     }
 
-    CPUParticleEffect::CPUParticleEffect(const std::string& filePath)
+    CPUParticleEffect::CPUParticleEffect(const std::string& path)
     {
-        if (!Load(filePath))
+        if (!Load(path))
         {
-            Phi::Error("Invalid Effect File: ", filePath);
+            Phi::Error("Invalid Effect File: ", path);
         }
     }
 
@@ -107,12 +107,12 @@ namespace Phi
         }
     }
 
-    bool CPUParticleEffect::Load(const std::string& filePath)
+    bool CPUParticleEffect::Load(const std::string& path)
     {
         try
         {
             // Load the file using yaml-cpp
-            YAML::Node effect = YAML::LoadFile(File::GlobalizePath(filePath));
+            YAML::Node effect = YAML::LoadFile(File::GlobalizePath(path));
 
             // Check validity
             if (!effect) return false;
@@ -154,22 +154,25 @@ namespace Phi
         // Catch and handle exceptions
         catch (YAML::Exception& e)
         {
-            Error("YAML parser exception: ", filePath, ": ", e.msg);
+            Error("YAML parser exception: ", path, ": ", e.msg);
             Reset();
             return false;
         }
     }
 
-    void CPUParticleEffect::Save(const std::string& filePath, bool singleFile) const
+    void CPUParticleEffect::Save(const std::string& path, bool singleFile) const
     {
-        // TODO: Change saving to use Phi::File and globalize / localize paths where necessary
+        // Grab the global path
+        std::string globalPath = File::GlobalizePath(path);
         
         if (singleFile)
         {
             // Output the entire effect contents to a single file
 
+            // TODO: Change to using Phi::File for IO as well!
+
             // Create the effect file stream
-            std::ofstream effectStream(filePath);
+            std::ofstream effectStream(globalPath);
 
             // Name, spawnRelative and renderRelative
             effectStream << "effect_name: " << name.c_str() << "\nspawn_relative: "
@@ -427,49 +430,39 @@ namespace Phi
             // Output each emitter file separately
 
             // Create the effect file stream
-            std::ofstream effectStream(filePath);
+            std::ofstream effectStream(globalPath);
 
             // Name, spawnRelative and renderRelative
             effectStream << "effect_name: " << name.c_str() << "\nspawn_relative: "
                 << (spawnRelativeTransform ? "true" : "false") << "\nrender_relative: "
                 << (renderRelativeTransform ? "true" : "false") << "\nemitters: [\n";
             
+            // Find if an extension is given
+            size_t pos = path.find_last_of('.');
+            
             // Output all emitters
             for (const auto& emitter : loadedEmitters)
             {
-                // Construct the emitter path
-                size_t pos = filePath.find('.');
-                std::string emitterPath;
+                // Generate the emitter's global path
+                std::string emitterGlobalPath;
                 if (pos == std::string::npos)
                 {
                     // No extension given
-                    auto rel = std::filesystem::path(filePath).generic_string();
-                    auto dataPath = (std::filesystem::current_path() / "").generic_string();
-                    size_t p = 0;
-                    while ((p = rel.find(dataPath, p)) != std::string::npos)
-                    {
-                        rel.replace(p, dataPath.length(), "");
-                    }
-                    emitterPath = rel + "-" + emitter.name + ".emitter";
+                    emitterGlobalPath = globalPath + "-" + emitter.name + ".emitter";
                 }
                 else
                 {
-                    // Extension supplied from user choice
-                    auto rel = std::filesystem::path(filePath.substr(0, pos)).generic_string();
-                    auto dataPath = (std::filesystem::current_path() / "").generic_string();
-                    size_t p = 0;
-                    while ((p = rel.find(dataPath, p)) != std::string::npos)
-                    {
-                        rel.replace(p, dataPath.length(), "");
-                    }
-                    emitterPath = rel + "-" + emitter.name + ".emitter";
+                    // Extension supplied from user choice (remove extension)
+                    emitterGlobalPath = globalPath.substr(0, pos) + "-" + emitter.name + ".emitter";
                 }
 
                 // Write the emitter reference to the effect file
-                effectStream << "\t{file: " << emitterPath << "},\n";
+                // Localizes path to preserve data:// or user:// tokens
+                // TODO: Maybe make local paths a toggleable editor setting?
+                effectStream << "\t{file: " << File::LocalizePath(emitterGlobalPath) << "},\n";
 
                 // Create the emitter file stream
-                std::ofstream emitterStream(emitterPath);
+                std::ofstream emitterStream(emitterGlobalPath);
 
                 // Main properties
                 emitterStream << "emitter_name: " << emitter.name.c_str() << "\n";

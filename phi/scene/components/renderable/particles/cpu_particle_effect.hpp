@@ -31,7 +31,8 @@ namespace Phi
             CPUParticleEffect();
 
             // Loads a particle effect from a YAML file
-            CPUParticleEffect(const std::string& filePath);
+            // Accepts local paths like data:// and user://
+            CPUParticleEffect(const std::string& path);
 
             ~CPUParticleEffect();
 
@@ -75,10 +76,12 @@ namespace Phi
             // Serialization
 
             // Loads the effect properties from a YAML file on disk
-            bool Load(const std::string& filePath);
+            // Accepts local paths like data:// and user://
+            bool Load(const std::string& path);
 
             // Saves the effect to disk
-            void Save(const std::string& filePath, bool singleFile = false) const;
+            // Accepts local paths like data:// and user://
+            void Save(const std::string& path, bool singleFile = false) const;
 
             // Removes all emitters and resets to default values
             void Reset();

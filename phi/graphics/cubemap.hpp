@@ -15,7 +15,11 @@ namespace Phi
     {
         // Interface
         public:
-
+            
+            // Constructor
+            // faces should contain 6 file paths to image files
+            // in the order: right, left, top, bottom, front, back
+            // Accepts local paths like data:// and user://
             Cubemap(const std::vector<std::string>& faces);
             ~Cubemap();
 

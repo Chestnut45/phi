@@ -50,10 +50,6 @@ namespace Phi
             static void FlushRenderQueue();
 
             // TODO: Procedural generation
-
-            // Loads vertex data from a pvox file
-            // NOTE: Materials must be loaded first
-            void Load(const std::string& filename);
         
         // Data / implementation
         private:

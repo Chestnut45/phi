@@ -70,10 +70,10 @@ namespace Phi
             // Normal generation
 
             // Generates flat shaded normals for each triangle in the provided vectors
-            void GenerateNormalsFlat(std::vector<Vertex>& vertices, std::vector<GLuint>& indices);
+            static void GenerateNormalsFlat(std::vector<Vertex>& vertices, std::vector<GLuint>& indices);
 
             // Generates smooth shaded normals, accounting for shared vertices
-            void GenerateNormalsSmooth(std::vector<Vertex>& vertices, std::vector<GLuint>& indices);
+            static void GenerateNormalsSmooth(std::vector<Vertex>& vertices, std::vector<GLuint>& indices);
         
         // Data / implementation
         private:

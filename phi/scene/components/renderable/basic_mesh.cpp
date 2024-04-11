@@ -18,8 +18,8 @@ namespace Phi
             // Initialize static resources
 
             shader = new Shader();
-            shader->LoadShaderSource(GL_VERTEX_SHADER, "phi/graphics/shaders/basic_mesh.vs");
-            shader->LoadShaderSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/basic_mesh.fs");
+            shader->LoadSource(GL_VERTEX_SHADER, "phi/graphics/shaders/basic_mesh.vs");
+            shader->LoadSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/basic_mesh.fs");
             shader->Link();
 
             vertexBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(Vertex) * MAX_VERTICES);
