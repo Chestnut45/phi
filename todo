@@ -27,9 +27,6 @@ high priority:
 - terrain, flora, fluid sim (in that order)
 - design voxel editor gui
 - raycasting mouse to select voxel on grid for edit / painting
-- loading voxel models into simulation (stamp to world grid or instantiate object)
-- make transforms not a component (part of every scene node) ...?
-- use Texture2D::FilterMode as argument in Texture2D constructors
 
 mid priority:
 - decide material tags from sketchbook list (ferromagnetic (magnetizable, attracted to / repelled by magnets), immovable?)
