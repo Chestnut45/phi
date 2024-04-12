@@ -30,9 +30,9 @@ voxels: [
 # Custom Format?
 
 .material_ids
-name1: 0
-name2: 1
-name3: 2
+0: name1
+1: name2
+2: name3
 
 .voxels
 0 0 0 0
