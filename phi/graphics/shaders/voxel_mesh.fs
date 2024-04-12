@@ -99,7 +99,7 @@ bool rayAABB(vec3 rayOrigin, vec3 rayDirection, vec3 boxCenter, vec3 boxRadius, 
     bvec3 test = bvec3(TEST(x, yz), TEST(y, zx), TEST(z, xy));
 
     // CMOV chain that guarantees exactly one element of sgn is preserved and that the value has the right sign
-    sgn = test.x ? vec3(sgn.x, 0.0, 0.0) : (test.y ? vec3(0.0, sgn.y, 0.0) : vec3(0.0, 0.0, test.z ? sgn.z : 0.0));    
+    sgn = test.x ? vec3(sgn.x, 0.0, 0.0) : (test.y ? vec3(0.0, sgn.y, 0.0) : vec3(0.0, 0.0, test.z ? sgn.z : 0.0));
     #undef TEST
 
     // Calculate distance to the box, masked by whichever axis is non-zero
