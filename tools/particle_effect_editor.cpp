@@ -161,7 +161,7 @@ void ParticleEffectEditor::ShowEditorWindow()
                 else
                 {
                     // Load a new effect from disk
-                    auto effectFile = pfd::open_file("Load Effect File", "", {"Effect Files (.effect)", "*.effect"}, pfd::opt::none);
+                    auto effectFile = pfd::open_file("Load Effect File", Phi::File::GetDataPath() + "effects", {"Effect Files (.effect)", "*.effect"}, pfd::opt::none);
                     if (effectFile.result().size() > 0)
                     {
                         // Grab the effect path, and convert it to the proper format
@@ -179,7 +179,7 @@ void ParticleEffectEditor::ShowEditorWindow()
             if (ImGui::MenuItem("Load Emitter"))
             {   
                 // Load the emitter
-                auto emitterFile = pfd::open_file("Select Emitter File", "", {"Emitter Files (.emitter)", "*.emitter"}, pfd::opt::none);
+                auto emitterFile = pfd::open_file("Select Emitter File", Phi::File::GetDataPath() + "effects", {"Emitter Files (.emitter)", "*.emitter"}, pfd::opt::none);
                 if (emitterFile.result().size() > 0)
                 {
                     // Ensure there is an effect loaded
@@ -196,7 +196,7 @@ void ParticleEffectEditor::ShowEditorWindow()
                 if (currentEffect)
                 {
                     // Save the current effect to a single interleaved effect file containing emitter data
-                    auto saveFile = pfd::save_file("Save Interleaved Effect File", "", {"Effect Files (.effect)", "*.effect"}, pfd::opt::none);
+                    auto saveFile = pfd::save_file("Save Interleaved Effect File", Phi::File::GetDataPath() + "effects", {"Effect Files (.effect)", "*.effect"}, pfd::opt::none);
                     
                     if (saveFile.result().size() > 0)
                     {
@@ -212,7 +212,7 @@ void ParticleEffectEditor::ShowEditorWindow()
                 if (currentEffect)
                 {
                     // Save the current effect to a file that references separate emitter files
-                    auto saveFile = pfd::save_file("Save Effect", "", {"Effect Files (.effect)", "*.effect"}, pfd::opt::none);
+                    auto saveFile = pfd::save_file("Save Effect", Phi::File::GetDataPath() + "effects", {"Effect Files (.effect)", "*.effect"}, pfd::opt::none);
 
                     if (saveFile.result().size() > 0)
                     {
@@ -291,7 +291,7 @@ void ParticleEffectEditor::ShowEditorWindow()
         if (ImGui::Button("OK", ImVec2(128, 0)))
         {
             // Load a new effect from disk
-            auto effectFile = pfd::open_file("Select Effect File", "", {"Effect Files (.effect)", "*.effect"}, pfd::opt::none);
+            auto effectFile = pfd::open_file("Select Effect File", Phi::File::GetDataPath() + "effects", {"Effect Files (.effect)", "*.effect"}, pfd::opt::none);
 
             // Grab the path in proper format and load
             if (effectFile.result().size() > 0)
@@ -404,7 +404,7 @@ void ParticleEffectEditor::ShowEditorWindow()
                 if (ImGui::Button("Load"))
                 {
                     // Load a new texture
-                    auto startingPath = (std::filesystem::current_path() / "data/textures/particles").generic_string();
+                    auto startingPath = Phi::File::GetDataPath() + "textures/particles";
                     auto texFile = pfd::open_file("Select Texture File", startingPath, {"Textures (.png)", "*.png"}, pfd::opt::none);
                     
                     if (texFile.result().size() > 0)

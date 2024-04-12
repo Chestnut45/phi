@@ -50,6 +50,17 @@ namespace Phi
             // Converts a fully qualified global path to a local path using special tokens
             static std::string LocalizePath(const std::string& path);
 
+            // Special path access
+
+            // Gets the global path to the special data folder
+            static std::string GetDataPath() { return DATA_PATH; }
+
+            // Gets the global path to the special user folder
+            static std::string GetUserPath() { return USER_PATH; }
+
+            // Gets the global path to the special engine folder
+            static std::string GetPhiPath() { return PHI_PATH; }
+
             // TODO:
 
             // Cursor / seeking
