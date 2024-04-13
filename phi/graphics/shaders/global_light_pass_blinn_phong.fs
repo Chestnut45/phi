@@ -17,6 +17,12 @@ struct BasicMaterial
     vec4 colorShininess;
 };
 
+// Voxel material definition
+struct VoxelMaterial
+{
+    vec4 colorShininess;
+};
+
 // Camera uniform block
 layout(std140, binding = 0) uniform CameraBlock
 {
@@ -30,10 +36,17 @@ layout(std140, binding = 0) uniform CameraBlock
 };
 
 // Basic material buffer
-layout(std430, binding = 1) buffer MaterialBlock
+layout(std430, binding = 1) buffer BasicMaterialBlock
 {
-    BasicMaterial materials[MAX_MATERIALS];
+    BasicMaterial basicMaterials[MAX_MATERIALS];
 };
+
+// Basic material buffer
+layout(std430, binding = 2) buffer VoxelMaterialBlock
+{
+    VoxelMaterial voxelMaterials[MAX_MATERIALS];
+};
+
 
 // Lighting uniform block
 layout(std140, binding = 1) uniform GlobalLightBlock
@@ -59,8 +72,10 @@ void main()
     vec3 fragNorm = normalize(texture(gNorm, texCoords).xyz);
     uint materialID = texture(gMaterial, texCoords).r;
 
+    // TODO: Allow for multiple material types
+
     // Grab material
-    BasicMaterial material = materials[materialID];
+    BasicMaterial material = basicMaterials[materialID];
 
     // Gamma correct and clamp the material's color and shininess values
     vec3 materialColor = pow(material.colorShininess.rgb, vec3(GAMMA));

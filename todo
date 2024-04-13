@@ -1,6 +1,9 @@
 Immediate TODO:
 
-
+- figure out how to have voxel materials / basic materials shaded at the same time (stencil buffer?)
+    - geometry buffer stores different material ID based on what was rendered...
+    - mark stencil buffer with specific value when rendering each type...
+    - 2 global lighting passes, one for each material type? (use stencil test to ensure we only shade valid pixels)
 - test vertex shader cube generation
 - test VoxelMeshInstanced
 

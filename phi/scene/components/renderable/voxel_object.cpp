@@ -53,7 +53,7 @@ namespace Phi
 
                     // Extract the name and load the proper ID for it
                     std::string name = line.substr(line.find_first_of(':') + 2);
-                    loadedMaterialIDs.push_back(GetNode()->GetScene()->GetVoxelMaterialID(name));
+                    loadedMaterialIDs.push_back(GetNode()->GetScene()->GetBasicMaterialID(name)); // TODO: Use actual voxel materials
                 }
                 
                 // Actual voxel data parsing
@@ -70,6 +70,7 @@ namespace Phi
             }
 
             // Create the internal mesh and return
+            if (splatMesh) delete splatMesh;
             splatMesh = new VoxelMeshSplatMethod(voxelData);
             return true;
         }
