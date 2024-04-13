@@ -6,6 +6,7 @@
 
 #include <phi/core/file.hpp>
 #include <phi/core/logging.hpp>
+#include <phi/scene/scene.hpp>
 
 namespace Phi
 {
@@ -673,7 +674,7 @@ namespace Phi
                     vao->Bind();
                     shader->Use();
                     iBuffer->Bind(GL_DRAW_INDIRECT_BUFFER);
-                    eBuffer->BindRange(GL_SHADER_STORAGE_BUFFER, 1, eBuffer->GetCurrentSection() * eBuffer->GetSize(), eBuffer->GetSize());
+                    eBuffer->BindRange(GL_SHADER_STORAGE_BUFFER, (GLuint)Scene::ShaderStorageBindingIndex::InstanceData, eBuffer->GetCurrentSection() * eBuffer->GetSize(), eBuffer->GetSize());
 
                     // Bind texture units if necessary
                     if (queuedTextures.size() > 0)
@@ -739,7 +740,7 @@ namespace Phi
                 vao->Bind();
                 shader->Use();
                 iBuffer->Bind(GL_DRAW_INDIRECT_BUFFER);
-                eBuffer->BindRange(GL_SHADER_STORAGE_BUFFER, 1, eBuffer->GetCurrentSection() * eBuffer->GetSize(), eBuffer->GetSize());
+                eBuffer->BindRange(GL_SHADER_STORAGE_BUFFER, (GLuint)Scene::ShaderStorageBindingIndex::InstanceData, eBuffer->GetCurrentSection() * eBuffer->GetSize(), eBuffer->GetSize());
 
                 // Bind texture units if necessary
                 if (queuedTextures.size() > 0)

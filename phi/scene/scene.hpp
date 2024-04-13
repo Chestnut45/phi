@@ -54,13 +54,19 @@ namespace Phi
                 CustomViewport,
             };
 
-            // All of the internal uniform buffer binding indices
+            // Reserved internal uniform buffer binding indices
             enum class UniformBindingIndex
             {
                 Camera = 0,
-                Materials = 1,
-                GlobalLights = 2,
-                // ...
+                GlobalLights = 1,
+            };
+
+            // Reserved internal shader storage buffer binding indices
+            enum class ShaderStorageBindingIndex
+            {
+                BasicMaterial = 0,
+                VoxelMaterial = 1,
+                InstanceData = 2,
             };
 
             // Creates an empty scene with the default resolution

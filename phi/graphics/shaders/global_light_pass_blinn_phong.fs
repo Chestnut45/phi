@@ -29,14 +29,14 @@ layout(std140, binding = 0) uniform CameraBlock
     vec2 hres;
 };
 
-// Material buffer
-layout(std140, binding = 1) uniform MaterialBlock
+// Basic material buffer
+layout(std430, binding = 0) buffer MaterialBlock
 {
     BasicMaterial materials[MAX_MATERIALS];
 };
 
 // Lighting uniform block
-layout(std140, binding = 2) uniform GlobalLightBlock
+layout(std140, binding = 1) uniform GlobalLightBlock
 {
     DirectionalLight globalLights[MAX_DIRECTIONAL_LIGHTS];
 };

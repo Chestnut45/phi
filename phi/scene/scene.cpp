@@ -199,9 +199,11 @@ namespace Phi
         // Update the camera buffer right before rendering
         UpdateCameraBuffer();
 
-        // Ensure camera and material buffers are bound
+        // Bind the camera buffer
         cameraBuffer.BindRange(GL_UNIFORM_BUFFER, (int)UniformBindingIndex::Camera, cameraBuffer.GetCurrentSection() * cameraBuffer.GetSize(), cameraBuffer.GetSize());
-        basicMaterialBuffer.BindBase(GL_UNIFORM_BUFFER, (int)UniformBindingIndex::Materials);
+
+        // Bind the material buffers
+        basicMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::BasicMaterial);
 
         // Geometry passes
 
