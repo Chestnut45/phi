@@ -37,10 +37,10 @@ VoxelTest::VoxelTest() : App("Voxel Test", 4, 6)
     scene.LoadMaterials("data://basic_materials.yaml");
 
     // Add the test voxel mesh
-    light.GetNode()->AddComponent<VoxelMesh>();
+    VoxelMesh& mesh = scene.CreateNode()->AddComponent<VoxelMesh>();
 
     // Give it a transform component
-    voxelMeshTransform = &light.GetNode()->AddComponent<Transform>();
+    voxelMeshTransform = &mesh.GetNode()->AddComponent<Transform>();
 
     // Log
     Log("Voxel Test initialized");
