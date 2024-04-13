@@ -3,6 +3,7 @@ Immediate TODO:
 
 - File operator<< / >> overloading for stream IO
 - VoxelMaterial pipeline
+    - switch to SSBOs for basic / voxel materials
 - VoxelMeshRayTraced Rename (NOT COMPONENT ANYMORE)
 - VoxelObject component (load from .pvox, generate mesh)
 - test vertex shader cube generation
