@@ -1,0 +1,75 @@
+basic_materials: [
+    {
+        name: emerald,
+        color: {r: 0.24, g: 0.69, b: 0.32},
+        shininess: 0.8
+    },
+    {
+        name: sapphire,
+        color: {r: 0.05, g: 0.32, b: 0.73},
+        shininess: 0.8
+    },
+    {
+        name: ruby,
+        color: {r: 0.8, g: 0.01, b: 0.25},
+        shininess: 0.8
+    },
+    {
+        name: gold,
+        color: {r: 0.75164, g: 0.60648, b: 0.22648},
+        shininess: 0.8
+    },
+    {
+        name: silver,
+        color: {r: 0.7, g: 0.7, b: 0.7},
+        shininess: 0.8
+    },
+    {
+        name: iron,
+        color: {r: 0.45, g: 0.36, b: 0.36},
+        shininess: 0.6
+    },
+    {
+        name: copper,
+        color: {r: 0.7038, g: 0.27048, b: 0.0828},
+        shininess: 0.45
+    },
+    {
+        name: chrome,
+        color: {r: 0.4, g: 0.4, b: 0.4},
+        shininess: 0.9
+    },
+    {
+        name: pearl,
+        color: {r: 1.0, g: 0.829, b: 0.829},
+        shininess: 0.5
+    },
+    {
+        name: obsidian,
+        color: {r: 0.18275, g: 0.17, b: 0.22525},
+        shininess: 0.5
+    },
+    {
+        name: rubber,
+        color: {r: 0.6, g: 0.5, b: 0.2},
+        shininess: 0.02
+    },
+    {
+        name: diamond,
+        color: {r: 0.6, g: 0.6, b: 1.0},
+        shininess: 1.0
+    },
+    {
+        name: asteroid,
+        color: {r: 0.1, g: 0.05, b: 0.02},
+        shininess: 0.3
+    },
+]
+
+voxel_materials: [
+    {
+        name: grass,
+        color: {r: 0.12, g: 0.69, b: 0.16},
+        shininess: 0.1
+    },
+]
