@@ -81,7 +81,7 @@ basic_materials: [
     },
 ]
 
-# TODO: Use separate voxel materials (should work )
+# TODO: Use separate voxel materials once scene rendering allows for multiple material types
 # voxel_materials: [
 #     {
 #         name: grass,
