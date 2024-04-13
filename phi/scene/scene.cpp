@@ -204,6 +204,7 @@ namespace Phi
 
         // Bind the material buffers
         basicMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::BasicMaterial);
+        voxelMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::VoxelMaterial);
 
         // Geometry passes
 
@@ -415,33 +416,57 @@ namespace Phi
     int Scene::AddMaterial(const std::string& name, const BasicMaterial& material)
     {
         // Find if the material exists
-        const auto& it = materialIDs.find(name);
+        const auto& it = basicMaterialIDs.find(name);
 
-        if (it != materialIDs.end())
+        if (it != basicMaterialIDs.end())
         {
             // Material with provided name exists, replace it
-            materials[it->second] = material;
+            basicMaterials[it->second] = material;
         }
         else
         {
             // Material does not exist, add it and add the ID to the map
-            materialIDs[name] = materials.size();
-            materials.push_back(material);
+            basicMaterialIDs[name] = basicMaterials.size();
+            basicMaterials.push_back(material);
 
             // Write the new material to the buffer
             basicMaterialBuffer.Sync();
             basicMaterialBuffer.Write(glm::vec4{glm::vec3(material.color), material.shininess});
         }
 
-        return materialIDs[name];
+        return basicMaterialIDs[name];
     }
 
-    int Scene::GetMaterialID(const std::string& name)
+    int Scene::AddMaterial(const std::string& name, const VoxelMaterial& material)
     {
         // Find if the material exists
-        const auto& it = materialIDs.find(name);
+        const auto& it = voxelMaterialIDs.find(name);
 
-        if (it != materialIDs.end())
+        if (it != voxelMaterialIDs.end())
+        {
+            // Material with provided name exists, replace it
+            voxelMaterials[it->second] = material;
+        }
+        else
+        {
+            // Material does not exist, add it and add the ID to the map
+            voxelMaterialIDs[name] = voxelMaterials.size();
+            voxelMaterials.push_back(material);
+
+            // Write the new material to the buffer
+            voxelMaterialBuffer.Sync();
+            voxelMaterialBuffer.Write(glm::vec4{glm::vec3(material.color), material.shininess});
+        }
+
+        return voxelMaterialIDs[name];
+    }
+
+    int Scene::GetBasicMaterialID(const std::string& name)
+    {
+        // Find if the material exists
+        const auto& it = basicMaterialIDs.find(name);
+
+        if (it != basicMaterialIDs.end())
         {
             // Material with provided name exists
             return it->second;
@@ -451,12 +476,27 @@ namespace Phi
         return 0;
     }
 
-    void Scene::LoadMaterials(const std::string& filepath)
+    int Scene::GetVoxelMaterialID(const std::string& name)
+    {
+        // Find if the material exists
+        const auto& it = voxelMaterialIDs.find(name);
+
+        if (it != voxelMaterialIDs.end())
+        {
+            // Material with provided name exists
+            return it->second;
+        }
+
+        // Does not exist, return default value
+        return 0;
+    }
+
+    void Scene::LoadMaterials(const std::string& path)
     {
         try
         {
             // Load YAML file
-            YAML::Node node = YAML::LoadFile(File::GlobalizePath(filepath));
+            YAML::Node node = YAML::LoadFile(File::GlobalizePath(path));
 
             // Process basic materials
             if (node["basic_materials"])
@@ -471,7 +511,31 @@ namespace Phi
                     BasicMaterial m{};
 
                     // Load properties from node
-                    std::string name = mat["name"] ? mat["name"].as<std::string>() : "Unnamed Material";
+                    std::string name = mat["name"] ? mat["name"].as<std::string>() : "Unnamed Basic Material";
+                    m.color.r = mat["color"]["r"] ? mat["color"]["r"].as<float>() : m.color.r;
+                    m.color.g = mat["color"]["g"] ? mat["color"]["g"].as<float>() : m.color.g;
+                    m.color.b = mat["color"]["b"] ? mat["color"]["b"].as<float>() : m.color.b;
+                    m.shininess = mat["shininess"] ? mat["shininess"].as<float>() : m.shininess;
+
+                    // Add the material to the scene
+                    AddMaterial(name, m);
+                }
+            }
+
+            // Process voxel materials
+            if (node["voxel_materials"])
+            {
+                const auto& mats = node["voxel_materials"];
+                for (int i = 0; i < mats.size(); ++i)
+                {
+                    // Grab the specific material
+                    const auto& mat = mats[i];
+
+                    // Create the basic material
+                    VoxelMaterial m{};
+
+                    // Load properties from node
+                    std::string name = mat["name"] ? mat["name"].as<std::string>() : "Unnamed Voxel Material";
                     m.color.r = mat["color"]["r"] ? mat["color"]["r"].as<float>() : m.color.r;
                     m.color.g = mat["color"]["g"] ? mat["color"]["g"].as<float>() : m.color.g;
                     m.color.b = mat["color"]["b"] ? mat["color"]["b"].as<float>() : m.color.b;
@@ -484,7 +548,7 @@ namespace Phi
         }
         catch (YAML::Exception e)
         {
-            Error("YAML Parser Error: ", filepath);
+            Error("YAML Parser Error: ", path);
         }
     }
 

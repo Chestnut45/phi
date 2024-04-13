@@ -41,7 +41,7 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     currentEffect = &node->AddComponent<Phi::CPUParticleEffect>("data://effects/fire.effect");
 
     // Load materials
-    scene.LoadMaterials("data://basic_materials.yaml");
+    scene.LoadMaterials("data://materials.yaml");
 
     // Create mesh
     Phi::BasicMesh& mesh = node->AddComponent<Phi::BasicMesh>();

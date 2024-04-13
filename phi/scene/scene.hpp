@@ -118,18 +118,21 @@ namespace Phi
 
             // Material management
 
-            // Adds a single basic material to the internal registry
+            // Adds a single material to the internal registry
             // If a material already exists with the given name,
             // the new material data replaces the old, but keeps the same ID
             // Returns the ID of the material
             int AddMaterial(const std::string& name, const BasicMaterial& material);
+            int AddMaterial(const std::string& name, const VoxelMaterial& material);
             
             // Returns the ID for the given named material, if it exists
             // Returns 0 (the default material) otherwise
-            int GetMaterialID(const std::string& name);
+            int GetBasicMaterialID(const std::string& name);
+            int GetVoxelMaterialID(const std::string& name);
 
-            // Loads the materials from a .pmat format data file
-            void LoadMaterials(const std::string& filepath);
+            // Loads materials from a YAML file and adds them to the scene
+            // NOTE: Works with both BasicMaterial and VoxelMaterial
+            void LoadMaterials(const std::string& path);
 
             // Camera management
 
@@ -179,6 +182,11 @@ namespace Phi
 
             // TODO: Interface for iterating components / nodes directly
 
+            // Limits
+            static inline glm::ivec2 MAX_RESOLUTION = glm::ivec2(4096, 2160);
+            static const int MAX_BASIC_MATERIALS = 1024;
+            static const int MAX_VOXEL_MATERIALS = 1024;
+
         // Data / implementation
         private:
 
@@ -195,9 +203,6 @@ namespace Phi
 
             // Mode
             RenderMode renderMode{RenderMode::MatchInternalResolution};
-
-            // Limits
-            static inline glm::ivec2 MAX_RESOLUTION = glm::ivec2(4096, 2160);
 
             // Internal rendering resolution
             int renderWidth = 1280;
@@ -225,11 +230,18 @@ namespace Phi
             Texture2D* gTexDepthStencil = nullptr;
 
             // Material data
-            std::vector<BasicMaterial> materials;
-            std::unordered_map<std::string, int> materialIDs;
+
+            // Basic materials
+            std::vector<BasicMaterial> basicMaterials;
+            std::unordered_map<std::string, int> basicMaterialIDs;
+
+            // Voxel materials
+            std::vector<VoxelMaterial> voxelMaterials;
+            std::unordered_map<std::string, int> voxelMaterialIDs;
 
             // Material buffers
-            GPUBuffer basicMaterialBuffer{BufferType::Dynamic, 1024 * sizeof(glm::vec4)};
+            GPUBuffer basicMaterialBuffer{BufferType::Dynamic, MAX_BASIC_MATERIALS * sizeof(glm::vec4)};
+            GPUBuffer voxelMaterialBuffer{BufferType::Dynamic, MAX_VOXEL_MATERIALS * sizeof(glm::vec4)};
 
             // Render queues and lists
 

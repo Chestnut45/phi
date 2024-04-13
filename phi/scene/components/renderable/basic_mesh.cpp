@@ -306,7 +306,7 @@ namespace Phi
         }
 
         // Retrieve the material ID
-        int materialID = node->GetScene()->GetMaterialID(name);
+        int materialID = node->GetScene()->GetBasicMaterialID(name);
 
         if (materialID)
         {

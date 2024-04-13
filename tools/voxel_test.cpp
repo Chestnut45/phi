@@ -34,7 +34,7 @@ VoxelTest::VoxelTest() : App("Voxel Test", 4, 6)
     scene.AttachLight(light, Scene::LightSlot::SLOT_0);
 
     // Load test materials
-    scene.LoadMaterials("data://basic_materials.yaml");
+    scene.LoadMaterials("data://materials.yaml");
 
     // Add the test voxel mesh
     VoxelMesh& mesh = scene.CreateNode()->AddComponent<VoxelMesh>();
