@@ -13,9 +13,10 @@ namespace Phi
 {
     Scene::Scene()
     {
-        // Add the default material
+        // Add the default materials
         // Guaranteed to have the ID 0
         AddMaterial("default", BasicMaterial());
+        AddMaterial("default", VoxelMaterial());
 
         // Set all global light pointers to nullptr
         for (int i = 0; i < (int)LightSlot::NUM_SLOTS; ++i)
@@ -166,6 +167,8 @@ namespace Phi
                         basicMeshRenderQueue.push_back(&mesh);
                     }
                 }
+
+                // TODO: Cull voxel objects
             }
         }
         else
@@ -177,9 +180,9 @@ namespace Phi
                 basicMeshRenderQueue.push_back(&mesh);
             }
 
-            for (auto&&[node, voxelmesh] : registry.view<VoxelMesh>().each())
+            for (auto&&[node, voxelObject] : registry.view<VoxelObject>().each())
             {
-                voxelMeshRenderQueue.push_back(&voxelmesh);
+                voxelObjectRenderQueue.push_back(&voxelObject);
             }
         }
 
@@ -230,21 +233,21 @@ namespace Phi
         BasicMesh::FlushRenderQueue();
         basicMeshRenderQueue.clear();
 
-        // Render all voxel meshes
-        for (VoxelMesh* mesh : voxelMeshRenderQueue)
+        // Render all voxel objects
+        for (VoxelObject* voxelObject : voxelObjectRenderQueue)
         {
-            Transform* transform = mesh->GetNode()->GetComponent<Transform>();
+            Transform* transform = voxelObject->GetNode()->GetComponent<Transform>();
             if (transform)
             {
-                mesh->Render(transform->GetGlobalMatrix(), glm::mat3_cast(transform->GetGlobalRotation()));
+                voxelObject->Render(transform->GetGlobalMatrix(), glm::mat3_cast(transform->GetGlobalRotation()));
             }
             else
             {
-                mesh->Render(); // Draw with no transform (default argument is identity matrix)
+                voxelObject->Render(); // Draw with no transform (default argument is identity matrix)
             }
         }
-        VoxelMesh::FlushRenderQueue();
-        voxelMeshRenderQueue.clear();
+        VoxelObject::FlushRenderQueue();
+        voxelObjectRenderQueue.clear();
 
         // TODO: PBR material pass
 
@@ -377,7 +380,7 @@ namespace Phi
         ImGui::Text("Statistics");
         ImGui::Separator();
         ImGui::Text("Nodes: %lu", nodeCount);
-        ImGui::Text("Voxel meshes rendered: %lu", voxelMeshRenderQueue.size());
+        ImGui::Text("Voxel objects rendered: %lu", voxelObjectRenderQueue.size());
         ImGui::NewLine();
 
         ImGui::Text("Active Camera");

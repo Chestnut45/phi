@@ -17,9 +17,9 @@ VoxelTest::VoxelTest() : App("Voxel Test", 4, 6)
 
     // Add a camera
     Camera& camera = scene.CreateNode()->AddComponent<Camera>();
-    camera.SetPosition({-36, 28, 36});
-    camera.SetMode(Camera::Mode::Target);
-    camera.LookAt(glm::vec3(0, 0, 0));
+    camera.SetPosition({-8, 8, 8});
+    // camera.SetMode(Camera::Mode::Target);
+    // camera.LookAt(glm::vec3(0, 0, 0));
     scene.SetActiveCamera(camera);
 
     // Add a skybox
@@ -36,11 +36,12 @@ VoxelTest::VoxelTest() : App("Voxel Test", 4, 6)
     // Load test materials
     scene.LoadMaterials("data://materials.yaml");
 
-    // Add the test voxel mesh
-    VoxelMesh& mesh = scene.CreateNode()->AddComponent<VoxelMesh>();
+    // Add the test voxel object and load the model
+    VoxelObject& voxelObject = scene.CreateNode()->AddComponent<VoxelObject>();
+    voxelObject.Load("data://models/mushroom.pvox");
 
     // Give it a transform component
-    voxelMeshTransform = &mesh.GetNode()->AddComponent<Transform>();
+    voxelObjectTransform = &(voxelObject.GetNode()->AddComponent<Transform>());
 
     // Log
     Log("Voxel Test initialized");
@@ -74,8 +75,8 @@ void VoxelTest::Update(float delta)
     }
     
     // Rotate and bob the voxel mesh
-    voxelMeshTransform->SetPositionXYZ(0, sin(programLifetime), 0);
-    voxelMeshTransform->RotateXYZDeg(0.0f, 45.0f * delta, 0.0f);
+    voxelObjectTransform->SetPositionXYZ(0, sin(programLifetime), 0);
+    voxelObjectTransform->RotateXYZDeg(0.0f, 45.0f * delta, 0.0f);
 
     // Update all nodes / components in the scene
     scene.Update(delta);

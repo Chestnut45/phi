@@ -1,8 +1,6 @@
 Immediate TODO:
 
 
-- VoxelMeshRayTraced Rename (NOT COMPONENT ANYMORE)
-- VoxelObject component (load from .pvox, generate mesh)
 - test vertex shader cube generation
 - test VoxelMeshInstanced
 

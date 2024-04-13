@@ -16,7 +16,7 @@
 #include <phi/scene/components/renderable/skybox.hpp>
 #include <phi/scene/components/transform.hpp>
 #include <phi/scene/components/lighting/directional_light.hpp>
-#include <phi/scene/components/renderable/voxel_mesh.hpp>
+#include <phi/scene/components/renderable/voxel_object.hpp>
 
 namespace Phi
 {
@@ -248,8 +248,8 @@ namespace Phi
             // Queue of basic meshes to be rendered this frame
             std::vector<BasicMesh*> basicMeshRenderQueue;
 
-            // Queue of voxel meshes to be rendered this frame
-            std::vector<VoxelMesh*> voxelMeshRenderQueue;
+            // Queue of voxel objects to be rendered this frame
+            std::vector<VoxelObject*> voxelObjectRenderQueue;
 
             // Wireframe resources
             std::vector<VertexPos> wireframeVerts;

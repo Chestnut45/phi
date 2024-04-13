@@ -31,5 +31,5 @@ class VoxelTest : public Phi::App
         Scene scene;
 
         // Transform for test voxel mesh
-        Transform* voxelMeshTransform = nullptr;
+        Transform* voxelObjectTransform = nullptr;
 };
