@@ -1,16 +1,12 @@
-School TODO:
+Immediate TODO:
+
 
 - File operator<< / >> overloading for stream IO
-- Texture2D better constructors
-
-research paper
---------------------------------
-- VoxelObject component to abstract voxel rendering methods
-- VoxelMeshRayTraced / VoxelMeshInstanced
-    - element buffer to index same voxel multiple times?
-    - or build optimized cube mesh for each voxel on construction?
-- draw diagrams for ray marching / splatting
-- test vs cube generation bithack
+- VoxelMaterial pipeline
+- VoxelMeshRayTraced Rename (NOT COMPONENT ANYMORE)
+- VoxelObject component (load from .pvox, generate mesh)
+- test vertex shader cube generation
+- test VoxelMeshInstanced
 
 
 Engine TODO:
@@ -52,6 +48,7 @@ low priority:
 - design world building workflow (gui app? text format? biomes, landmasses, structures, models, entities, stamps...)
 - physics bodies (rigidbody.cpp, etc.)
 - icosphere flat normals
+- better Texture2D constructors
 
 bugs / fixes
 --------------------------------
