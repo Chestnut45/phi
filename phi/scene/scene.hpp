@@ -7,7 +7,7 @@
 #include <entt.hpp>
 
 #include <phi/core/structures/quadtree.hpp>
-#include <phi/graphics/materials/basic_material.hpp>
+#include <phi/graphics/materials.hpp>
 #include <phi/graphics/framebuffer.hpp>
 #include <phi/graphics/texture_2d.hpp>
 #include <phi/scene/components/renderable/basic_mesh.hpp>

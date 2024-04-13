@@ -22,11 +22,12 @@
 #include "graphics/framebuffer.hpp"
 #include "graphics/geometry.hpp"
 #include "graphics/gpu_buffer.hpp"
+#include "graphics/indirect.hpp"
+#include "graphics/materials.hpp"
 #include "graphics/shader.hpp"
 #include "graphics/texture_2d.hpp"
 #include "graphics/vertex.hpp"
 #include "graphics/vertex_attributes.hpp"
-#include "graphics/materials/basic_material.hpp"
 
 // Scene management / components
 #include "scene/node.hpp"

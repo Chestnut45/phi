@@ -7,6 +7,8 @@ Immediate TODO:
 - VoxelObject component (load from .pvox, generate mesh)
 - test vertex shader cube generation
 - test VoxelMeshInstanced
+- binary mode for File IO?
+- EventManager (wait for a good use case before implementing)
 
 
 Engine TODO:

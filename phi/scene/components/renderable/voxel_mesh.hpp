@@ -8,7 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-#include <phi/graphics/materials/basic_material.hpp>
+#include <phi/graphics/materials.hpp>
 #include <phi/graphics/vertex_attributes.hpp>
 #include <phi/graphics/shader.hpp>
 #include <phi/scene/components/base_component.hpp>
