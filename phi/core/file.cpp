@@ -1,5 +1,7 @@
 #include "file.hpp"
 
+#include <phi/core/logging.hpp>
+
 namespace Phi
 {
     File::File(const std::string& path, Mode mode)
@@ -8,15 +10,24 @@ namespace Phi
         pathToFile = path;
 
         // Convert to global (remove tokens)
-        std::string globalPath = GlobalizePath(pathToFile);
+        globalPath = GlobalizePath(pathToFile);
+
+        // Determine flags for opening
+        std::ios_base::openmode flags = (std::ios_base::openmode)0;
+        switch (mode)
+        {
+            case Mode::Read: flags |= std::ios_base::in; break;
+            case Mode::Write: flags |= std::ios_base::out | std::ios_base::trunc; break;
+            case Mode::Append: flags |= std::ios_base::out | std::ios_base::app; break;
+        }
 
         // Open the file
-        fileStream.open(globalPath, std::ios::binary);
+        open(globalPath, flags);
     }
 
     File::~File()
     {
-        fileStream.close();
+        close();
     }
 
     void File::Init()

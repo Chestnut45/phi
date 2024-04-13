@@ -12,7 +12,7 @@ namespace Phi
     // 1. "data://" - The project's data folder (e.g. resources, should be copied to program install location)
     // 2. "user://" - The user's persistent folder for the project (e.g. save file location)
     // 3. "phi://" - Internal engine data (e.g. built-in resources, should be read-only)
-    class File
+    class File : public std::fstream
     {
         // Interface
         public:
@@ -20,9 +20,14 @@ namespace Phi
             // Valid file modes
             enum class Mode
             {
+                // Opens the file for reading
                 Read,
+
+                // Opens the file for writing (overwrites any existing data)
                 Write,
-                ReadWrite
+
+                // Opens the file for writing (appends to the end of any existing data)
+                Append,
             };
 
             // Opens the file at the given path in the given mode
@@ -36,6 +41,10 @@ namespace Phi
             // Delete move constructor/assignment
             File(File&& other) = delete;
             void operator=(File&& other) = delete;
+
+            // Path access
+            const std::string& GetPath() const { return pathToFile; }
+            const std::string& GetGlobalPath() const { return globalPath; }
 
             // Initialization
             // Called by Phi::App automatically on construction
@@ -61,20 +70,14 @@ namespace Phi
             // Gets the global path to the special engine folder
             static std::string GetPhiPath() { return PHI_PATH; }
 
-            // TODO:
-
-            // Cursor / seeking
-
-            // Stream input / output
-
         // Data / implementation
         private:
 
-            // Path to the file
+            // Path as supplied in the constructor
             std::string pathToFile;
 
-            // Stream object for the file's data
-            std::fstream fileStream;
+            // Globalized path
+            std::string globalPath;
 
             // Special file paths (set during app initialization)
             static inline std::string DATA_PATH;

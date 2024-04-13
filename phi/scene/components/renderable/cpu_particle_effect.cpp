@@ -162,20 +162,15 @@ namespace Phi
 
     void CPUParticleEffect::Save(const std::string& path, bool singleFile) const
     {
-        // Grab the global path
-        std::string globalPath = File::GlobalizePath(path);
-        
         if (singleFile)
         {
             // Output the entire effect contents to a single file
 
-            // TODO: Change to using Phi::File for IO as well!
-
             // Create the effect file stream
-            std::ofstream effectStream(globalPath);
+            File outputFile(path, File::Mode::Write);
 
             // Name, spawnRelative and renderRelative
-            effectStream << "effect_name: " << name.c_str() << "\nspawn_relative: "
+            outputFile << "effect_name: " << name.c_str() << "\nspawn_relative: "
                 << (spawnRelativeTransform ? "true" : "false") << "\nrender_relative: "
                 << (renderRelativeTransform ? "true" : "false") << "\nemitters: [\n";
             
@@ -183,89 +178,89 @@ namespace Phi
             for (const auto& emitter : loadedEmitters)
             {
                 // Main properties
-                effectStream << "{\n\temitter_name: " << emitter.name.c_str() << ",\n";
+                outputFile << "{\n\temitter_name: " << emitter.name.c_str() << ",\n";
                 if (emitter.randomSeed)
                 {
-                    effectStream << "\tseed: random,\n";
+                    outputFile << "\tseed: random,\n";
                 }
                 else
                 {
-                    effectStream << "\tseed: " << emitter.rng.GetSeed() << ",\n";
+                    outputFile << "\tseed: " << emitter.rng.GetSeed() << ",\n";
                 }
-                effectStream << "\tduration: " << emitter.duration << ",\n";
-                effectStream << "\tmax_particles: " << emitter.maxActiveParticles << ",\n";
-                effectStream << "\toffset: {x: " << emitter.offset.x << ", y: " << emitter.offset.y << ", z: " << emitter.offset.z << "},\n";
+                outputFile << "\tduration: " << emitter.duration << ",\n";
+                outputFile << "\tmax_particles: " << emitter.maxActiveParticles << ",\n";
+                outputFile << "\toffset: {x: " << emitter.offset.x << ", y: " << emitter.offset.y << ", z: " << emitter.offset.z << "},\n";
 
                 // Blend mode
-                effectStream << "\tblend_mode: ";
+                outputFile << "\tblend_mode: ";
                 switch (emitter.blendMode)
                 {
                     case CPUParticleEmitter::BlendMode::None:
-                        effectStream << "none,\n";
+                        outputFile << "none,\n";
                         break;
                     
                     case CPUParticleEmitter::BlendMode::Additive:
-                        effectStream << "additive,\n";
+                        outputFile << "additive,\n";
                         break;
                     
                     case CPUParticleEmitter::BlendMode::Standard:
-                        effectStream << "standard,\n";
+                        outputFile << "standard,\n";
                         break;
                 }
 
                 // Texture
-                if (emitter.texture) effectStream << "\ttexture: " << emitter.texPath << ",\n";
+                if (emitter.texture) outputFile << "\ttexture: " << emitter.texPath << ",\n";
 
                 // Spawn / burst properties
-                effectStream << "\tspawn_mode: ";
+                outputFile << "\tspawn_mode: ";
                 switch (emitter.particleProperties.spawnMode)
                 {
                     case CPUParticleEmitter::SpawnMode::Continuous:
-                        effectStream << "continuous,\n";
-                        effectStream << "\tspawn_rate: " << emitter.particleProperties.spawnRate << ",\n\n";
+                        outputFile << "continuous,\n";
+                        outputFile << "\tspawn_rate: " << emitter.particleProperties.spawnRate << ",\n\n";
                         break;
                     
                     case CPUParticleEmitter::SpawnMode::ContinuousBurst:
-                        effectStream << "continuous_burst,\n";
-                        effectStream << "\tspawn_rate: " << emitter.particleProperties.spawnRate << ",\n";
-                        effectStream << "\tburst_count: " << emitter.particleProperties.burstCount << ",\n\n";
+                        outputFile << "continuous_burst,\n";
+                        outputFile << "\tspawn_rate: " << emitter.particleProperties.spawnRate << ",\n";
+                        outputFile << "\tburst_count: " << emitter.particleProperties.burstCount << ",\n\n";
                         break;
                     
                     case CPUParticleEmitter::SpawnMode::Random:
-                        effectStream << "random,\n";
-                        effectStream << "\tspawn_rate_min: " << emitter.particleProperties.spawnRateMin << ",\n";
-                        effectStream << "\tspawn_rate_max: " << emitter.particleProperties.spawnRateMax << ",\n\n";
+                        outputFile << "random,\n";
+                        outputFile << "\tspawn_rate_min: " << emitter.particleProperties.spawnRateMin << ",\n";
+                        outputFile << "\tspawn_rate_max: " << emitter.particleProperties.spawnRateMax << ",\n\n";
                         break;
                     
                     case CPUParticleEmitter::SpawnMode::RandomBurst:
-                        effectStream << "random_burst,\n";
-                        effectStream << "\tspawn_rate_min: " << emitter.particleProperties.spawnRateMin << ",\n";
-                        effectStream << "\tspawn_rate_max: " << emitter.particleProperties.spawnRateMax << ",\n";
-                        effectStream << "\tburst_count_min: " << emitter.particleProperties.burstCountMin << ",\n";
-                        effectStream << "\tburst_count_max: " << emitter.particleProperties.burstCountMax << ",\n\n";
+                        outputFile << "random_burst,\n";
+                        outputFile << "\tspawn_rate_min: " << emitter.particleProperties.spawnRateMin << ",\n";
+                        outputFile << "\tspawn_rate_max: " << emitter.particleProperties.spawnRateMax << ",\n";
+                        outputFile << "\tburst_count_min: " << emitter.particleProperties.burstCountMin << ",\n";
+                        outputFile << "\tburst_count_max: " << emitter.particleProperties.burstCountMax << ",\n\n";
                         break;
                     
                     case CPUParticleEmitter::SpawnMode::SingleBurst:
-                        effectStream << "single_burst,\n";
-                        effectStream << "\tburst_count: " << emitter.particleProperties.burstCount << ",\n\n";
+                        outputFile << "single_burst,\n";
+                        outputFile << "\tburst_count: " << emitter.particleProperties.burstCount << ",\n\n";
                         break;
                 }
 
                 // Particle properties
-                effectStream << "\tparticle_properties: {\n";
+                outputFile << "\tparticle_properties: {\n";
 
                 // Position
-                effectStream << "\t\tposition: {type: ";
+                outputFile << "\t\tposition: {type: ";
                 switch (emitter.particleProperties.positionMode)
                 {
                     case CPUParticleEmitter::PositionMode::Constant:
-                        effectStream << "constant, value: {x: " << emitter.particleProperties.position.x
+                        outputFile << "constant, value: {x: " << emitter.particleProperties.position.x
                             << ", y: " << emitter.particleProperties.position.y
                             << ", z: " << emitter.particleProperties.position.z << "}},\n";
                         break;
                     
                     case CPUParticleEmitter::PositionMode::RandomMinMax:
-                        effectStream << "random_min_max, min: {x: " << emitter.particleProperties.positionMin.x
+                        outputFile << "random_min_max, min: {x: " << emitter.particleProperties.positionMin.x
                             << ", y: " << emitter.particleProperties.positionMin.y
                             << ", z: " << emitter.particleProperties.positionMin.z
                             << "}, max: {x: " << emitter.particleProperties.positionMax.x
@@ -274,24 +269,24 @@ namespace Phi
                         break;
                     
                     case CPUParticleEmitter::PositionMode::RandomSphere:
-                        effectStream << "random_sphere, center: {x: " << emitter.particleProperties.position.x
+                        outputFile << "random_sphere, center: {x: " << emitter.particleProperties.position.x
                             << ", y: " << emitter.particleProperties.position.y
                             << ", z: " << emitter.particleProperties.position.z << "}, radius: " << emitter.particleProperties.spawnRadius << "},\n";
                         break;
                 }
 
                 // Velocity
-                effectStream << "\t\tvelocity: {type: ";
+                outputFile << "\t\tvelocity: {type: ";
                 switch (emitter.particleProperties.velocityMode)
                 {
                     case CPUParticleEmitter::VelocityMode::Constant:
-                        effectStream << "constant, value: {x: " << emitter.particleProperties.velocity.x
+                        outputFile << "constant, value: {x: " << emitter.particleProperties.velocity.x
                             << ", y: " << emitter.particleProperties.velocity.y
                             << ", z: " << emitter.particleProperties.velocity.z;
                         break;
                     
                     case CPUParticleEmitter::VelocityMode::RandomMinMax:
-                        effectStream << "random_min_max, min: {x: " << emitter.particleProperties.velocityMin.x
+                        outputFile << "random_min_max, min: {x: " << emitter.particleProperties.velocityMin.x
                             << ", y: " << emitter.particleProperties.velocityMin.y
                             << ", z: " << emitter.particleProperties.velocityMin.z
                             << "}, max: {x: " << emitter.particleProperties.velocityMax.x
@@ -301,20 +296,20 @@ namespace Phi
                 }
 
                 // Output velocity damping no matter the mode
-                effectStream << "}, damping: " << emitter.particleProperties.damping << "},\n";
+                outputFile << "}, damping: " << emitter.particleProperties.damping << "},\n";
 
                 // Color
-                effectStream << "\t\tcolor: {type: ";
+                outputFile << "\t\tcolor: {type: ";
                 switch (emitter.particleProperties.colorMode)
                 {
                     case CPUParticleEmitter::ColorMode::Constant:
-                        effectStream << "constant, value: {r: " << emitter.particleProperties.color.r
+                        outputFile << "constant, value: {r: " << emitter.particleProperties.color.r
                             << ", g: " << emitter.particleProperties.color.g
                             << ", b: " << emitter.particleProperties.color.b << "}},\n";
                         break;
                     
                     case CPUParticleEmitter::ColorMode::RandomMinMax:
-                        effectStream << "random_min_max, min: {r: " << emitter.particleProperties.colorMin.r
+                        outputFile << "random_min_max, min: {r: " << emitter.particleProperties.colorMin.r
                             << ", g: " << emitter.particleProperties.colorMin.g
                             << ", b: " << emitter.particleProperties.colorMin.b
                             << "}, max: {r: " << emitter.particleProperties.colorMax.r
@@ -323,7 +318,7 @@ namespace Phi
                         break;
                     
                     case CPUParticleEmitter::ColorMode::RandomLerp:
-                        effectStream << "random_lerp, color_a: {r: " << emitter.particleProperties.colorA.r
+                        outputFile << "random_lerp, color_a: {r: " << emitter.particleProperties.colorA.r
                             << ", g: " << emitter.particleProperties.colorA.g
                             << ", b: " << emitter.particleProperties.colorA.b
                             << "}, color_b: {r: " << emitter.particleProperties.colorB.r
@@ -332,7 +327,7 @@ namespace Phi
                         break;
                     
                     case CPUParticleEmitter::ColorMode::LerpOverLifetime:
-                        effectStream << "lerp_over_lifetime, start_color: {r: " << emitter.particleProperties.startColor.r
+                        outputFile << "lerp_over_lifetime, start_color: {r: " << emitter.particleProperties.startColor.r
                         << ", g: " << emitter.particleProperties.startColor.g << ", b: " << emitter.particleProperties.startColor.b
                         << "}, end_color: {r: " << emitter.particleProperties.endColor.r << ", g: " << emitter.particleProperties.endColor.g
                         << ", b: " << emitter.particleProperties.endColor.b << "}},\n";
@@ -340,30 +335,30 @@ namespace Phi
                 }
 
                 // Size
-                effectStream << "\t\tsize: {type: ";
+                outputFile << "\t\tsize: {type: ";
                 switch (emitter.particleProperties.sizeMode)
                 {
                     case CPUParticleEmitter::SizeMode::Constant:
-                        effectStream << "constant, value: {x: " << emitter.particleProperties.size.x
+                        outputFile << "constant, value: {x: " << emitter.particleProperties.size.x
                             << ", y: " << emitter.particleProperties.size.y << "}},\n";
                         break;
                     
                     case CPUParticleEmitter::SizeMode::RandomMinMax:
-                        effectStream << "random_min_max, min: {x: " << emitter.particleProperties.sizeMin.x
+                        outputFile << "random_min_max, min: {x: " << emitter.particleProperties.sizeMin.x
                             << ", y: " << emitter.particleProperties.sizeMin.y
                             << "}, max: {x: " << emitter.particleProperties.sizeMax.x
                             << ", y: " << emitter.particleProperties.sizeMax.y << "}},\n";
                         break;
                     
                     case CPUParticleEmitter::SizeMode::RandomLerp:
-                        effectStream << "random_lerp, min: {x: " << emitter.particleProperties.sizeMin.x
+                        outputFile << "random_lerp, min: {x: " << emitter.particleProperties.sizeMin.x
                             << ", y: " << emitter.particleProperties.sizeMin.y
                             << "}, max: {x: " << emitter.particleProperties.sizeMax.x
                             << ", y: " << emitter.particleProperties.sizeMax.y << "}},\n";
                         break;
                     
                     case CPUParticleEmitter::SizeMode::LerpOverLifetime:
-                        effectStream << "lerp_over_lifetime, start_size: {x: " << emitter.particleProperties.startSize.x
+                        outputFile << "lerp_over_lifetime, start_size: {x: " << emitter.particleProperties.startSize.x
                             << ", y: " << emitter.particleProperties.startSize.y
                             << "}, end_size: {x: " << emitter.particleProperties.endSize.x
                             << ", y: " << emitter.particleProperties.endSize.y << "}},\n";
@@ -371,69 +366,69 @@ namespace Phi
                 }
 
                 // Opacity
-                effectStream << "\t\topacity: {type: ";
+                outputFile << "\t\topacity: {type: ";
                 switch (emitter.particleProperties.opacityMode)
                 {
                     case CPUParticleEmitter::OpacityMode::Constant:
-                        effectStream << "constant, value: " << emitter.particleProperties.opacity << "},\n";
+                        outputFile << "constant, value: " << emitter.particleProperties.opacity << "},\n";
                         break;
                     
                     case CPUParticleEmitter::OpacityMode::RandomMinMax:
-                        effectStream << "random_min_max, min: " << emitter.particleProperties.opacityMin
+                        outputFile << "random_min_max, min: " << emitter.particleProperties.opacityMin
                             << ", max: " << emitter.particleProperties.opacityMax << "},\n";
                         break;
                     case CPUParticleEmitter::OpacityMode::LerpOverLifetime:
-                        effectStream << "lerp_over_lifetime, start_opacity: " << emitter.particleProperties.startOpacity
+                        outputFile << "lerp_over_lifetime, start_opacity: " << emitter.particleProperties.startOpacity
                             << ", end_opacity: " << emitter.particleProperties.endOpacity << "},\n";
                         break;
                 }
 
                 // Lifespan
-                effectStream << "\t\tlifespan: {type: ";
+                outputFile << "\t\tlifespan: {type: ";
                 switch (emitter.particleProperties.lifespanMode)
                 {
                     case CPUParticleEmitter::LifespanMode::Constant:
-                        effectStream << "constant, value: " << emitter.particleProperties.lifespan << "},\n";
+                        outputFile << "constant, value: " << emitter.particleProperties.lifespan << "},\n";
                         break;
                     
                     case CPUParticleEmitter::LifespanMode::RandomMinMax:
-                        effectStream << "random_min_max, min: " << emitter.particleProperties.lifespanMin
+                        outputFile << "random_min_max, min: " << emitter.particleProperties.lifespanMin
                             << ", max: " << emitter.particleProperties.lifespanMax << "},\n";
                         break;
                 }
 
-                effectStream << "\t},\n\n";
+                outputFile << "\t},\n\n";
                 
                 // Basic Affectors
-                effectStream << "\taffectors: {\n";
-                effectStream << "\t\tadd_velocity: " << (emitter.affectorProperties.addVelocity ? "true,\n" : "false,\n");
-                effectStream << "\t\tgravity: " << (emitter.affectorProperties.gravityEnabled ? "true,\n" : "false,\n");
-                effectStream << "\t},\n\n";
+                outputFile << "\taffectors: {\n";
+                outputFile << "\t\tadd_velocity: " << (emitter.affectorProperties.addVelocity ? "true,\n" : "false,\n");
+                outputFile << "\t\tgravity: " << (emitter.affectorProperties.gravityEnabled ? "true,\n" : "false,\n");
+                outputFile << "\t},\n\n";
 
                 // Attractors
-                effectStream << "\tattractors: [";
+                outputFile << "\tattractors: [";
                 for (int i = 0; i < emitter.attractors.size(); ++i)
                 {
                     const auto& a = emitter.attractors[i];
-                    effectStream << "\n\t\t{position: {x: " << a.position.x << ", y: " << a.position.y << ", z: " << a.position.z
+                    outputFile << "\n\t\t{position: {x: " << a.position.x << ", y: " << a.position.y << ", z: " << a.position.z
                         << "}, radius: " << a.radius << ", strength: " << a.strength << ", relative: " << (a.relativeToTransform ? "true" : "false") << "},";
                 }
-                effectStream << "\n\t]\n";
+                outputFile << "\n\t]\n";
 
-                effectStream << "},\n";
+                outputFile << "},\n";
             }
 
-            effectStream << "]\n";
+            outputFile << "]\n";
         }
         else
         {
             // Output each emitter file separately
 
             // Create the effect file stream
-            std::ofstream effectStream(globalPath);
+            File effectFile(path, File::Mode::Write);
 
             // Name, spawnRelative and renderRelative
-            effectStream << "effect_name: " << name.c_str() << "\nspawn_relative: "
+            effectFile << "effect_name: " << name.c_str() << "\nspawn_relative: "
                 << (spawnRelativeTransform ? "true" : "false") << "\nrender_relative: "
                 << (renderRelativeTransform ? "true" : "false") << "\nemitters: [\n";
             
@@ -448,106 +443,106 @@ namespace Phi
                 if (pos == std::string::npos)
                 {
                     // No extension given
-                    emitterGlobalPath = globalPath + "-" + emitter.name + ".emitter";
+                    emitterGlobalPath = effectFile.GetGlobalPath() + "-" + emitter.name + ".emitter";
                 }
                 else
                 {
                     // Extension supplied from user choice (remove extension)
-                    emitterGlobalPath = globalPath.substr(0, pos) + "-" + emitter.name + ".emitter";
+                    emitterGlobalPath = effectFile.GetGlobalPath().substr(0, pos) + "-" + emitter.name + ".emitter";
                 }
 
                 // Write the emitter reference to the effect file
                 // Localizes path to preserve data:// or user:// tokens
                 // TODO: Maybe make local paths a toggleable editor setting?
-                effectStream << "\t{file: " << File::LocalizePath(emitterGlobalPath) << "},\n";
+                effectFile << "\t{file: " << File::LocalizePath(emitterGlobalPath) << "},\n";
 
                 // Create the emitter file stream
-                std::ofstream emitterStream(emitterGlobalPath);
+                File emitterFile(emitterGlobalPath, File::Mode::Write);
 
                 // Main properties
-                emitterStream << "emitter_name: " << emitter.name.c_str() << "\n";
+                emitterFile << "emitter_name: " << emitter.name.c_str() << "\n";
                 if (emitter.randomSeed)
                 {
-                    emitterStream << "seed: random\n";
+                    emitterFile << "seed: random\n";
                 }
                 else
                 {
-                    emitterStream << "seed: " << emitter.rng.GetSeed() << "\n";
+                    emitterFile << "seed: " << emitter.rng.GetSeed() << "\n";
                 }
-                emitterStream << "duration: " << emitter.duration << "\n";
-                emitterStream << "max_particles: " << emitter.maxActiveParticles << "\n";
-                emitterStream << "offset: {x: " << emitter.offset.x << ", y: " << emitter.offset.y << ", z: " << emitter.offset.z << "}\n";
+                emitterFile << "duration: " << emitter.duration << "\n";
+                emitterFile << "max_particles: " << emitter.maxActiveParticles << "\n";
+                emitterFile << "offset: {x: " << emitter.offset.x << ", y: " << emitter.offset.y << ", z: " << emitter.offset.z << "}\n";
 
                 // Blend mode
-                emitterStream << "blend_mode: ";
+                emitterFile << "blend_mode: ";
                 switch (emitter.blendMode)
                 {
                     case CPUParticleEmitter::BlendMode::None:
-                        emitterStream << "none\n";
+                        emitterFile << "none\n";
                         break;
                     
                     case CPUParticleEmitter::BlendMode::Additive:
-                        emitterStream << "additive\n";
+                        emitterFile << "additive\n";
                         break;
                     
                     case CPUParticleEmitter::BlendMode::Standard:
-                        emitterStream << "standard\n";
+                        emitterFile << "standard\n";
                         break;
                 }
 
                 // Texture
-                if (emitter.texture) emitterStream << "texture: " << emitter.texPath << "\n";
+                if (emitter.texture) emitterFile << "texture: " << emitter.texPath << "\n";
 
                 // Spawn / burst properties
-                emitterStream << "spawn_mode: ";
+                emitterFile << "spawn_mode: ";
                 switch (emitter.particleProperties.spawnMode)
                 {
                     case CPUParticleEmitter::SpawnMode::Continuous:
-                        emitterStream << "continuous\n";
-                        emitterStream << "spawn_rate: " << emitter.particleProperties.spawnRate << "\n\n";
+                        emitterFile << "continuous\n";
+                        emitterFile << "spawn_rate: " << emitter.particleProperties.spawnRate << "\n\n";
                         break;
                     
                     case CPUParticleEmitter::SpawnMode::ContinuousBurst:
-                        emitterStream << "continuous_burst\n";
-                        emitterStream << "spawn_rate: " << emitter.particleProperties.spawnRate << "\n";
-                        emitterStream << "burst_count: " << emitter.particleProperties.burstCount << "\n\n";
+                        emitterFile << "continuous_burst\n";
+                        emitterFile << "spawn_rate: " << emitter.particleProperties.spawnRate << "\n";
+                        emitterFile << "burst_count: " << emitter.particleProperties.burstCount << "\n\n";
                         break;
                     
                     case CPUParticleEmitter::SpawnMode::Random:
-                        emitterStream << "random\n";
-                        emitterStream << "spawn_rate_min: " << emitter.particleProperties.spawnRateMin << "\n";
-                        emitterStream << "spawn_rate_max: " << emitter.particleProperties.spawnRateMax << "\n\n";
+                        emitterFile << "random\n";
+                        emitterFile << "spawn_rate_min: " << emitter.particleProperties.spawnRateMin << "\n";
+                        emitterFile << "spawn_rate_max: " << emitter.particleProperties.spawnRateMax << "\n\n";
                         break;
                     
                     case CPUParticleEmitter::SpawnMode::RandomBurst:
-                        emitterStream << "random_burst\n";
-                        emitterStream << "spawn_rate_min: " << emitter.particleProperties.spawnRateMin << "\n";
-                        emitterStream << "spawn_rate_max: " << emitter.particleProperties.spawnRateMax << "\n";
-                        emitterStream << "burst_count_min: " << emitter.particleProperties.burstCountMin << "\n";
-                        emitterStream << "burst_count_max: " << emitter.particleProperties.burstCountMax << "\n\n";
+                        emitterFile << "random_burst\n";
+                        emitterFile << "spawn_rate_min: " << emitter.particleProperties.spawnRateMin << "\n";
+                        emitterFile << "spawn_rate_max: " << emitter.particleProperties.spawnRateMax << "\n";
+                        emitterFile << "burst_count_min: " << emitter.particleProperties.burstCountMin << "\n";
+                        emitterFile << "burst_count_max: " << emitter.particleProperties.burstCountMax << "\n\n";
                         break;
                     
                     case CPUParticleEmitter::SpawnMode::SingleBurst:
-                        emitterStream << "single_burst\n";
-                        emitterStream << "burst_count: " << emitter.particleProperties.burstCount << "\n\n";
+                        emitterFile << "single_burst\n";
+                        emitterFile << "burst_count: " << emitter.particleProperties.burstCount << "\n\n";
                         break;
                 }
 
                 // Particle properties
-                emitterStream << "particle_properties: {\n";
+                emitterFile << "particle_properties: {\n";
 
                 // Position
-                emitterStream << "\tposition: {type: ";
+                emitterFile << "\tposition: {type: ";
                 switch (emitter.particleProperties.positionMode)
                 {
                     case CPUParticleEmitter::PositionMode::Constant:
-                        emitterStream << "constant, value: {x: " << emitter.particleProperties.position.x
+                        emitterFile << "constant, value: {x: " << emitter.particleProperties.position.x
                             << ", y: " << emitter.particleProperties.position.y
                             << ", z: " << emitter.particleProperties.position.z << "}},\n";
                         break;
                     
                     case CPUParticleEmitter::PositionMode::RandomMinMax:
-                        emitterStream << "random_min_max, min: {x: " << emitter.particleProperties.positionMin.x
+                        emitterFile << "random_min_max, min: {x: " << emitter.particleProperties.positionMin.x
                             << ", y: " << emitter.particleProperties.positionMin.y
                             << ", z: " << emitter.particleProperties.positionMin.z
                             << "}, max: {x: " << emitter.particleProperties.positionMax.x
@@ -556,24 +551,24 @@ namespace Phi
                         break;
                     
                     case CPUParticleEmitter::PositionMode::RandomSphere:
-                        emitterStream << "random_sphere, center: {x: " << emitter.particleProperties.position.x
+                        emitterFile << "random_sphere, center: {x: " << emitter.particleProperties.position.x
                             << ", y: " << emitter.particleProperties.position.y
                             << ", z: " << emitter.particleProperties.position.z << "}, radius: " << emitter.particleProperties.spawnRadius << "},\n";
                         break;
                 }
 
                 // Velocity
-                emitterStream << "\tvelocity: {type: ";
+                emitterFile << "\tvelocity: {type: ";
                 switch (emitter.particleProperties.velocityMode)
                 {
                     case CPUParticleEmitter::VelocityMode::Constant:
-                        emitterStream << "constant, value: {x: " << emitter.particleProperties.velocity.x
+                        emitterFile << "constant, value: {x: " << emitter.particleProperties.velocity.x
                             << ", y: " << emitter.particleProperties.velocity.y
                             << ", z: " << emitter.particleProperties.velocity.z;
                         break;
                     
                     case CPUParticleEmitter::VelocityMode::RandomMinMax:
-                        emitterStream << "random_min_max, min: {x: " << emitter.particleProperties.velocityMin.x
+                        emitterFile << "random_min_max, min: {x: " << emitter.particleProperties.velocityMin.x
                             << ", y: " << emitter.particleProperties.velocityMin.y
                             << ", z: " << emitter.particleProperties.velocityMin.z
                             << "}, max: {x: " << emitter.particleProperties.velocityMax.x
@@ -583,20 +578,20 @@ namespace Phi
                 }
 
                 // Output velocity damping no matter the mode
-                emitterStream << "}, damping: " << emitter.particleProperties.damping << "},\n";
+                emitterFile << "}, damping: " << emitter.particleProperties.damping << "},\n";
 
                 // Color
-                emitterStream << "\tcolor: {type: ";
+                emitterFile << "\tcolor: {type: ";
                 switch (emitter.particleProperties.colorMode)
                 {
                     case CPUParticleEmitter::ColorMode::Constant:
-                        emitterStream << "constant, value: {r: " << emitter.particleProperties.color.r
+                        emitterFile << "constant, value: {r: " << emitter.particleProperties.color.r
                             << ", g: " << emitter.particleProperties.color.g
                             << ", b: " << emitter.particleProperties.color.b << "}},\n";
                         break;
                     
                     case CPUParticleEmitter::ColorMode::RandomMinMax:
-                        emitterStream << "random_min_max, min: {r: " << emitter.particleProperties.colorMin.r
+                        emitterFile << "random_min_max, min: {r: " << emitter.particleProperties.colorMin.r
                             << ", g: " << emitter.particleProperties.colorMin.g
                             << ", b: " << emitter.particleProperties.colorMin.b
                             << "}, max: {r: " << emitter.particleProperties.colorMax.r
@@ -605,7 +600,7 @@ namespace Phi
                         break;
                     
                     case CPUParticleEmitter::ColorMode::RandomLerp:
-                        emitterStream << "random_lerp, color_a: {r: " << emitter.particleProperties.colorA.r
+                        emitterFile << "random_lerp, color_a: {r: " << emitter.particleProperties.colorA.r
                             << ", g: " << emitter.particleProperties.colorA.g
                             << ", b: " << emitter.particleProperties.colorA.b
                             << "}, color_b: {r: " << emitter.particleProperties.colorB.r
@@ -614,7 +609,7 @@ namespace Phi
                         break;
                     
                     case CPUParticleEmitter::ColorMode::LerpOverLifetime:
-                        emitterStream << "lerp_over_lifetime, start_color: {r: " << emitter.particleProperties.startColor.r
+                        emitterFile << "lerp_over_lifetime, start_color: {r: " << emitter.particleProperties.startColor.r
                         << ", g: " << emitter.particleProperties.startColor.g << ", b: " << emitter.particleProperties.startColor.b
                         << "}, end_color: {r: " << emitter.particleProperties.endColor.r << ", g: " << emitter.particleProperties.endColor.g
                         << ", b: " << emitter.particleProperties.endColor.b << "}},\n";
@@ -622,30 +617,30 @@ namespace Phi
                 }
 
                 // Size
-                emitterStream << "\tsize: {type: ";
+                emitterFile << "\tsize: {type: ";
                 switch (emitter.particleProperties.sizeMode)
                 {
                     case CPUParticleEmitter::SizeMode::Constant:
-                        emitterStream << "constant, value: {x: " << emitter.particleProperties.size.x
+                        emitterFile << "constant, value: {x: " << emitter.particleProperties.size.x
                             << ", y: " << emitter.particleProperties.size.y << "}},\n";
                         break;
                     
                     case CPUParticleEmitter::SizeMode::RandomMinMax:
-                        emitterStream << "random_min_max, min: {x: " << emitter.particleProperties.sizeMin.x
+                        emitterFile << "random_min_max, min: {x: " << emitter.particleProperties.sizeMin.x
                             << ", y: " << emitter.particleProperties.sizeMin.y
                             << "}, max: {x: " << emitter.particleProperties.sizeMax.x
                             << ", y: " << emitter.particleProperties.sizeMax.y << "}},\n";
                         break;
                     
                     case CPUParticleEmitter::SizeMode::RandomLerp:
-                        emitterStream << "random_lerp, min: {x: " << emitter.particleProperties.sizeMin.x
+                        emitterFile << "random_lerp, min: {x: " << emitter.particleProperties.sizeMin.x
                             << ", y: " << emitter.particleProperties.sizeMin.y
                             << "}, max: {x: " << emitter.particleProperties.sizeMax.x
                             << ", y: " << emitter.particleProperties.sizeMax.y << "}},\n";
                         break;
                     
                     case CPUParticleEmitter::SizeMode::LerpOverLifetime:
-                        emitterStream << "lerp_over_lifetime, start_size: {x: " << emitter.particleProperties.startSize.x
+                        emitterFile << "lerp_over_lifetime, start_size: {x: " << emitter.particleProperties.startSize.x
                             << ", y: " << emitter.particleProperties.startSize.y
                             << "}, end_size: {x: " << emitter.particleProperties.endSize.x
                             << ", y: " << emitter.particleProperties.endSize.y << "}},\n";
@@ -653,57 +648,57 @@ namespace Phi
                 }
 
                 // Opacity
-                emitterStream << "\topacity: {type: ";
+                emitterFile << "\topacity: {type: ";
                 switch (emitter.particleProperties.opacityMode)
                 {
                     case CPUParticleEmitter::OpacityMode::Constant:
-                        emitterStream << "constant, value: " << emitter.particleProperties.opacity << "},\n";
+                        emitterFile << "constant, value: " << emitter.particleProperties.opacity << "},\n";
                         break;
                     
                     case CPUParticleEmitter::OpacityMode::RandomMinMax:
-                        emitterStream << "random_min_max, min: " << emitter.particleProperties.opacityMin
+                        emitterFile << "random_min_max, min: " << emitter.particleProperties.opacityMin
                             << ", max: " << emitter.particleProperties.opacityMax << "},\n";
                         break;
                     case CPUParticleEmitter::OpacityMode::LerpOverLifetime:
-                        emitterStream << "lerp_over_lifetime, start_opacity: " << emitter.particleProperties.startOpacity
+                        emitterFile << "lerp_over_lifetime, start_opacity: " << emitter.particleProperties.startOpacity
                             << ", end_opacity: " << emitter.particleProperties.endOpacity << "},\n";
                         break;
                 }
 
                 // Lifespan
-                emitterStream << "\tlifespan: {type: ";
+                emitterFile << "\tlifespan: {type: ";
                 switch (emitter.particleProperties.lifespanMode)
                 {
                     case CPUParticleEmitter::LifespanMode::Constant:
-                        emitterStream << "constant, value: " << emitter.particleProperties.lifespan << "},\n";
+                        emitterFile << "constant, value: " << emitter.particleProperties.lifespan << "},\n";
                         break;
                     
                     case CPUParticleEmitter::LifespanMode::RandomMinMax:
-                        emitterStream << "random_min_max, min: " << emitter.particleProperties.lifespanMin
+                        emitterFile << "random_min_max, min: " << emitter.particleProperties.lifespanMin
                             << ", max: " << emitter.particleProperties.lifespanMax << "},\n";
                         break;
                 }
 
-                emitterStream << "}\n\n";
+                emitterFile << "}\n\n";
                 
                 // Basic Affectors
-                emitterStream << "affectors: {\n";
-                emitterStream << "\tadd_velocity: " << (emitter.affectorProperties.addVelocity ? "true,\n" : "false,\n");
-                emitterStream << "\tgravity: " << (emitter.affectorProperties.gravityEnabled ? "true,\n" : "false,\n");
-                emitterStream << "}\n\n";
+                emitterFile << "affectors: {\n";
+                emitterFile << "\tadd_velocity: " << (emitter.affectorProperties.addVelocity ? "true,\n" : "false,\n");
+                emitterFile << "\tgravity: " << (emitter.affectorProperties.gravityEnabled ? "true,\n" : "false,\n");
+                emitterFile << "}\n\n";
 
                 // Attractors
-                emitterStream << "attractors: [";
+                emitterFile << "attractors: [";
                 for (int i = 0; i < emitter.attractors.size(); ++i)
                 {
                     const auto& a = emitter.attractors[i];
-                    emitterStream << "\n\t{position: {x: " << a.position.x << ", y: " << a.position.y << ", z: " << a.position.z
+                    emitterFile << "\n\t{position: {x: " << a.position.x << ", y: " << a.position.y << ", z: " << a.position.z
                         << "}, radius: " << a.radius << ", strength: " << a.strength << ", relative: " << (a.relativeToTransform ? "true" : "false") << "},";
                 }
-                emitterStream << "\n]";
+                emitterFile << "\n]";
             }
 
-            effectStream << "]\n";
+            effectFile << "]\n";
         }
     }
 

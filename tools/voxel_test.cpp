@@ -74,8 +74,8 @@ void VoxelTest::Update(float delta)
     }
     
     // Rotate and bob the voxel mesh
-    // voxelMeshTransform->SetPositionXYZ(0, sin(programLifetime), 0);
-    // voxelMeshTransform->RotateXYZDeg(0.0f, 45.0f * delta, 0.0f);
+    voxelMeshTransform->SetPositionXYZ(0, sin(programLifetime), 0);
+    voxelMeshTransform->RotateXYZDeg(0.0f, 45.0f * delta, 0.0f);
 
     // Update all nodes / components in the scene
     scene.Update(delta);
