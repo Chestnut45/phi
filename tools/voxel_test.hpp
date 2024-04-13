@@ -8,6 +8,8 @@
 // Phi engine
 #include <phi/phi.hpp>
 
+using namespace Phi;
+
 class VoxelTest : public Phi::App
 {
     // Interface
@@ -26,11 +28,8 @@ class VoxelTest : public Phi::App
     private:
 
         // Main scene
-        Phi::Scene scene;
+        Scene scene;
 
-        // Random number generator
-        Phi::RNG rng{4545};
-
-        // DEBUG: Transform for test voxel mesh
-        Phi::Transform* voxelMeshTransform = nullptr;
+        // Transform for test voxel mesh
+        Transform* voxelMeshTransform = nullptr;
 };

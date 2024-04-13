@@ -1,35 +1,4 @@
-# Verbose YAML Format?
-
-material_ids: {
-    name1: 0,
-    name2: 1,
-    name3: 2
-}
-
-voxels: [
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-    {x: 0, y: 0, z: 0, material: 0},
-]
-
-# Custom Format?
-
-.material_ids
+.materials
 0: name1
 1: name2
 2: name3

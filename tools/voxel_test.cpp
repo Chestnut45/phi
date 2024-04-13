@@ -12,49 +12,43 @@ int main(int, char**)
 }
 
 VoxelTest::VoxelTest() : App("Voxel Test", 4, 6)
-{
-    // Initialize mouse input
-    input.EnableRawMouseMotion();
-    input.CaptureMouse();
-    
+{   
     // Initialize the scene
+
+    // Add a camera
+    Camera& camera = scene.CreateNode()->AddComponent<Camera>();
+    camera.SetPosition({-36, 28, 36});
+    camera.SetMode(Camera::Mode::Target);
+    camera.LookAt(glm::vec3(0, 0, 0));
+    scene.SetActiveCamera(camera);
+
+    // Add a skybox
+    Skybox& skybox = camera.GetNode()->AddComponent<Skybox>("data://textures/skybox_day", "data://textures/skybox_night_old");
+    scene.SetActiveSkybox(skybox);
+
+    // Add a directional light
+    DirectionalLight& light = skybox.GetNode()->AddComponent<DirectionalLight>();
+    light.SetColor(glm::vec4(1.0f));
+    light.SetDirection(glm::normalize(glm::vec3(-0.5f, -0.5f, 0.5f)));
+    light.SetAmbient(0.1f);
+    scene.AttachLight(light, Scene::LightSlot::SLOT_0);
 
     // Load test materials
     scene.LoadMaterials("data://basic_materials.yaml");
 
-    // Add a camera
-    Phi::Camera& camera = scene.CreateNode()->AddComponent<Phi::Camera>();
-    camera.SetPosition({0, 32, 64});
-    scene.SetActiveCamera(camera);
-
-    // Add a skybox
-    Phi::Skybox& skybox = camera.GetNode()->AddComponent<Phi::Skybox>("data://textures/skybox_day", "data://textures/skybox_night_old");
-    scene.SetActiveSkybox(skybox);
-
-    // Add a directional light
-    Phi::DirectionalLight& light = skybox.GetNode()->AddComponent<Phi::DirectionalLight>();
-
-    // Configure the light
-    light.SetColor(glm::vec4(1.0f));
-    light.SetDirection(glm::normalize(glm::vec3(-0.5f, -0.5f, 0.5f)));
-    light.SetAmbient(0.1f);
-
-    // Attach it to the current scene
-    scene.AttachLight(light, Phi::Scene::LightSlot::SLOT_0);
-
-    // Add a test voxel mesh
-    light.GetNode()->AddComponent<Phi::VoxelMesh>();
+    // Add the test voxel mesh
+    light.GetNode()->AddComponent<VoxelMesh>();
 
     // Give it a transform component
-    voxelMeshTransform = &light.GetNode()->AddComponent<Phi::Transform>();
+    voxelMeshTransform = &light.GetNode()->AddComponent<Transform>();
 
     // Log
-    Phi::Log("Voxel Test initialized");
+    Log("Voxel Test initialized");
 }
 
 VoxelTest::~VoxelTest()
 {
-    Phi::Log("Voxel Test shutdown");
+    Log("Voxel Test shutdown");
 }
 
 void VoxelTest::Update(float delta)

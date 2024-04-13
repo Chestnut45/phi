@@ -60,8 +60,8 @@ void main()
         gMaterial = material;
 
         // Update depth buffer
-        // vec4 depth = viewProj * vec4(surfacePos, 1.0);
-        // gl_FragDepth = ((depth.z / depth.w) + 1) * 0.5;
+        vec4 depth = viewProj * vec4(surfacePos, 1.0);
+        gl_FragDepth = ((depth.z / depth.w) + 1) * 0.5;
     }
     else
     {
