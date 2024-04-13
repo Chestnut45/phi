@@ -30,7 +30,7 @@ layout(std140, binding = 0) uniform CameraBlock
 };
 
 // Basic material buffer
-layout(std430, binding = 0) buffer MaterialBlock
+layout(std430, binding = 1) buffer MaterialBlock
 {
     BasicMaterial materials[MAX_MATERIALS];
 };

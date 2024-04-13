@@ -2,11 +2,11 @@ Immediate TODO:
 
 
 - VoxelMaterial pipeline
-    - switch to SSBOs for basic / voxel materials
 - VoxelMeshRayTraced Rename (NOT COMPONENT ANYMORE)
 - VoxelObject component (load from .pvox, generate mesh)
 - test vertex shader cube generation
 - test VoxelMeshInstanced
+
 - binary mode for File IO?
 - EventManager (wait for a good use case before implementing)
 - replace all internal filepaths with "phi://"

@@ -64,9 +64,9 @@ namespace Phi
             // Reserved internal shader storage buffer binding indices
             enum class ShaderStorageBindingIndex
             {
-                BasicMaterial = 0,
-                VoxelMaterial = 1,
-                InstanceData = 2,
+                InstanceData = 0,
+                BasicMaterial = 1,
+                VoxelMaterial = 2,
             };
 
             // Creates an empty scene with the default resolution
