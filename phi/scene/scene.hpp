@@ -264,7 +264,8 @@ namespace Phi
 
             // Global lighting resources
             GPUBuffer globalLightBuffer{BufferType::Dynamic, 4 * (sizeof(glm::vec4) * 2)};
-            Shader globalLightShader;
+            Shader globalLightBasicShader;
+            Shader globalLightVoxelShader;
 
             // A dummy VAO used for attributeless rendering
             GLuint dummyVAO = 0;

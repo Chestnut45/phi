@@ -40,10 +40,17 @@ namespace Phi
 
         // Load shaders
 
-        // Global lighting (Blinn-Phong)
-        globalLightShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light_pass_basic.vs");
-        globalLightShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pass_basic.fs");
-        globalLightShader.Link();
+        // Global lighting shaders
+
+        // Basic material
+        globalLightBasicShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light_pass.vs");
+        globalLightBasicShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pass_basic.fs");
+        globalLightBasicShader.Link();
+
+        // Voxel material
+        globalLightVoxelShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light_pass.vs");
+        globalLightVoxelShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pass_voxel.fs");
+        globalLightVoxelShader.Link();
 
         // Wireframes
         wireframeShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/wireframe.vs");
@@ -277,10 +284,6 @@ namespace Phi
                 activeLights++;
             }
         }
-        
-        // Bind shader and update light count uniform
-        globalLightShader.Use();
-        globalLightShader.SetUniform("globalLightCount", activeLights);
 
         // Bind the geometry buffer textures
         gTexPosition->Bind(0);
@@ -302,6 +305,10 @@ namespace Phi
         // Disable depth testing / writing
         glDepthFunc(GL_ALWAYS);
         glDepthMask(GL_FALSE);
+
+        // Bind shader and update light count uniform
+        globalLightBasicShader.Use();
+        globalLightBasicShader.SetUniform("globalLightCount", activeLights);
 
         // Draw fullscreen triangle to calculate global lighting on every pixel
         glBindVertexArray(dummyVAO);

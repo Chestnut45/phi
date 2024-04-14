@@ -17,12 +17,6 @@ struct BasicMaterial
     vec4 colorShininess;
 };
 
-// Voxel material definition
-struct VoxelMaterial
-{
-    vec4 colorShininess;
-};
-
 // Camera uniform block
 layout(std140, binding = 0) uniform CameraBlock
 {
@@ -40,13 +34,6 @@ layout(std430, binding = 1) buffer BasicMaterialBlock
 {
     BasicMaterial basicMaterials[MAX_MATERIALS];
 };
-
-// Basic material buffer
-layout(std430, binding = 2) buffer VoxelMaterialBlock
-{
-    VoxelMaterial voxelMaterials[MAX_MATERIALS];
-};
-
 
 // Lighting uniform block
 layout(std140, binding = 1) uniform GlobalLightBlock
