@@ -186,6 +186,7 @@ namespace Phi
             static inline glm::ivec2 MAX_RESOLUTION = glm::ivec2(4096, 2160);
             static const int MAX_BASIC_MATERIALS = 1024;
             static const int MAX_VOXEL_MATERIALS = 1024;
+            static const int MAX_DIRECTIONAL_LIGHTS = 4;
 
         // Data / implementation
         private:
@@ -263,7 +264,7 @@ namespace Phi
             DirectionalLight* globalLights[(int)LightSlot::NUM_SLOTS];
 
             // Global lighting resources
-            GPUBuffer globalLightBuffer{BufferType::Dynamic, 4 * (sizeof(glm::vec4) * 2)};
+            GPUBuffer globalLightBuffer{BufferType::Dynamic, MAX_DIRECTIONAL_LIGHTS * (sizeof(glm::vec4) * 2) + sizeof(GLint)};
             Shader globalLightBasicShader;
             Shader globalLightVoxelShader;
 

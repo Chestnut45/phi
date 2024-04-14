@@ -273,7 +273,7 @@ namespace Phi
         globalLightBuffer.BindBase(GL_UNIFORM_BUFFER, (GLuint)UniformBindingIndex::GlobalLights);
 
         // Write all active global lights to the buffer
-        GLuint activeLights = 0;
+        int activeLights = 0;
         for (int i = 0; i < (int)LightSlot::NUM_SLOTS; i++)
         {
             DirectionalLight* light = globalLights[i];
@@ -284,6 +284,8 @@ namespace Phi
                 activeLights++;
             }
         }
+        globalLightBuffer.SetOffset((sizeof(glm::vec4) * 2) * MAX_DIRECTIONAL_LIGHTS);
+        globalLightBuffer.Write(activeLights);
 
         // Bind the geometry buffer textures
         gTexPosition->Bind(0);
@@ -308,7 +310,6 @@ namespace Phi
 
         // Bind shader and update light count uniform
         globalLightBasicShader.Use();
-        globalLightBasicShader.SetUniform("globalLightCount", activeLights);
 
         // Draw fullscreen triangle to calculate global lighting on every pixel
         glBindVertexArray(dummyVAO);

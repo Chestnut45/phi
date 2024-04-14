@@ -39,9 +39,8 @@ layout(std430, binding = 2) buffer VoxelMaterialBlock
 layout(std140, binding = 1) uniform GlobalLightBlock
 {
     DirectionalLight globalLights[MAX_DIRECTIONAL_LIGHTS];
+    int globalLightCount;
 };
-
-uniform int globalLightCount;
 
 // Geometry buffer texture samplers
 layout(binding = 0) uniform sampler2D gPos;
