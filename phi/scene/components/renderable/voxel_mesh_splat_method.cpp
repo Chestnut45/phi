@@ -17,8 +17,8 @@ namespace Phi
             // Initialize static resources
 
             shader = new Shader();
-            shader->LoadSource(GL_VERTEX_SHADER, "phi/graphics/shaders/voxel_mesh.vs");
-            shader->LoadSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/voxel_mesh.fs");
+            shader->LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/voxel_mesh.vs");
+            shader->LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/voxel_mesh.fs");
             shader->Link();
 
             vertexBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(Vertex) * MAX_VOXELS);

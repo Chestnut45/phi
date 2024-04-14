@@ -75,8 +75,8 @@ namespace Phi
             skyboxShader = new Phi::Shader();
 
             // TODO: Use local paths hardcoded so that global paths can be generated at runtime
-            skyboxShader->LoadSource(GL_VERTEX_SHADER, "phi/graphics/shaders/skybox.vs");
-            skyboxShader->LoadSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/skybox.fs");
+            skyboxShader->LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/skybox.vs");
+            skyboxShader->LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/skybox.fs");
             skyboxShader->Link();
         }
 

@@ -18,13 +18,13 @@ namespace Phi
 
             // Load shaders
             untexturedShader = new Shader();
-            untexturedShader->LoadSource(GL_VERTEX_SHADER, "phi/graphics/shaders/untextured_particle_emitter.vs");
-            untexturedShader->LoadSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/untextured_particle_emitter.fs");
+            untexturedShader->LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/untextured_particle_emitter.vs");
+            untexturedShader->LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/untextured_particle_emitter.fs");
             untexturedShader->Link();
 
             texturedShader = new Shader();
-            texturedShader->LoadSource(GL_VERTEX_SHADER, "phi/graphics/shaders/textured_particle_emitter.vs");
-            texturedShader->LoadSource(GL_FRAGMENT_SHADER, "phi/graphics/shaders/textured_particle_emitter.fs");
+            texturedShader->LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/textured_particle_emitter.vs");
+            texturedShader->LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/textured_particle_emitter.fs");
             texturedShader->Link();
 
             // Create buffers

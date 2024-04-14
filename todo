@@ -10,7 +10,6 @@ Immediate TODO:
 
 - binary mode for File IO?
 - EventManager (wait for a good use case before implementing)
-- replace all internal filepaths with "phi://"
 
 
 Engine TODO:
