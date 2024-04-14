@@ -224,6 +224,12 @@ namespace Phi
 
         // Basic material pass
 
+        // Setup stencil state
+        glEnable(GL_STENCIL_TEST);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+        glStencilFunc(GL_ALWAYS, (int)StencilValue::BasicMaterial, 0xff);
+        glStencilMask(0xff);
+
         // Render all basic meshes
         for (BasicMesh* mesh : basicMeshRenderQueue)
         {
@@ -239,6 +245,11 @@ namespace Phi
         }
         BasicMesh::FlushRenderQueue();
         basicMeshRenderQueue.clear();
+
+        // Voxel material pass
+
+        // Setup stencil state
+        glStencilFunc(GL_ALWAYS, (int)StencilValue::VoxelMaterial, 0xff);
 
         // Render all voxel objects
         for (VoxelObject* voxelObject : voxelObjectRenderQueue)
@@ -297,10 +308,12 @@ namespace Phi
         {
             case RenderMode::MatchInternalResolution:
                 glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+                glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
                 break;
             
             case RenderMode::CustomViewport:
                 glBlitFramebuffer(0, 0, renderWidth, renderHeight, viewportX, viewportY, viewportX + viewportWidth, viewportY + viewportHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+                glBlitFramebuffer(0, 0, renderWidth, renderHeight, viewportX, viewportY, viewportX + viewportWidth, viewportY + viewportHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
                 break;
         }
 
@@ -308,13 +321,25 @@ namespace Phi
         glDepthFunc(GL_ALWAYS);
         glDepthMask(GL_FALSE);
 
-        // Bind shader and update light count uniform
-        globalLightBasicShader.Use();
-
-        // Draw fullscreen triangle to calculate global lighting on every pixel
+        // Draw fullscreen triangles to calculate global lighting on every pixel
         glBindVertexArray(dummyVAO);
+
+        // Ensure no stencil values are updated
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+        glStencilMask(0x00);
+
+        // Basic materials first
+        globalLightBasicShader.Use();
+        glStencilFunc(GL_EQUAL, (GLint)StencilValue::BasicMaterial, 0xff);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        glBindVertexArray(0);
+
+        // Voxel materials
+        globalLightVoxelShader.Use();
+        glStencilFunc(GL_EQUAL, (GLint)StencilValue::VoxelMaterial, 0xff);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        // Disable stencil testing
+        glDisable(GL_STENCIL_TEST);
 
         // Lock global light buffer
         globalLightBuffer.Lock();

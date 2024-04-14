@@ -64,6 +64,9 @@ basic_materials: [
         color: {r: 0.1, g: 0.05, b: 0.02},
         shininess: 0.3
     },
+]
+
+voxel_materials: [
     {
         name: grass,
         color: {r: 0.12, g: 0.69, b: 0.16},
@@ -80,22 +83,3 @@ basic_materials: [
         shininess: 0.2
     },
 ]
-
-# TODO: Use separate voxel materials once scene rendering allows for multiple material types
-# voxel_materials: [
-#     {
-#         name: grass,
-#         color: {r: 0.12, g: 0.69, b: 0.16},
-#         shininess: 0.1
-#     },
-#     {
-#         name: fungal_stem,
-#         color: {r: 1.0, g: 0.829, b: 0.64},
-#         shininess: 0.4
-#     },
-#     {
-#         name: fungal_cap_red,
-#         color: {r: 0.8, g: 0.01, b: 0.05},
-#         shininess: 0.2
-#     },
-# ]

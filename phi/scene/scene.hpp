@@ -69,6 +69,14 @@ namespace Phi
                 VoxelMaterial = 2,
             };
 
+            // Special stencil values (mostly for readability)
+            enum class StencilValue
+            {
+                None = 0,
+                BasicMaterial = 1,
+                VoxelMaterial = 2,
+            };
+
             // Creates an empty scene with the default resolution
             Scene();
 
