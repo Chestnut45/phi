@@ -82,6 +82,7 @@ namespace Phi
             // Create the internal mesh and return
             if (splatMesh) delete splatMesh;
             splatMesh = new VoxelMeshSplatMethod(voxelData);
+            voxelCount = voxelData.size();
             return true;
         }
         else
@@ -100,5 +101,11 @@ namespace Phi
     void VoxelObject::FlushRenderQueue()
     {
         VoxelMeshSplatMethod::FlushRenderQueue();
+    }
+
+    void VoxelObject::Reset()
+    {
+        if (splatMesh) delete splatMesh;
+        splatMesh = nullptr;
     }
 }

@@ -3,6 +3,9 @@
 #include <phi/scene/components/base_component.hpp>
 #include <phi/scene/components/renderable/voxel_mesh_splat_method.hpp>
 
+// Forward declaration
+class VoxelEditor;
+
 namespace Phi
 {
     // A component representing an instance of a voxel object
@@ -38,11 +41,24 @@ namespace Phi
 
             // Flushes internal render queue and displays all objects
             static void FlushRenderQueue();
+
+            // Management
+
+            // Resets to initial state, unloads all voxel data and destroys internal resources
+            void Reset();
         
         // Data / implementation
         private:
 
             // DEBUG: Testing different implementations
             VoxelMeshSplatMethod* splatMesh = nullptr;
+
+            // Internal statistics
+            int voxelCount = 0;
+
+            // Friends
+
+            // Needed for Voxel Editor to work
+            friend class ::VoxelEditor;
     };
 }

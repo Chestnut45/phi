@@ -180,7 +180,9 @@ namespace Phi
 
     void App::ShowDebug()
     {
-        ImGui::Begin("App Debug");
+        ImGui::SetNextWindowPos(ImVec2(wWidth - 260, 4));
+        ImGui::SetNextWindowSize(ImVec2(256, 256));
+        ImGui::Begin("App Debug", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
         
         // Performance monitoring
         ImGui::Text("Performance:");

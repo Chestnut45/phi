@@ -13,6 +13,8 @@ design / features
 --------------------------------
 
 high priority:
+- move vsync and fullscreen to App::SetWindowMode() and App::SetVsyncMode() (remove from App::ShowDebug())
+- make transform not a component (always accessible to any node / basecomponent)
 - point light components
 - input buffering
 - pbr pipeline (PBRMaterial, PBRMesh)
