@@ -18,8 +18,8 @@ VoxelTest::VoxelTest() : App("Voxel Test", 4, 6)
     // Add a camera
     Camera& camera = scene.CreateNode()->AddComponent<Camera>();
     camera.SetPosition({0, 32, 128});
-    camera.SetMode(Camera::Mode::Target);
-    camera.LookAt(glm::vec3(0, 0, 0));
+    // camera.SetMode(Camera::Mode::Target);
+    // camera.LookAt(glm::vec3(0, 0, 0));
     scene.SetActiveCamera(camera);
 
     // Add a skybox
