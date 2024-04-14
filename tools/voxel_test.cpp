@@ -17,7 +17,7 @@ VoxelTest::VoxelTest() : App("Voxel Test", 4, 6)
 
     // Add a camera
     Camera& camera = scene.CreateNode()->AddComponent<Camera>();
-    camera.SetPosition({-8, 8, 8});
+    camera.SetPosition({0, 32, 128});
     camera.SetMode(Camera::Mode::Target);
     camera.LookAt(glm::vec3(0, 0, 0));
     scene.SetActiveCamera(camera);
@@ -29,8 +29,7 @@ VoxelTest::VoxelTest() : App("Voxel Test", 4, 6)
     // Add a directional light
     DirectionalLight& light = skybox.GetNode()->AddComponent<DirectionalLight>();
     light.SetColor(glm::vec4(1.0f));
-    light.SetDirection(glm::normalize(glm::vec3(-0.5f, -0.5f, 0.5f)));
-    light.SetAmbient(0.1f);
+    light.SetDirection(glm::normalize(glm::vec3(0.5f, -0.5f, 0.0f)));
     scene.AttachLight(light, Scene::LightSlot::SLOT_0);
 
     // Load test materials
@@ -38,7 +37,7 @@ VoxelTest::VoxelTest() : App("Voxel Test", 4, 6)
 
     // Add the test voxel object and load the model
     VoxelObject& voxelObject = scene.CreateNode()->AddComponent<VoxelObject>();
-    voxelObject.Load("data://models/mushroom.pvox");
+    voxelObject.Load("data://models/teapot.pvox");
 
     // Give it a transform component
     voxelObjectTransform = &(voxelObject.GetNode()->AddComponent<Transform>());

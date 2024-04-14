@@ -27,6 +27,7 @@ namespace Phi
             // Parse the file
             std::string line;
             int phase = 0;
+            bool zAxisVertical = false;
             while (std::getline(file, line))
             {
                 // Ignore comments and empty lines
@@ -43,6 +44,7 @@ namespace Phi
                     phase = 2;
                     continue;
                 }
+                if (line == ".z_axis_vertical") zAxisVertical = true;
 
                 // Actual material parsing
                 if (phase == 1)
@@ -61,7 +63,15 @@ namespace Phi
                 {
                     // Parse the voxel data
                     VoxelMeshSplatMethod::Vertex v;
-                    std::istringstream(line) >> v.x >> v.y >> v.z >> v.material;
+
+                    if (zAxisVertical)
+                    {
+                        std::istringstream(line) >> v.x >> v.z >> v.y >> v.material;
+                    }
+                    else
+                    {
+                        std::istringstream(line) >> v.x >> v.y >> v.z >> v.material;
+                    }
 
                     // Translate to the currently loaded ID and add to the vector
                     v.material = loadedMaterialIDs[v.material];
