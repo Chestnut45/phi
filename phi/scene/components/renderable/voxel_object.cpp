@@ -12,6 +12,7 @@ namespace Phi
     VoxelObject::~VoxelObject()
     {
         if (splatMesh) delete splatMesh;
+        if (instancedMesh) delete instancedMesh;
     }
 
     bool VoxelObject::Load(const std::string& path)
@@ -22,7 +23,7 @@ namespace Phi
         {
             // Container for material ids
             std::vector<int> loadedMaterialIDs;
-            std::vector<VoxelMeshSplatMethod::Vertex> voxelData;
+            std::vector<VoxelMeshSplat::Vertex> voxelData;
 
             // Parse the file
             std::string line;
@@ -62,7 +63,7 @@ namespace Phi
                 if (phase == 2)
                 {
                     // Parse the voxel data
-                    VoxelMeshSplatMethod::Vertex v;
+                    VoxelMeshSplat::Vertex v;
 
                     if (zAxisVertical)
                     {
@@ -79,9 +80,13 @@ namespace Phi
                 }
             }
 
-            // Create the internal mesh and return
+            // Create the internal meshes
             if (splatMesh) delete splatMesh;
-            splatMesh = new VoxelMeshSplatMethod(voxelData);
+            splatMesh = new VoxelMeshSplat(voxelData);
+            if (instancedMesh) delete instancedMesh;
+            instancedMesh = new VoxelMeshInstanced(voxelData);
+
+            // Update size and return
             voxelCount = voxelData.size();
             return true;
         }
@@ -95,17 +100,27 @@ namespace Phi
 
     void VoxelObject::Render(const glm::mat4& transform, const glm::mat3& rotation)
     {
-        if (splatMesh) splatMesh->Render(transform, rotation);
+        if (rayTraced)
+        {
+            if (splatMesh) splatMesh->Render(transform, rotation);
+        }
+        else
+        {
+            if (instancedMesh) instancedMesh->Render(transform);
+        }
     }
 
     void VoxelObject::FlushRenderQueue()
     {
-        VoxelMeshSplatMethod::FlushRenderQueue();
+        VoxelMeshSplat::FlushRenderQueue();
+        VoxelMeshInstanced::FlushRenderQueue();
     }
 
     void VoxelObject::Reset()
     {
         if (splatMesh) delete splatMesh;
         splatMesh = nullptr;
+        if (instancedMesh) delete instancedMesh;
+        instancedMesh = nullptr;
     }
 }

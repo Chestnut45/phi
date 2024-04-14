@@ -139,6 +139,7 @@ void VoxelEditor::ShowInterface()
     
     // Controls
     ImGui::SeparatorText("Controls");
+    ImGui::Checkbox("Ray Traced", &voxelObject->rayTraced);
     ImGui::Checkbox("Rotate Model", &rotateModel);
     if (ImGui::Checkbox("Free Camera", &freeCamera))
     {

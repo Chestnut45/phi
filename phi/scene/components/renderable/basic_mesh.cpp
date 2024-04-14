@@ -346,6 +346,34 @@ namespace Phi
         }
     }
 
+    void BasicMesh::GenerateNormalsFlat(std::vector<Vertex>& vertices)
+    {
+        for (int i = 0; i <= vertices.size() - 3; i += 3)
+        {
+            // Grab the 3 vertices that make up this triangle
+            auto& a = vertices[i];
+            auto& b = vertices[i + 1];
+            auto& c = vertices[i + 2];
+            glm::vec3 A = {a.x, a.y, a.z};
+            glm::vec3 B = {b.x, b.y, b.z};
+            glm::vec3 C = {c.x, c.y, c.z};
+
+            // Calculate the normal
+            glm::vec3 normal = glm::normalize(glm::cross(B - A, C - A));
+
+            // Set normal for all vertices
+            a.nx = normal.x;
+            a.ny = normal.y;
+            a.nz = normal.z;
+            b.nx = normal.x;
+            b.ny = normal.y;
+            b.nz = normal.z;
+            c.nx = normal.x;
+            c.ny = normal.y;
+            c.nz = normal.z;
+        }
+    }
+
     void BasicMesh::GenerateNormalsSmooth(std::vector<Vertex>& vertices, std::vector<GLuint>& indices)
     {
         // Set all normals to zero first

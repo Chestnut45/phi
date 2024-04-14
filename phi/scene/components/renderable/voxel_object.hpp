@@ -1,7 +1,8 @@
 #pragma once
 
 #include <phi/scene/components/base_component.hpp>
-#include <phi/scene/components/renderable/voxel_mesh_splat_method.hpp>
+#include <phi/scene/components/renderable/voxel_mesh_instanced.hpp>
+#include <phi/scene/components/renderable/voxel_mesh_splat.hpp>
 
 // Forward declaration
 class VoxelEditor;
@@ -51,7 +52,9 @@ namespace Phi
         private:
 
             // DEBUG: Testing different implementations
-            VoxelMeshSplatMethod* splatMesh = nullptr;
+            VoxelMeshSplat* splatMesh = nullptr;
+            VoxelMeshInstanced* instancedMesh = nullptr;
+            bool rayTraced = false;
 
             // Internal statistics
             int voxelCount = 0;

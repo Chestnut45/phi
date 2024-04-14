@@ -41,5 +41,6 @@
 #include "scene/components/renderable/cpu_particle_effect.hpp"
 #include "scene/components/renderable/cpu_particle_emitter.hpp"
 #include "scene/components/renderable/skybox.hpp"
-#include "scene/components/renderable/voxel_mesh_splat_method.hpp"
+#include "scene/components/renderable/voxel_mesh_instanced.hpp"
+#include "scene/components/renderable/voxel_mesh_splat.hpp"
 #include "scene/components/renderable/voxel_object.hpp"
