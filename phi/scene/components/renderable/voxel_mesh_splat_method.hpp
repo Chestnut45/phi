@@ -21,7 +21,7 @@ namespace Phi
         public:
 
             // Constants
-            static inline const size_t MAX_VOXELS = 65'536;
+            static inline const size_t MAX_VOXELS = 1'048'576;
 
             // Convenience vertex declaration
             typedef Phi::VertexVoxel Vertex;
