@@ -228,7 +228,6 @@ namespace Phi
         glEnable(GL_STENCIL_TEST);
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
         glStencilFunc(GL_ALWAYS, (int)StencilValue::BasicMaterial, 0xff);
-        glStencilMask(0xff);
 
         // Render all basic meshes
         for (BasicMesh* mesh : basicMeshRenderQueue)
@@ -303,7 +302,7 @@ namespace Phi
         gTexNormal->Bind(1);
         gTexMaterial->Bind(2);
 
-        // Blit the geometry buffer's depth texture to the main render target
+        // Blit the geometry buffer's depth and stencil textures to the main render target
         switch (renderMode)
         {
             case RenderMode::MatchInternalResolution:
@@ -326,7 +325,6 @@ namespace Phi
 
         // Ensure no stencil values are updated
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-        glStencilMask(0x00);
 
         // Basic materials first
         globalLightBasicShader.Use();
@@ -355,9 +353,6 @@ namespace Phi
         // Particle pass
 
         // Render all particle effects
-        // POTENTIAL: See if we can render particles to the geometry buffer instead
-        // Probably not, but worth thinking about possibly interpolating particle data while blending
-        // (stencil buffer could count number of times a pixel is blended and average all positions / normals at the end?)
         for (auto&&[node, effect] : registry.view<CPUParticleEffect>().each())
         {
             Transform* transform = effect.GetNode()->GetComponent<Transform>();

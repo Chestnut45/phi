@@ -70,6 +70,9 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     pupilsMesh.GetNode()->AddComponent<Phi::Transform>();
     mesh.GetNode()->AddChild(pupilsMesh.GetNode());
 
+    // DEBUG: Add a voxel mesh to make sure scenes with custom viewports doesn't mess up stencil buffer transfers
+    mesh.GetNode()->AddComponent<Phi::VoxelObject>().Load("data://models/mushroom.pvox");
+
     // Log
     Phi::Log(name, " initialized");
 }
