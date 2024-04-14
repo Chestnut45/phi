@@ -40,6 +40,6 @@ void main()
 
     // Set fragment shader outputs
     fragPos = worldPos.xyz;
-    fragNormal = vNorm;
+    fragNormal = normalize((inverse(transpose(transforms[gl_DrawID])) * vec4(vNorm, 1.0)).xyz);
     fragMaterial = voxelMaterial;
 }
