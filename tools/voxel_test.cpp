@@ -18,8 +18,8 @@ VoxelTest::VoxelTest() : App("Voxel Test", 4, 6)
     // Add a camera
     Camera& camera = scene.CreateNode()->AddComponent<Camera>();
     camera.SetPosition({0, 32, 128});
-    // camera.SetMode(Camera::Mode::Target);
-    // camera.LookAt(glm::vec3(0, 0, 0));
+    camera.SetMode(Camera::Mode::Target);
+    camera.LookAt(glm::vec3(0, 0, 0));
     scene.SetActiveCamera(camera);
 
     // Add a skybox
@@ -39,34 +39,8 @@ VoxelTest::VoxelTest() : App("Voxel Test", 4, 6)
     VoxelObject& voxelObject = scene.CreateNode()->AddComponent<VoxelObject>();
     voxelObject.Load("data://models/teapot.pvox");
 
-    // Give it a transform component
+    // Add transform component
     voxelObjectTransform = &(voxelObject.GetNode()->AddComponent<Transform>());
-
-    // Add basic mesh for visual debugging
-    Phi::BasicMesh& mesh = voxelObject.GetNode()->AddComponent<Phi::BasicMesh>();
-    mesh.AddIcosphere(1.0f, 2);
-    mesh.AddBox(1.0f, 2.0f, 1.0, glm::vec3(0, -1, 0));
-    mesh.AddBox(2.0f, 0.5f, 0.5f, glm::vec3(1, -1, 0));
-    mesh.AddBox(2.0f, 0.5f, 0.5f, glm::vec3(-1, -1, 0));
-    mesh.AddBox(0.25f, 1.0f, 0.25f, glm::vec3(-0.25f, -2, 0));
-    mesh.AddBox(0.25f, 1.0f, 0.25f, glm::vec3(0.25f, -2, 0));
-    mesh.SetMaterial("sapphire");
-
-    // Add eyes
-    Phi::BasicMesh& eyesMesh = scene.CreateNode()->AddComponent<Phi::BasicMesh>();
-    eyesMesh.AddIcosphere(0.5f, 2, glm::vec3(-0.5f, 0.25f, 0.5f));
-    eyesMesh.AddIcosphere(0.5f, 2, glm::vec3(0.5f, 0.25f, 0.5f));
-    eyesMesh.SetMaterial("pearl");
-    eyesMesh.GetNode()->AddComponent<Phi::Transform>();
-    mesh.GetNode()->AddChild(eyesMesh.GetNode());
-
-    // Add pupils to eyes (lol)
-    Phi::BasicMesh& pupilsMesh = scene.CreateNode()->AddComponent<Phi::BasicMesh>();
-    pupilsMesh.AddIcosphere(0.25f, 2, glm::vec3(0.5f, 0.25f, 0.9f));
-    pupilsMesh.AddIcosphere(0.25f, 2, glm::vec3(-0.5f, 0.25f, 0.9f));
-    pupilsMesh.SetMaterial("obsidian");
-    pupilsMesh.GetNode()->AddComponent<Phi::Transform>();
-    mesh.GetNode()->AddChild(pupilsMesh.GetNode());
 
     // Log
     Log("Voxel Test initialized");

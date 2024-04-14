@@ -20,7 +20,7 @@ layout(std140, binding = 0) uniform CameraBlock
 
 // Emitter data SSBO (Each emitter gets their own indirect draw command,
 // so we can index this buffer with gl_DrawID directly)
-layout(std430, binding = 1) buffer EmitterSSBO
+layout(std430, binding = 0) buffer EmitterSSBO
 {
     EmitterData emitters[];
 };
