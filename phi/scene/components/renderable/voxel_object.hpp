@@ -15,6 +15,14 @@ namespace Phi
         // Interface
         public:
 
+            // Different rendering modes
+            enum class RenderMode
+            {
+                Instanced,
+                RayTraced,
+            };
+
+            // Creates an empty voxel object
             VoxelObject();
             ~VoxelObject();
 
@@ -51,10 +59,10 @@ namespace Phi
         // Data / implementation
         private:
 
-            // DEBUG: Testing different implementations
+            // DEBUG: Testing different rendering implementations
             VoxelMeshSplat* splatMesh = nullptr;
             VoxelMeshInstanced* instancedMesh = nullptr;
-            bool rayTraced = false;
+            RenderMode renderMode{RenderMode::RayTraced};
 
             // Internal statistics
             int voxelCount = 0;

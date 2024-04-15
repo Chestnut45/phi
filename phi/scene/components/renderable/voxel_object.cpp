@@ -100,13 +100,10 @@ namespace Phi
 
     void VoxelObject::Render(const glm::mat4& transform, const glm::mat3& rotation)
     {
-        if (rayTraced)
+        switch (renderMode)
         {
-            if (splatMesh) splatMesh->Render(transform, rotation);
-        }
-        else
-        {
-            if (instancedMesh) instancedMesh->Render(transform);
+            case RenderMode::Instanced: if (instancedMesh) instancedMesh->Render(transform); break;
+            case RenderMode::RayTraced: if (splatMesh) splatMesh->Render(transform, rotation); break;
         }
     }
 

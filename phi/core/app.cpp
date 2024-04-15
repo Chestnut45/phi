@@ -24,6 +24,8 @@ namespace Phi
 
     App::App(const std::string& name, int glMajVer, int glMinVer) : name(name), wWidth(defaultWidth), wHeight(defaultHeight)
     {
+        // TODO: Ensure valid GL version
+
         // Initialize GLFW
         if (!glfwInit())
         {
@@ -113,7 +115,7 @@ namespace Phi
         {
             // Update timing
             double currentTime = glfwGetTime();
-            float elapsedTime = (float)(currentTime - lastTime);
+            elapsedTime = (float)(currentTime - lastTime);
             programLifetime += elapsedTime;
             lastTime = currentTime;
 
@@ -169,8 +171,10 @@ namespace Phi
             {
                 updateSamples.push_back(lastUpdate * 1000);
                 renderSamples.push_back(lastRender * 1000);
+                totalSamples.push_back(elapsedTime * 1000);
                 while (updateSamples.size() > perfSamplesPerSecond) updateSamples.erase(updateSamples.begin());
                 while (renderSamples.size() > perfSamplesPerSecond) renderSamples.erase(renderSamples.begin());
+                while (totalSamples.size() > perfSamplesPerSecond) totalSamples.erase(totalSamples.begin());
                 sampleAccum -= sampleRate;
             }
 
@@ -178,10 +182,43 @@ namespace Phi
         }
     }
 
+    void App::ToggleFullscreen()
+    {
+        // Toggle
+        fullscreen = !fullscreen;
+
+        // Apply new mode
+        GLFWwindow* window = GetWindow();
+        if (fullscreen)
+        {
+            // Get primary monitor and enable fullscreen
+            GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+            const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+            glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+        }
+        else
+        {
+            // Get window monitor and revert to windowed mode
+            GLFWmonitor* monitor = glfwGetWindowMonitor(window);
+            const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+            glfwSetWindowMonitor(window, NULL, (mode->width - defaultWidth) / 2, (mode->height - defaultHeight) / 2, defaultWidth, defaultHeight, 0);
+        }
+    }
+
+    void App::ToggleVsync()
+    {
+        // Toggle
+        vsync = !vsync;
+
+        // Apply
+        glfwSwapInterval(vsync);
+    }
+
     void App::ShowDebug()
     {
+        // Default window positioning
         ImGui::SetNextWindowPos(ImVec2(wWidth - 260, 4));
-        ImGui::SetNextWindowSize(ImVec2(256, 256));
+        ImGui::SetNextWindowSize(ImVec2(256, 177));
         ImGui::Begin("App Debug", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
         
         // Performance monitoring
@@ -194,29 +231,9 @@ namespace Phi
         ImGui::PlotLines("Render:", renderSamples.data(), renderSamples.size(), 0, (const char*)nullptr, 0.0f, 16.67f, ImVec2{128.0f, 32.0f});
         ImGui::SameLine();
         ImGui::Text("%.2fms", lastRender * 1000);
-        ImGui::NewLine();
-        
-        ImGui::Text("Settings:");
-        ImGui::Separator();
-        if (ImGui::Checkbox("Vsync", &vsync)) glfwSwapInterval(vsync);
-        if (ImGui::Checkbox("Fullscreen", &fullscreen))
-        {
-            GLFWwindow* window = GetWindow();
-            if (fullscreen)
-            {
-                // Get primary monitor and enable fullscreen
-                GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-                const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-                glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-            }
-            else
-            {
-                // Get window monitor and revert to windowed mode
-                GLFWmonitor* monitor = glfwGetWindowMonitor(window);
-                const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-                glfwSetWindowMonitor(window, NULL, (mode->width - defaultWidth) / 2, (mode->height - defaultHeight) / 2, defaultWidth, defaultHeight, 0);
-            }
-        }
+        ImGui::PlotLines("Total:", totalSamples.data(), totalSamples.size(), 0, (const char*)nullptr, 0.0f, 16.67f, ImVec2{128.0f, 32.0f});
+        ImGui::SameLine();
+        ImGui::Text("%.2fms", elapsedTime * 1000);
 
         ImGui::End();
     }

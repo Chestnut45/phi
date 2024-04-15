@@ -5,7 +5,7 @@
         "commandLine": "",
         "environment": [
         ],
-        "executable": "/home/chestnut/Desktop/Dev/phi/build/particle_effect_editor",
+        "executable": "/home/chestnut/Desktop/Dev/phi/build/voxel_editor",
         "inject": false,
         "numQueuedFrames": 0,
         "options": {

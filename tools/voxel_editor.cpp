@@ -20,7 +20,7 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
 
     // Add a camera
     Camera& camera = scene.CreateNode()->AddComponent<Camera>();
-    camera.SetPosition({0, 32, 128});
+    camera.SetPosition({0, 32, 96});
     camera.SetMode(Camera::Mode::Target);
     camera.LookAt(glm::vec3(0, 0, 0));
     scene.SetActiveCamera(camera);
@@ -92,7 +92,7 @@ void VoxelEditor::Render()
 
 void VoxelEditor::ShowInterface()
 {
-    ImGui::Begin("Voxel Editor", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+    ImGui::Begin("Voxel Editor", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove);
 
     // Main menu bar
     bool loadModelFlag = false;
@@ -136,10 +136,25 @@ void VoxelEditor::ShowInterface()
     
     // Statistics
     ImGui::Text("# Voxels: %d", voxelObject->voxelCount);
+
+    // Settings
+    ImGui::SeparatorText("Settings");
+
+    // Render mode
+    static const char* renderModes[] = {"Instanced", "Ray Traced"};
+    const char* currentMode = renderModes[(int)voxelObject->renderMode];
+    if (ImGui::BeginCombo("Render Mode", currentMode))
+    {
+        for (int n = 0; n < IM_ARRAYSIZE(renderModes); n++)
+        {
+            bool is_selected = (currentMode == renderModes[n]);
+            if (ImGui::Selectable(renderModes[n], is_selected)) voxelObject->renderMode = (VoxelObject::RenderMode)n;
+            if (is_selected) ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
+    }
     
-    // Controls
-    ImGui::SeparatorText("Controls");
-    ImGui::Checkbox("Ray Traced", &voxelObject->rayTraced);
+    // Other general settings
     ImGui::Checkbox("Rotate Model", &rotateModel);
     if (ImGui::Checkbox("Free Camera", &freeCamera))
     {
@@ -154,6 +169,11 @@ void VoxelEditor::ShowInterface()
             c->LookAt(glm::vec3(0.0f));
         }
     }
+    bool v = vsync;
+    bool f = fullscreen;
+    if (ImGui::Checkbox("Fullscreen", &f)) ToggleFullscreen();
+    if (ImGui::Checkbox("Vsync", &v)) ToggleVsync();
+
 
     ImGui::End();
 }

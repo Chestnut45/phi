@@ -34,12 +34,18 @@ namespace Phi
     {
         public:
 
+            // Creates an app with the given name and OpenGL version
             App(const std::string& name, int glMajVer = 4, int glMinVer = 5);
             virtual ~App();
 
+            // Main methods
             virtual void Run();
             virtual void Update(float delta) = 0;
             virtual void Render() = 0;
+
+            // Graphics / Window management
+            void ToggleFullscreen();
+            void ToggleVsync();
 
             // Accessors
             GLFWwindow* GetWindow() const { return pWindow; };
@@ -65,11 +71,13 @@ namespace Phi
             float lastUpdate = 0;
             float lastRender = 0;
             float lastTime = 0;
+            float elapsedTime = 0;
             float averageFPS = 0;
             uint32_t timingFrameCount = 0;
             uint32_t totalFrameCount = 0;
             std::vector<float> updateSamples;
             std::vector<float> renderSamples;
+            std::vector<float> totalSamples;
             static const int perfSamplesPerSecond = 240;
             static inline float sampleRate = 1.0f / perfSamplesPerSecond;
             static inline float fpsUpdateRate = 1.0f / 2.0f;
