@@ -563,6 +563,7 @@ namespace Phi
             int queueCount = 0;
 
             // Init render state
+            glDepthFunc(GL_LESS);
 
             // Non-owning resource pointers for THIS queue
             Shader* shader = nullptr;
@@ -575,7 +576,6 @@ namespace Phi
                 case RenderQueue::TexturedNoBlend:
                     // Setup blend and depth state
                     glDisable(GL_BLEND);
-                    glDepthFunc(GL_LESS);
                     glDepthMask(GL_TRUE);
                     
                     // Choose resources
@@ -590,7 +590,6 @@ namespace Phi
                     // Setup blend and depth state
                     glEnable(GL_BLEND);
                     glBlendFunc(GL_ONE, GL_ONE);
-                    glDepthFunc(GL_LESS);
                     glDepthMask(GL_FALSE);
 
                     // Choose resources
@@ -605,7 +604,6 @@ namespace Phi
                     // Setup blend and depth state
                     glEnable(GL_BLEND);
                     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                    glDepthFunc(GL_LESS);
                     glDepthMask(GL_FALSE);
 
                     // Choose resources
@@ -619,7 +617,6 @@ namespace Phi
                 case RenderQueue::UntexturedNoBlend:
                     // Setup blend and depth state
                     glDisable(GL_BLEND);
-                    glDepthFunc(GL_LESS);
                     glDepthMask(GL_TRUE);
 
                     // Choose resources
@@ -634,7 +631,6 @@ namespace Phi
                     // Setup blend and depth state
                     glEnable(GL_BLEND);
                     glBlendFunc(GL_ONE, GL_ONE);
-                    glDepthFunc(GL_LESS);
                     glDepthMask(GL_FALSE);
 
                     // Choose resources
@@ -649,7 +645,6 @@ namespace Phi
                     // Setup blend and depth state
                     glEnable(GL_BLEND);
                     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                    glDepthFunc(GL_LESS);
                     glDepthMask(GL_FALSE);
 
                     // Choose resources
