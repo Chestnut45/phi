@@ -32,7 +32,7 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     // Add a directional light
     DirectionalLight& light = skybox.GetNode()->AddComponent<DirectionalLight>();
     light.SetColor(glm::vec4(1.0f));
-    light.SetDirection(glm::normalize(glm::vec3(0.5f, -0.5f, 0.0f)));
+    light.SetDirection(glm::normalize(glm::vec3(-0.5f, -0.5f, 0.0f)));
     scene.AttachLight(light, Scene::LightSlot::SLOT_0);
 
     // Load test materials

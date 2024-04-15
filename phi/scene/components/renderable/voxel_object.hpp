@@ -62,7 +62,7 @@ namespace Phi
             // DEBUG: Testing different rendering implementations
             VoxelMeshSplat* splatMesh = nullptr;
             VoxelMeshInstanced* instancedMesh = nullptr;
-            RenderMode renderMode{RenderMode::RayTraced};
+            RenderMode renderMode{RenderMode::Instanced};
 
             // Internal statistics
             int voxelCount = 0;
