@@ -55,7 +55,7 @@ namespace Phi
 
         // Attach shader to the program and keep track
         glAttachShader(programID, shader);
-        shaders.push_back(shader);   
+        shaders.push_back(shader);
 
         // Successful return if no errors
         return true;
