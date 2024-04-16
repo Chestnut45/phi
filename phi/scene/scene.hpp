@@ -47,11 +47,15 @@ namespace Phi
             // Valid render modes
             enum class RenderMode
             {
-                // Renders the final image to the viewport (0, 0, renderWidth, renderHeight) of the default framebuffer
+                // Renders the final image to the default framebuffer with viewport (0, 0, renderWidth, renderHeight)
                 MatchInternalResolution,
 
-                // Renders the final image to the custom viewport set by Scene::SetViewport(...)
+                // Renders the final image to the default framebuffer with the scene's viewport
                 CustomViewport,
+
+                // TODO: TextureBlit
+                // Renders the final image to a texture at internal rendering resolution,
+                // then blits to the default framebuffer using the scene's viewport
             };
 
             // Reserved internal uniform buffer binding indices

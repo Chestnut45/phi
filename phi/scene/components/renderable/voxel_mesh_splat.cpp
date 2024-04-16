@@ -1,8 +1,5 @@
 #include "voxel_mesh_splat.hpp"
 
-// DEBUG
-#include <phi/core/math/rng.hpp>
-
 #include <phi/core/logging.hpp>
 #include <phi/graphics/geometry.hpp>
 #include <phi/graphics/indirect.hpp>
