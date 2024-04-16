@@ -208,28 +208,33 @@ namespace Phi
 
         // Update the camera buffer right before rendering
         UpdateCameraBuffer();
-
-        // Bind the camera buffer
         cameraBuffer.BindRange(GL_UNIFORM_BUFFER, (int)UniformBindingIndex::Camera, cameraBuffer.GetCurrentSection() * cameraBuffer.GetSize(), cameraBuffer.GetSize());
 
-        // Bind the material buffers
-        basicMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::BasicMaterial);
-        voxelMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::VoxelMaterial);
+        // Flags
+        bool basicPass = basicMeshRenderQueue.size() > 0;
+        bool voxelPass = voxelObjectRenderQueue.size() > 0;
 
-        // Geometry passes
+        if (basicPass || voxelPass)
+        {
+            // Geometry passes
 
-        // Bind the geometry buffer and clear it
-        gBuffer->Bind();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            // Bind the material buffers
+            basicMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::BasicMaterial);
+            voxelMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::VoxelMaterial);
+
+            // Bind the geometry buffer and clear it
+            gBuffer->Bind();
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+            // Setup stencil state
+            glEnable(GL_STENCIL_TEST);
+            glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+        }
 
         // Basic material pass
 
-        // Setup stencil state
-        glEnable(GL_STENCIL_TEST);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-        glStencilFunc(GL_ALWAYS, (int)StencilValue::BasicMaterial, 0xff);
-
         // Render all basic meshes
+        glStencilFunc(GL_ALWAYS, (int)StencilValue::BasicMaterial, 0xff);
         for (BasicMesh* mesh : basicMeshRenderQueue)
         {
             Transform* transform = mesh->GetNode()->GetComponent<Transform>();
@@ -243,14 +248,11 @@ namespace Phi
             }
         }
         BasicMesh::FlushRenderQueue();
-        basicMeshRenderQueue.clear();
 
         // Voxel material pass
 
-        // Setup stencil state
-        glStencilFunc(GL_ALWAYS, (int)StencilValue::VoxelMaterial, 0xff);
-
         // Render all voxel objects
+        glStencilFunc(GL_ALWAYS, (int)StencilValue::VoxelMaterial, 0xff);
         for (VoxelObject* voxelObject : voxelObjectRenderQueue)
         {
             Transform* transform = voxelObject->GetNode()->GetComponent<Transform>();
@@ -264,11 +266,8 @@ namespace Phi
             }
         }
         VoxelObject::FlushRenderQueue();
-        voxelObjectRenderQueue.clear();
 
         // TODO: PBR material pass
-
-        // Lighting passes
 
         // Bind the main render target to draw to
         gBuffer->Unbind(GL_DRAW_FRAMEBUFFER);
@@ -279,62 +278,76 @@ namespace Phi
         // Use custom viewport instead of renderTarget
         if (renderMode == RenderMode::CustomViewport) glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
 
-        // Update global light buffer
-        globalLightBuffer.BindBase(GL_UNIFORM_BUFFER, (GLuint)UniformBindingIndex::GlobalLights);
-
-        // Write all active global lights to the buffer
-        int activeLights = 0;
-        for (int i = 0; i < (int)LightSlot::NUM_SLOTS; i++)
+        // Lighting passes
+        
+        // Lighting pass setup
+        if (basicPass || voxelPass)
         {
-            DirectionalLight* light = globalLights[i];
-            if (light)
+            // Update global light buffer
+            globalLightBuffer.Sync();
+            globalLightBuffer.BindRange(GL_UNIFORM_BUFFER, (GLuint)UniformBindingIndex::GlobalLights,
+                globalLightBuffer.GetCurrentSection() * globalLightBuffer.GetSize(), globalLightBuffer.GetSize());
+
+            // Write all active global lights to the buffer
+            int activeLights = 0;
+            for (int i = 0; i < (int)LightSlot::NUM_SLOTS; i++)
             {
-                globalLightBuffer.Write(light->color);
-                globalLightBuffer.Write(glm::vec4(light->direction, light->ambient));
-                activeLights++;
+                DirectionalLight* light = globalLights[i];
+                if (light)
+                {
+                    globalLightBuffer.Write(light->color);
+                    globalLightBuffer.Write(glm::vec4(light->direction, light->ambient));
+                    activeLights++;
+                }
             }
+            globalLightBuffer.SetOffset((sizeof(glm::vec4) * 2) * MAX_DIRECTIONAL_LIGHTS);
+            globalLightBuffer.Write(activeLights);
+
+            // Blit the geometry buffer's depth and stencil textures to the main render target
+            switch (renderMode)
+            {
+                case RenderMode::MatchInternalResolution:
+                    glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+                    glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+                    break;
+                
+                case RenderMode::CustomViewport:
+                    glBlitFramebuffer(0, 0, renderWidth, renderHeight, viewportX, viewportY, viewportX + viewportWidth, viewportY + viewportHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+                    glBlitFramebuffer(0, 0, renderWidth, renderHeight, viewportX, viewportY, viewportX + viewportWidth, viewportY + viewportHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+                    break;
+            }
+
+            // Disable depth testing / writing
+            glDepthFunc(GL_ALWAYS);
+            glDepthMask(GL_FALSE);
+
+            // Draw fullscreen triangles to calculate global lighting on every pixel
+            glBindVertexArray(dummyVAO);
+
+            // Ensure no stencil values are updated
+            glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+            // Bind the geometry buffer textures
+            gTexPosition->Bind(0);
+            gTexNormal->Bind(1);
+            gTexMaterial->Bind(2);
         }
-        globalLightBuffer.SetOffset((sizeof(glm::vec4) * 2) * MAX_DIRECTIONAL_LIGHTS);
-        globalLightBuffer.Write(activeLights);
-
-        // Bind the geometry buffer textures
-        gTexPosition->Bind(0);
-        gTexNormal->Bind(1);
-        gTexMaterial->Bind(2);
-
-        // Blit the geometry buffer's depth and stencil textures to the main render target
-        switch (renderMode)
-        {
-            case RenderMode::MatchInternalResolution:
-                glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-                glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
-                break;
-            
-            case RenderMode::CustomViewport:
-                glBlitFramebuffer(0, 0, renderWidth, renderHeight, viewportX, viewportY, viewportX + viewportWidth, viewportY + viewportHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-                glBlitFramebuffer(0, 0, renderWidth, renderHeight, viewportX, viewportY, viewportX + viewportWidth, viewportY + viewportHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
-                break;
-        }
-
-        // Disable depth testing / writing
-        glDepthFunc(GL_ALWAYS);
-        glDepthMask(GL_FALSE);
-
-        // Draw fullscreen triangles to calculate global lighting on every pixel
-        glBindVertexArray(dummyVAO);
-
-        // Ensure no stencil values are updated
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
         // Basic materials first
-        globalLightBasicShader.Use();
-        glStencilFunc(GL_EQUAL, (GLint)StencilValue::BasicMaterial, 0xff);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        if (basicPass)
+        {
+            globalLightBasicShader.Use();
+            glStencilFunc(GL_EQUAL, (GLint)StencilValue::BasicMaterial, 0xff);
+            glDrawArrays(GL_TRIANGLES, 0, 3);
+        }
 
         // Voxel materials
-        globalLightVoxelShader.Use();
-        glStencilFunc(GL_EQUAL, (GLint)StencilValue::VoxelMaterial, 0xff);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        if (voxelPass)
+        {
+            globalLightVoxelShader.Use();
+            glStencilFunc(GL_EQUAL, (GLint)StencilValue::VoxelMaterial, 0xff);
+            glDrawArrays(GL_TRIANGLES, 0, 3);
+        }
 
         // Disable stencil testing
         glDisable(GL_STENCIL_TEST);
@@ -399,6 +412,10 @@ namespace Phi
         // Lock the camera buffer and move to the next section
         cameraBuffer.Lock();
         cameraBuffer.SwapSections();
+
+        // Clear render queues
+        basicMeshRenderQueue.clear();
+        voxelObjectRenderQueue.clear();
     }
 
     void Scene::ShowDebug()

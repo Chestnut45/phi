@@ -72,8 +72,10 @@ NOTE: Wondering where the commit history went? I had to recreate the repo due to
 ### Core Modules
 - [x] App
 - [ ] File Management
-    - [ ] File wrapper class
-    - [ ] Document valid special paths (data://, user://, etc.)
+    - [x] File wrapper class
+    - [x] Document valid special paths (data://, user://, etc.)
+    - [x] Path globalization / localization
+    - [ ] Binary IO mode
 - [ ] Input
     - [x] Keyboard input
     - [x] Mouse input

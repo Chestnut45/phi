@@ -272,7 +272,7 @@ namespace Phi
             DirectionalLight* globalLights[(int)LightSlot::NUM_SLOTS];
 
             // Global lighting resources
-            GPUBuffer globalLightBuffer{BufferType::Dynamic, MAX_DIRECTIONAL_LIGHTS * (sizeof(glm::vec4) * 2) + sizeof(GLint)};
+            GPUBuffer globalLightBuffer{BufferType::DynamicDoubleBuffer, MAX_DIRECTIONAL_LIGHTS * (sizeof(glm::vec4) * 2) + sizeof(GLint)};
             Shader globalLightBasicShader;
             Shader globalLightVoxelShader;
 
