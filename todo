@@ -3,6 +3,9 @@ Immediate TODO:
 
 - test vertex shader cube generation
 
+Voxel pipeline progress
+- target rendering speed: 0.01667 microseconds/voxel
+- current fastest: 0.063 microseconds/voxel
 
 Engine TODO:
 
