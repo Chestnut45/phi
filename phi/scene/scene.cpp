@@ -769,6 +769,7 @@ namespace Phi
         cameraBuffer.Write(view);
         cameraBuffer.Write(glm::inverse(view));
         cameraBuffer.Write(proj);
+        cameraBuffer.Write(glm::inverse(proj));
         cameraBuffer.Write(glm::vec4(activeCamera->GetPosition(), 1.0f));
         cameraBuffer.Write(glm::vec4(activeCamera->GetWidth() * 0.5f, activeCamera->GetHeight() * 0.5f, 0.0f, 0.0f));
     }

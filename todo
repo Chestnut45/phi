@@ -1,11 +1,11 @@
 Immediate TODO:
 
 
+Voxel pipeline progress
+- target rendering speed: 0.01667 microseconds/voxel on intel i5 1240p
+- current fastest: 0.0630 microseconds/voxel (on Intel i5 1240p iGPU)
 - test vertex shader cube generation
 
-Voxel pipeline progress
-- target rendering speed: 0.01667 microseconds/voxel
-- current fastest: 0.063 microseconds/voxel
 
 Engine TODO:
 
@@ -35,7 +35,7 @@ mid priority:
     - magnets (monopoles, materials can have base charge, ferromagnetic voxels can be magnetized either by an electromagnet, or impulse charge)
     - gravity (affects all particles / objects)
     - fluid simulation (Particle-based or Cellular Automata?) Likely hybrid, voxelGrid does simulation as CA
-    - particles (voxel physics particles vs visual-only particles?)
+    - particles (voxel physics particles?)
     - waves / effects (static / dynamic hitboxes that interact [apply force, adjust state, etc.] with entities or voxels)
     - explosions
     - acid
@@ -50,6 +50,9 @@ low priority:
 - better Texture2D constructors
 - binary mode for File IO?
 - EventManager (wait for a good use case before implementing)
+- Sprite2D
+- text rendering
+- audio library choice (likely OpenAL)
 
 bugs / fixes
 --------------------------------

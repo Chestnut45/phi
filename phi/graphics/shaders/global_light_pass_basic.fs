@@ -25,6 +25,7 @@ layout(std140, binding = 0) uniform CameraBlock
     mat4 view;
     mat4 invView;
     mat4 proj;
+    mat4 invProj;
     vec4 cameraPos;
     vec2 hres;
 };
@@ -57,8 +58,6 @@ void main()
     vec4 fragPos = texture(gPos, texCoords);
     vec3 fragNorm = normalize(texture(gNorm, texCoords).xyz);
     uint materialID = texture(gMaterial, texCoords).r;
-
-    // TODO: Allow for multiple material types
 
     // Grab material
     BasicMaterial material = basicMaterials[materialID];

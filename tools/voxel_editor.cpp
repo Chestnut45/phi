@@ -44,7 +44,7 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     voxelObject->Load("data://models/teapot.pvox");
 
     // DEBUG: A bunch of models
-    // for (int i = 0; i < 10; ++i)
+    // for (int i = 0; i < 16; ++i)
     // {
     //     auto& v = scene.CreateNode()->AddComponent<VoxelObject>();
     //     v.Load("data://models/teapot.pvox");

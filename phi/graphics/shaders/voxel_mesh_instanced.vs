@@ -8,6 +8,7 @@ layout(std140, binding = 0) uniform CameraBlock
     mat4 view;
     mat4 invView;
     mat4 proj;
+    mat4 invProj;
     vec4 cameraPos;
     vec2 hres;
 };
@@ -26,7 +27,7 @@ in ivec3 voxelPos;
 in int voxelMaterial;
 
 // Fragment shader outputs
-out vec3 fragPos;
+// out vec3 fragPos;
 out vec3 fragNormal;
 out flat int fragMaterial;
 
@@ -39,7 +40,7 @@ void main()
     gl_Position = viewProj * vec4(worldPos.xyz, 1.0);
 
     // Set fragment shader outputs
-    fragPos = worldPos.xyz;
+    // fragPos = worldPos.xyz;
     fragNormal = normalize((inverse(transpose(transforms[gl_DrawID])) * vec4(vNorm, 1.0)).xyz);
     fragMaterial = voxelMaterial;
 }

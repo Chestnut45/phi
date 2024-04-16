@@ -29,7 +29,7 @@ layout(std140, binding = 0) uniform CameraBlock
     vec2 hres;
 };
 
-// Basic material buffer
+// Voxel material buffer
 layout(std430, binding = 2) buffer VoxelMaterialBlock
 {
     VoxelMaterial voxelMaterials[MAX_MATERIALS];
@@ -57,8 +57,6 @@ void main()
     vec4 fragPos = texture(gPos, texCoords);
     vec3 fragNorm = normalize(texture(gNorm, texCoords).xyz);
     uint materialID = texture(gMaterial, texCoords).r;
-
-    // TODO: Allow for multiple material types
 
     // Grab material
     VoxelMaterial material = voxelMaterials[materialID];

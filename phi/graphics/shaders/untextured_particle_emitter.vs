@@ -14,6 +14,7 @@ layout(std140, binding = 0) uniform CameraBlock
     mat4 view;
     mat4 invView;
     mat4 proj;
+    mat4 invProj;
     vec4 cameraPos;
     vec2 hres;
 };
