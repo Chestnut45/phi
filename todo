@@ -5,6 +5,7 @@ Voxel pipeline progress
 - target rendering speed: 0.01667 microseconds/voxel on intel i5 1240p
 - current fastest: 0.0630 microseconds/voxel (on Intel i5 1240p iGPU)
 - test vertex shader cube generation
+- remove position texture from G-Buffer (reconstruct position in lighting shaders using depth texture);
 
 
 Engine TODO:
