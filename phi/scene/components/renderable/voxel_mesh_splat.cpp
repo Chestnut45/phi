@@ -7,7 +7,7 @@
 
 namespace Phi
 {
-    VoxelMeshSplat::VoxelMeshSplat(const std::vector<Vertex>& voxels)
+    VoxelMeshSplat::VoxelMeshSplat(const std::vector<VertexVoxel>& voxels)
     {
         if (refCount == 0)
         {
@@ -18,7 +18,7 @@ namespace Phi
             shader->LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/voxel_mesh_splat.fs");
             shader->Link();
 
-            vertexBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(Vertex) * MAX_VOXELS);
+            vertexBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(VertexVoxel) * MAX_VOXELS);
             meshDataBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, (sizeof(glm::mat4) + sizeof(glm::mat3) * 2) * MAX_DRAW_CALLS);
             indirectBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(DrawArraysCommand) * MAX_DRAW_CALLS);
 
@@ -95,7 +95,7 @@ namespace Phi
         indirectBuffer->Write(cmd);
 
         // Write the vertices to the buffer
-        vertexBuffer->Write(vertices.data(), vertices.size() * sizeof(Vertex));
+        vertexBuffer->Write(vertices.data(), vertices.size() * sizeof(VertexVoxel));
 
         // Write the per-mesh matrices
         meshDataBuffer->Write(transform);

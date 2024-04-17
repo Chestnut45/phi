@@ -23,11 +23,8 @@ namespace Phi
             // Constants
             static inline const size_t MAX_VOXELS = 1'048'576;
 
-            // Convenience vertex declaration
-            typedef Phi::VertexVoxel Vertex;
-
             // Creates a voxel mesh with the given voxel data
-            VoxelMeshSplat(const std::vector<Vertex>& voxels);
+            VoxelMeshSplat(const std::vector<VertexVoxel>& voxels);
             ~VoxelMeshSplat();
 
             // Delete copy constructor/assignment
@@ -55,7 +52,7 @@ namespace Phi
         private:
 
             // Vertex data
-            std::vector<Vertex> vertices;
+            std::vector<VertexVoxel> vertices;
             
             // Constants
             static inline const size_t MAX_DRAW_CALLS = 1'024;

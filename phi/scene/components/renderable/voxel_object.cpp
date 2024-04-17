@@ -23,7 +23,7 @@ namespace Phi
         {
             // Container for material ids
             std::vector<int> loadedMaterialIDs;
-            std::vector<VoxelMeshSplat::Vertex> voxelData;
+            std::vector<VertexVoxel> voxelData;
 
             // Parse the file
             std::string line;
@@ -63,7 +63,7 @@ namespace Phi
                 if (phase == 2)
                 {
                     // Parse the voxel data
-                    VoxelMeshSplat::Vertex v;
+                    VertexVoxel v;
 
                     if (zAxisVertical)
                     {
