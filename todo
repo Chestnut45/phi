@@ -17,8 +17,6 @@ high priority:
 - make transform not a component (always accessible to any node / basecomponent)
 - point light components
 - input buffering
-- pbr pipeline (PBRMaterial, PBRMesh)
-    - stencil buffer for selecting lighting method for fragments?
 - terrain, flora, fluid sim (in that order)
 - design voxel editor gui
 - raycasting mouse to select voxel on grid for edit / painting
@@ -49,6 +47,7 @@ low priority:
 - Sprite2D
 - text rendering
 - audio library choice (likely OpenAL)
+- pbr materials
 - ColorRGBAFloat / ColorRGBByte wrappers?
 - extend quadtree to octree (may be useful for speeding up raycast queries in voxel editor?)
 - implement rehash / resize + write unit tests for HashMap
