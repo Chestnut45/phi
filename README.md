@@ -51,8 +51,8 @@ NOTE: Wondering where the commit history went? I had to recreate the repo due to
     - [x] Basic float / int distributions
     - [ ] Custom weighted distributions
 - [ ] Noise
-    - [ ] OpenSimplex2 integration
-    - [ ] 1D, 2D, 3D sampling
+    - [x] FastNoiseLite wrapper
+    - [x] 2D + 3D sampling
 - [ ] Shapes (Intersection testable)
     - [ ] 2D
         - [x] Rectangle / IRectangle
@@ -89,7 +89,8 @@ NOTE: Wondering where the commit history went? I had to recreate the repo due to
 - [x] Indirect draw command structures
 - [x] Internal vertex formats
 - [ ] Materials
-    - [x] Basic Material
+    - [x] Basic Material (Blinn-Phong)
+    - [x] Voxel Material (Blinn-Phong for now...)
     - [ ] PBR Material
 - [ ] RAII OpenGL Wrappers
     - [x] Cubemap
@@ -127,10 +128,11 @@ NOTE: Wondering where the commit history went? I had to recreate the repo due to
             - [x] Procedural geometry generation
             - [x] Procedural normal generation
             - [ ] .obj loading
-        - [ ] Voxel Mesh (Ray Traced)
-            - [x] Batched indirect rendering pipeline
-            - [ ] Loading from voxel model
-        - [ ] Voxel Mesh (Instanced)
+        - [ ] Voxel Object
+            - [x] Loading from voxel model
+            - [x] Voxel Mesh (Ray Traced)
+            - [x] Voxel Mesh (Instanced)
+            - [ ] Voxel Mesh (VS generated)
         - [ ] PBR Mesh
 
 ## Prerequisites
