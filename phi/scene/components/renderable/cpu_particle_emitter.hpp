@@ -234,7 +234,7 @@ namespace Phi
             // Adds the emitter's active particles to the render queue
             // Drawn particles won't be displayed to the screen until 
             // the next call to CPUParticleEmitter::FlushRenderQueue()
-            void Render(const glm::mat4& transform = glm::mat4(1.0f));
+            void Render(const glm::mat4& transform);
 
             // Flushes internal render queues and displays all particles
             static void FlushRenderQueue();

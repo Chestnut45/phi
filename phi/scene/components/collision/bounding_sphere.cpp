@@ -33,7 +33,7 @@ namespace Phi
         bool result;
         if (relativeToTransform)
         {
-            Transform* transform = GetNode()->GetComponent<Transform>();
+            Transform* transform = GetNode()->Get<Transform>();
             if (transform)
             {
                 glm::vec3 oldPosition = volume.position;
@@ -77,7 +77,7 @@ namespace Phi
     {
         if (relativeToTransform)
         {
-            Transform* transform = GetNode()->GetComponent<Transform>();
+            Transform* transform = GetNode()->Get<Transform>();
             if (transform)
             {
                 glm::vec3 oldPosition = volume.position;
@@ -121,7 +121,7 @@ namespace Phi
     {
         if (relativeToTransform)
         {
-            Transform* transform = GetNode()->GetComponent<Transform>();
+            Transform* transform = GetNode()->Get<Transform>();
             if (transform)
             {
                 glm::vec3 oldPosition = volume.position;

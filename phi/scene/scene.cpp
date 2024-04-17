@@ -88,6 +88,24 @@ namespace Phi
         return &registry.emplace<Node>(id, this, id);
     }
 
+    Node* Scene::CreateNode3D()
+    {
+        // Create the internal entity
+        NodeID id = registry.create();
+
+        // Increase counter
+        nodeCount++;
+
+        // Construct the node
+        Node* node = &registry.emplace<Node>(id, this, id);
+
+        // Add a transform
+        node->AddComponent<Transform>();
+
+        // Then return
+        return node;
+    }
+
     Node* Scene::Get(NodeID id)
     {
         return registry.try_get<Node>(id);
@@ -131,7 +149,7 @@ namespace Phi
         activeCamera->Update(delta);
 
         // Update all particle effects
-        for (auto&&[node, effect] : registry.view<CPUParticleEffect>().each())
+        for (auto&&[id, effect] : registry.view<CPUParticleEffect>().each())
         {
             effect.Update(delta);
         }
@@ -153,15 +171,15 @@ namespace Phi
                 {
                     // Grab the bounding sphere and intersection test the actual volume
                     BoundingSphere* s = quadtree.Get(i);
-                    if (s->Intersects(viewFrustum)) basicMeshRenderQueue.push_back(s->GetNode()->GetComponent<BasicMesh>());
+                    if (s->Intersects(viewFrustum)) basicMeshRenderQueue.push_back(s->GetNode()->Get<BasicMesh>());
                 }
             }
             else
             {
                 // Naively cull every mesh with a bounding volume
-                for (auto&&[node, mesh] : registry.view<BasicMesh>().each())
+                for (auto&&[id, mesh] : registry.view<BasicMesh>().each())
                 {
-                    BoundingSphere* sphere = mesh.GetNode()->GetComponent<BoundingSphere>();
+                    BoundingSphere* sphere = mesh.GetNode()->Get<BoundingSphere>();
                     if (sphere && sphere->IsCullingEnabled())
                     {
                         // If the volume exists, only add to render queue if it intersects the view frustum
@@ -181,12 +199,12 @@ namespace Phi
         {
             // Culling is disabled, draw all meshes
 
-            for (auto&&[node, mesh] : registry.view<BasicMesh>().each())
+            for (auto&&[id, mesh] : registry.view<BasicMesh>().each())
             {
                 basicMeshRenderQueue.push_back(&mesh);
             }
 
-            for (auto&&[node, voxelObject] : registry.view<VoxelObject>().each())
+            for (auto&&[id, voxelObject] : registry.view<VoxelObject>().each())
             {
                 voxelObjectRenderQueue.push_back(&voxelObject);
             }
@@ -236,15 +254,7 @@ namespace Phi
         glStencilFunc(GL_ALWAYS, (int)StencilValue::BasicMaterial, 0xff);
         for (BasicMesh* mesh : basicMeshRenderQueue)
         {
-            Transform* transform = mesh->GetNode()->GetComponent<Transform>();
-            if (transform)
-            {
-                mesh->Render(transform->GetGlobalMatrix());
-            }
-            else
-            {
-                mesh->Render(); // Draw with no transform (default argument is identity matrix)
-            }
+            mesh->Render();
         }
         BasicMesh::FlushRenderQueue();
 
@@ -254,15 +264,7 @@ namespace Phi
         glStencilFunc(GL_ALWAYS, (int)StencilValue::VoxelMaterial, 0xff);
         for (VoxelObject* voxelObject : voxelObjectRenderQueue)
         {
-            Transform* transform = voxelObject->GetNode()->GetComponent<Transform>();
-            if (transform)
-            {
-                voxelObject->Render(transform->GetGlobalMatrix(), glm::mat3_cast(transform->GetGlobalRotation()));
-            }
-            else
-            {
-                voxelObject->Render(); // Draw with no transform (default argument is identity matrix)
-            }
+            voxelObject->Render();
         }
         VoxelObject::FlushRenderQueue();
 
@@ -320,7 +322,7 @@ namespace Phi
             glDepthFunc(GL_ALWAYS);
             glDepthMask(GL_FALSE);
 
-            // Draw fullscreen triangles to calculate global lighting on every pixel
+            // Bind the empty VAO for attributeless rendering
             glBindVertexArray(dummyVAO);
 
             // Ensure no stencil values are updated
@@ -332,7 +334,7 @@ namespace Phi
             gTexDepthStencil->Bind(2);
         }
 
-        // Basic materials first
+        // Basic materials
         if (basicPass)
         {
             globalLightBasicShader.Use();
@@ -365,17 +367,9 @@ namespace Phi
         // Particle pass
 
         // Render all particle effects
-        for (auto&&[node, effect] : registry.view<CPUParticleEffect>().each())
+        for (auto&&[id, effect] : registry.view<CPUParticleEffect>().each())
         {
-            Transform* transform = effect.GetNode()->GetComponent<Transform>();
-            if (transform)
-            {
-                effect.Render(transform->GetGlobalMatrix());
-            }
-            else
-            {
-                effect.Render(); // Draw with no transform (default argument is identity matrix)
-            }
+            effect.Render();
         }
         CPUParticleEffect::FlushRenderQueue();
 
@@ -788,7 +782,7 @@ namespace Phi
             if (!sphere.IsCullingEnabled()) continue;
 
             // Grab the global position and radius of the node
-            const glm::vec3& pos = sphere.GetNode()->GetComponent<Transform>()->GetGlobalPosition();
+            const glm::vec3& pos = sphere.GetNode()->Get<Transform>()->GetGlobalPosition();
             float r = sphere.GetVolume().radius;
 
             // Create the bounding rectangle

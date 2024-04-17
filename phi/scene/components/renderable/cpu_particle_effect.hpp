@@ -50,8 +50,9 @@ namespace Phi
             void Update(float delta);
 
             // Renders all emitters that belong to this effect
-            void Render(const glm::mat4& transform = glm::mat4(1.0f));
+            void Render();
 
+            // Flushes all effects / emitters queued for rendering by Render()
             static void FlushRenderQueue();
 
             // Controls

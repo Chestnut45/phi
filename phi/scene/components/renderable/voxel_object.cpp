@@ -98,12 +98,29 @@ namespace Phi
         }
     }
 
-    void VoxelObject::Render(const glm::mat4& transform, const glm::mat3& rotation)
+    void VoxelObject::Render()
     {
+        // Grab the current transform if it exists
+        Transform* transform = GetNode()->Get<Transform>();
+
         switch (renderMode)
         {
-            case RenderMode::Instanced: if (instancedMesh) instancedMesh->Render(transform); break;
-            case RenderMode::RayTraced: if (splatMesh) splatMesh->Render(transform, rotation); break;
+            case RenderMode::Instanced:
+                if (instancedMesh)
+                {
+                    instancedMesh->Render(transform ? transform->GetGlobalMatrix() : glm::mat4(1.0f));
+                }
+                break;
+            
+            case RenderMode::RayTraced:
+                if (splatMesh)
+                {
+                    if (transform)
+                        splatMesh->Render(transform->GetGlobalMatrix(), glm::mat3_cast(transform->GetGlobalRotation()));
+                    else
+                        splatMesh->Render(glm::mat4(1.0f), glm::mat3(1.0f));
+                }
+                break;
         }
     }
 

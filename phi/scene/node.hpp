@@ -60,7 +60,7 @@ namespace Phi
 
             // Returns a pointer to the given component, if it exists
             template <typename T>
-            T* GetComponent()
+            T* Get()
             {
                 return scene->registry.try_get<T>(id);
             }

@@ -38,8 +38,7 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     scene.LoadMaterials("data://materials.yaml");
 
     // Add the test voxel object and load the model
-    voxelObject = &scene.CreateNode()->AddComponent<VoxelObject>();
-    voxelObject->GetNode()->AddComponent<Transform>();
+    voxelObject = &scene.CreateNode3D()->AddComponent<VoxelObject>();
     voxelObject->Load("data://models/teapot.pvox");
 
     // DEBUG: A bunch of models
@@ -84,7 +83,7 @@ void VoxelEditor::Update(float delta)
     }
     
     // Rotate the voxel mesh
-    if (rotateModel) voxelObject->GetNode()->GetComponent<Transform>()->RotateXYZDeg(0.0f, 45.0f * delta, 0.0f);
+    if (rotateModel) voxelObject->GetNode()->Get<Transform>()->RotateXYZDeg(0.0f, 45.0f * delta, 0.0f);
 
     // Update all nodes / components in the scene
     scene.Update(delta);
@@ -122,7 +121,7 @@ void VoxelEditor::ShowInterface()
                     voxelObject->Load(modelPath);
 
                     // Reset rotation
-                    voxelObject->GetNode()->GetComponent<Transform>()->SetRotationXYZ(0, 0, 0);
+                    voxelObject->GetNode()->Get<Transform>()->SetRotationXYZ(0, 0, 0);
                 }
                 lastTime = glfwGetTime();   
             }
@@ -136,7 +135,7 @@ void VoxelEditor::ShowInterface()
                 voxelObject->Reset();
 
                 // Reset rotation
-                voxelObject->GetNode()->GetComponent<Transform>()->SetRotationXYZ(0, 0, 0);
+                voxelObject->GetNode()->Get<Transform>()->SetRotationXYZ(0, 0, 0);
             }
             ImGui::EndMenu();
         }

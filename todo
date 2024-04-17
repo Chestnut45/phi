@@ -14,7 +14,6 @@ design / features
 --------------------------------
 
 high priority:
-- make transform not a component (always accessible to any node / basecomponent)
 - point light components
 - input buffering
 - terrain, flora, fluid sim (in that order)

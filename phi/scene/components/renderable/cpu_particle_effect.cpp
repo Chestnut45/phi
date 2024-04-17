@@ -31,7 +31,7 @@ namespace Phi
     {
         // Grab sibling transform component
         glm::mat4 transform = glm::mat4(1.0f);
-        Transform* t = GetNode()->GetComponent<Transform>();
+        Transform* t = GetNode()->Get<Transform>();
         if (t) transform = t->GetGlobalMatrix();
 
         switch (state)
@@ -61,12 +61,15 @@ namespace Phi
         }
     }
 
-    void CPUParticleEffect::Render(const glm::mat4& transform)
+    void CPUParticleEffect::Render()
     {
+        // Grab transform component if it exists
+        Transform* transform = GetNode()->Get<Transform>();
+        
         // Render all emitters
         for (auto& emitter : loadedEmitters)
         {
-            emitter.Render(renderRelativeTransform ? transform : glm::mat4(1.0f));
+            emitter.Render((renderRelativeTransform && transform) ? transform->GetGlobalMatrix() : glm::mat4(1.0f));
         }
     }
 

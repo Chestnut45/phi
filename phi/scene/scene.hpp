@@ -108,6 +108,9 @@ namespace Phi
             // Creates and registers a new empty node into the scene
             Node* CreateNode();
 
+            // Creates and registers a new node with a transform component into the scene
+            Node* CreateNode3D();
+
             // Returns a pointer to the given node, or nullptr if id is invalid
             Node* Get(NodeID id);
 

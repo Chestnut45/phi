@@ -55,7 +55,7 @@ namespace Phi
         Node* parent = GetNode()->GetParent();
         if (parent)
         {
-            Transform* parentTransform = parent->GetComponent<Transform>();
+            Transform* parentTransform = parent->Get<Transform>();
             if (parentTransform)
             {
                 return parentTransform->GetGlobalMatrix() * glm::vec4(position, 1.0f);
@@ -69,7 +69,7 @@ namespace Phi
         Node* parent = GetNode()->GetParent();
         if (parent)
         {
-            Transform* parentTransform = parent->GetComponent<Transform>();
+            Transform* parentTransform = parent->Get<Transform>();
             if (parentTransform)
             {
                 return parentTransform->GetGlobalRotation() * rotation;
@@ -83,7 +83,7 @@ namespace Phi
         Node* parent = GetNode()->GetParent();
         if (parent)
         {
-            Transform* parentTransform = parent->GetComponent<Transform>();
+            Transform* parentTransform = parent->Get<Transform>();
             if (parentTransform)
             {
                 return parentTransform->GetGlobalScale() * scale;
@@ -97,7 +97,7 @@ namespace Phi
         Node* parent = GetNode()->GetParent();
         if (parent)
         {
-            Transform* parentTransform = parent->GetComponent<Transform>();
+            Transform* parentTransform = parent->Get<Transform>();
             if (parentTransform)
             {
                 return parentTransform->GetGlobalMatrix() * GetLocalMatrix();

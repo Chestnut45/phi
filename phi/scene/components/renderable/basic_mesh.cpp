@@ -68,7 +68,7 @@ namespace Phi
         }
     }
 
-    void BasicMesh::Render(const glm::mat4& transform)
+    void BasicMesh::Render()
     {
         // Check to ensure the buffers can contain this mesh currently
         if (meshDrawCount >= MAX_DRAW_CALLS ||
@@ -101,8 +101,11 @@ namespace Phi
         vertexBuffer->Write(vertices.data(), vertices.size() * sizeof(Vertex));
         indexBuffer->Write(indices.data(), indices.size() * sizeof(GLuint));
 
+        // Grab the current transform if it exists
+        Transform* transform = GetNode()->Get<Transform>();
+
         // Write the per-mesh transform and material
-        meshDataBuffer->Write(transform);
+        meshDataBuffer->Write(transform ? transform->GetGlobalMatrix() : glm::mat4(1.0f));
         meshDataBuffer->Write(material);
 
         // Increase internal counters

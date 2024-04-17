@@ -42,11 +42,10 @@ namespace Phi
 
             // Rendering
 
-            // Draws the object with the given transformation matrix,
-            // or the identity matrix if none is supplied
+            // Draws the object (using node's transform if it exists)
             // Drawn objects won't be displayed to the screen until
             // the next call to VoxelObject::FlushRenderQueue()
-            void Render(const glm::mat4& transform = glm::mat4(1.0f), const glm::mat3& rotation = glm::mat3(1.0f));
+            void Render();
 
             // Flushes internal render queue and displays all objects
             static void FlushRenderQueue();

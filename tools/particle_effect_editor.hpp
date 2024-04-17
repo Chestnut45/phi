@@ -43,7 +43,6 @@ class ParticleEffectEditor : public Phi::App
 
         // The current particle effect to edit
         Phi::Node* node = nullptr;
-        Phi::Transform* transform = nullptr;
         Phi::CPUParticleEffect* currentEffect = nullptr;
 
         // Displays the main effect editor window

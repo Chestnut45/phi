@@ -24,7 +24,7 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     scene.SetRenderMode(Phi::Scene::RenderMode::CustomViewport);
 
     // Add a camera
-    node = scene.CreateNode();
+    node = scene.CreateNode3D();
     Phi::Camera& camera = node->AddComponent<Phi::Camera>(sceneRenderWidth, sceneRenderHeight);
     scene.SetActiveCamera(camera);
 
@@ -51,26 +51,23 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     mesh.AddBox(0.25f, 1.0f, 0.25f, glm::vec3(-0.25f, -2, 0));
     mesh.AddBox(0.25f, 1.0f, 0.25f, glm::vec3(0.25f, -2, 0));
     mesh.SetMaterial("sapphire");
-    transform = &mesh.GetNode()->AddComponent<Phi::Transform>();
 
     // Add eyes
-    Phi::BasicMesh& eyesMesh = scene.CreateNode()->AddComponent<Phi::BasicMesh>();
+    Phi::BasicMesh& eyesMesh = scene.CreateNode3D()->AddComponent<Phi::BasicMesh>();
     eyesMesh.AddIcosphere(0.5f, 2, glm::vec3(-0.5f, 0.25f, 0.5f));
     eyesMesh.AddIcosphere(0.5f, 2, glm::vec3(0.5f, 0.25f, 0.5f));
     eyesMesh.SetMaterial("pearl");
-    eyesMesh.GetNode()->AddComponent<Phi::Transform>();
     mesh.GetNode()->AddChild(eyesMesh.GetNode());
 
     // Add pupils to eyes (lol)
-    Phi::BasicMesh& pupilsMesh = scene.CreateNode()->AddComponent<Phi::BasicMesh>();
+    Phi::BasicMesh& pupilsMesh = scene.CreateNode3D()->AddComponent<Phi::BasicMesh>();
     pupilsMesh.AddIcosphere(0.25f, 2, glm::vec3(0.5f, 0.25f, 0.9f));
     pupilsMesh.AddIcosphere(0.25f, 2, glm::vec3(-0.5f, 0.25f, 0.9f));
     pupilsMesh.SetMaterial("obsidian");
-    pupilsMesh.GetNode()->AddComponent<Phi::Transform>();
     mesh.GetNode()->AddChild(pupilsMesh.GetNode());
 
     // DEBUG: Add a voxel mesh to make sure scenes with custom viewports doesn't mess up stencil buffer transfers
-    // mesh.GetNode()->AddComponent<Phi::VoxelObject>().Load("data://models/mushroom.pvox");
+    node->AddComponent<Phi::VoxelObject>().Load("data://models/mushroom.pvox");
 
     // Log
     Phi::Log(name, " initialized");
@@ -112,6 +109,7 @@ void ParticleEffectEditor::Update(float delta)
     }
 
     // Move the guy
+    Phi::Transform* transform = node->Get<Phi::Transform>();
     transform->SetPositionXYZ(cos(programLifetime) * 4, sin(programLifetime) * 4, sin(programLifetime) * 4);
     transform->RotateXYZDeg(0.0f, -90.0f * delta, 0.0f);
 

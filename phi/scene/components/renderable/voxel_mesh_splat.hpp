@@ -38,10 +38,9 @@ namespace Phi
             // Rendering
 
             // Draws the mesh with the given transformation matrix,
-            // or the identity matrix if none is supplied
             // Drawn meshes won't be displayed to the screen until
             // the next call to VoxelMeshSplat::FlushRenderQueue()
-            void Render(const glm::mat4& transform = glm::mat4(1.0f), const glm::mat3& rotation = glm::mat3(1.0f));
+            void Render(const glm::mat4& transform, const glm::mat3& rotation);
 
             // Flushes internal render queue and displays all meshes
             static void FlushRenderQueue();
