@@ -25,8 +25,8 @@ namespace Phi
 
             // Mutators
 
-            // Sets the color directly in floating point format [0.0, 1.0] rgba
-            inline void SetColor(const glm::vec4& color) { this->color = color; };
+            // Sets the color directly in floating point format [0.0, 1.0] rgb
+            inline void SetColor(const glm::vec3& color) { this->color = color; };
 
             // Sets the direction vector for this light (must be normalized!)
             inline void SetDirection(const glm::vec3& direction) { this->direction = direction; };
@@ -35,7 +35,7 @@ namespace Phi
             inline void SetAmbient(float ambient) { this->ambient = ambient; };
 
             // Accessors
-            inline const glm::vec4& GetColor() const { return color; };
+            inline const glm::vec3& GetColor() const { return color; };
             inline const glm::vec3& GetDirection() const { return direction; };
             inline float GetAmbient() const { return ambient; };
         
@@ -49,7 +49,7 @@ namespace Phi
             friend class Scene;
 
             // Light data
-            glm::vec4 color{0.1f, 0.1f, 0.1f, 1.0f};
+            glm::vec3 color{1.0f};
             glm::vec3 direction{0.0f, -1.0f, 0.0f};
             float ambient = 0.1f;
 

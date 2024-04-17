@@ -294,7 +294,7 @@ namespace Phi
                 DirectionalLight* light = globalLights[i];
                 if (light)
                 {
-                    globalLightBuffer.Write(light->color);
+                    globalLightBuffer.Write(glm::vec4(light->color, 1.0f));
                     globalLightBuffer.Write(glm::vec4(light->direction, light->ambient));
                     activeLights++;
                 }
