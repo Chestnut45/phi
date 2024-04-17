@@ -34,7 +34,7 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
 
     // Add a directional light
     Phi::DirectionalLight& light = skybox.GetNode()->AddComponent<Phi::DirectionalLight>();
-    scene.AttachLight(light, Phi::Scene::LightSlot::SLOT_0);
+    light.Activate(Phi::DirectionalLight::Slot::SLOT_0);
 
     // Load default fire effect
     currentEffect = &node->AddComponent<Phi::CPUParticleEffect>("data://effects/fire.effect");

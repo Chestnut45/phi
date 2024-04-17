@@ -19,7 +19,7 @@ namespace Phi
         AddMaterial("default", VoxelMaterial());
 
         // Set all global light pointers to nullptr
-        for (int i = 0; i < (int)LightSlot::NUM_SLOTS; ++i)
+        for (int i = 0; i < (int)DirectionalLight::Slot::NUM_SLOTS; ++i)
         {
             globalLights[i] = nullptr;
         }
@@ -65,6 +65,9 @@ namespace Phi
     {
         // Ensure camera does not have a dangling pointer to us
         RemoveCamera();
+
+        // Destroy all components / nodes
+        registry.clear();
 
         // Delete framebuffers and textures
         delete renderTarget;
@@ -291,7 +294,7 @@ namespace Phi
 
             // Write all active global lights to the buffer
             int activeLights = 0;
-            for (int i = 0; i < (int)LightSlot::NUM_SLOTS; i++)
+            for (int i = 0; i < (int)DirectionalLight::Slot::NUM_SLOTS; i++)
             {
                 DirectionalLight* light = globalLights[i];
                 if (light)
@@ -648,22 +651,6 @@ namespace Phi
         {
             activeSkybox->activeScene = nullptr;
             activeSkybox = nullptr;
-        }
-    }
-
-    void Scene::AttachLight(DirectionalLight& light, LightSlot slot)
-    {
-        RemoveLight(slot);
-        globalLights[(int)slot] = &light;
-    }
-
-    void Scene::RemoveLight(LightSlot slot)
-    {
-        DirectionalLight* current = globalLights[(int)slot];
-        if (current)
-        {
-            current->active = false;
-            globalLights[(int)slot] = nullptr;
         }
     }
 

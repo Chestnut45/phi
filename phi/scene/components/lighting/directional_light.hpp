@@ -12,6 +12,18 @@ namespace Phi
         // Interface
         public:
 
+            // Valid slots for active global directional lights in a scene
+            enum class Slot : int
+            {
+                SLOT_0,
+                SLOT_1,
+                SLOT_2,
+                SLOT_3,
+                
+                // Enum to count slots, not a valid slot itself
+                NUM_SLOTS
+            };
+
             DirectionalLight();
             ~DirectionalLight();
 
@@ -22,6 +34,15 @@ namespace Phi
             // Delete move constructor/assignment
             DirectionalLight(DirectionalLight&& other) = delete;
             DirectionalLight& operator=(DirectionalLight&& other) = delete;
+
+            // Scene management
+
+            // Activates this light in the given slot of the current scene
+            // Will deactivate any existing light in that slot
+            void Activate(Slot slot);
+            
+            // Deactivates this light (will not render)
+            void Deactivate();
 
             // Mutators
 
@@ -44,17 +65,17 @@ namespace Phi
             
             // Pointer stability guarantee for components
             static constexpr auto in_place_delete = true;
-            
-            // Needed so scene can store attachment info for safe deletion
-            friend class Scene;
 
             // Light data
             glm::vec3 color{1.0f};
             glm::vec3 direction{0.0f, -1.0f, 0.0f};
             float ambient = 0.1f;
 
-            // Flags
+            // State
             bool active = false;
-            int slot = 0;
+            Slot slot = Slot::SLOT_0;
+
+            // Necessary for scenes to introspect our data to write to buffers
+            friend class Scene;
     };
 }

@@ -85,7 +85,7 @@ namespace Phi
                 scene->registry.remove<T>(id);
             }
 
-            // Delete ourselves from the scene entirely
+            // Delete this node from the scene entirely
             void Delete();
 
             // Hierarchy management

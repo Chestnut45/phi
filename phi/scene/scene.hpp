@@ -33,17 +33,6 @@ namespace Phi
         // Interface
         public:
 
-            // Valid slots for active global directional lights in a scene
-            enum class LightSlot : int
-            {
-                SLOT_0 = 0,
-                SLOT_1 = 1,
-                SLOT_2 = 2,
-                SLOT_3 = 3,
-                
-                NUM_SLOTS = 4
-            };
-
             // Valid render modes
             enum class RenderMode
             {
@@ -171,14 +160,6 @@ namespace Phi
             // Removes the currently active skybox
             void RemoveSkybox();
 
-            // Global lighting management
-
-            // Attaches a light to one of the global slots
-            void AttachLight(DirectionalLight& light, LightSlot slot);
-
-            // Removes any existing light at slot and replaces with nullptr
-            void RemoveLight(LightSlot slot);
-
             // Resolution management
 
             // Updates the resolution the scene is rendered at
@@ -275,7 +256,7 @@ namespace Phi
             // Lighting data
 
             // Slots for global directional lights in the scene
-            DirectionalLight* globalLights[(int)LightSlot::NUM_SLOTS];
+            DirectionalLight* globalLights[(int)DirectionalLight::Slot::NUM_SLOTS];
 
             // Global lighting resources
             GPUBuffer globalLightBuffer{BufferType::DynamicDoubleBuffer, MAX_DIRECTIONAL_LIGHTS * (sizeof(glm::vec4) * 2) + sizeof(GLint)};
@@ -307,6 +288,9 @@ namespace Phi
 
             // Necessary for nodes to be able to add components to the scene
             friend class Node;
+
+            // Necessary for directional lights to be able to activate / deactivate
+            friend class DirectionalLight;
         
         // Experimental features
         private:
