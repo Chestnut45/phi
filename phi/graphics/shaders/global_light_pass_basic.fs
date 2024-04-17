@@ -30,12 +30,6 @@ layout(std140, binding = 0) uniform CameraBlock
     vec2 hres;
 };
 
-// Basic material buffer
-layout(std430, binding = 1) buffer BasicMaterialBlock
-{
-    BasicMaterial basicMaterials[MAX_MATERIALS];
-};
-
 // Lighting uniform block
 layout(std140, binding = 1) uniform GlobalLightBlock
 {
@@ -43,21 +37,44 @@ layout(std140, binding = 1) uniform GlobalLightBlock
     int globalLightCount;
 };
 
+// Basic material buffer
+layout(std430, binding = 1) buffer BasicMaterialBlock
+{
+    BasicMaterial basicMaterials[MAX_MATERIALS];
+};
+
 // Geometry buffer texture samplers
-layout(binding = 0) uniform sampler2D gPos;
-layout(binding = 1) uniform sampler2D gNorm;
-layout(binding = 2) uniform usampler2D gMaterial;
+layout(binding = 0) uniform sampler2D gNorm;
+layout(binding = 1) uniform usampler2D gMaterial;
+layout(binding = 2) uniform sampler2D gDepth;
 
 in vec2 texCoords;
 
 out vec4 finalColor;
 
+// Gets the world position from texCoords and depth
+vec3 getWorldPos(vec2 texCoords, float depth)
+{
+    // Calculate view space position
+    vec4 viewSpacePos = invProj * vec4(texCoords * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
+
+    // Perspective division
+    viewSpacePos /= viewSpacePos.w;
+
+    // Calculate world space position
+    vec4 worldSpacePos = invView * viewSpacePos;
+    return worldSpacePos.xyz;
+}
+
 void main()
 {
     // Grab data from geometry buffer
-    vec4 fragPos = texture(gPos, texCoords);
+    float depth = texture(gDepth, texCoords).r;
     vec3 fragNorm = normalize(texture(gNorm, texCoords).xyz);
     uint materialID = texture(gMaterial, texCoords).r;
+
+    // Calculate fragment position in world space
+    vec3 fragPos = getWorldPos(texCoords, depth);
 
     // Grab material
     BasicMaterial material = basicMaterials[materialID];
@@ -67,7 +84,7 @@ void main()
     float materialShininess = pow(material.colorShininess.w, GAMMA);
 
     // Calculate view direction
-    vec3 viewDir = normalize(cameraPos.xyz - fragPos.xyz);
+    vec3 viewDir = normalize(cameraPos.xyz - fragPos);
 
     // Calculate influence from all active global lights
     vec3 result = vec3(0.0);

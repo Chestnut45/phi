@@ -27,20 +27,21 @@ in ivec3 voxelPos;
 in int voxelMaterial;
 
 // Fragment shader outputs
-// out vec3 fragPos;
 out vec3 fragNormal;
 out flat int fragMaterial;
 
 void main()
 {
+    // Grab the mesh transform
+    mat4 meshTransform = transforms[gl_DrawID];
+
     // Calculate world position
-    vec4 worldPos = transforms[gl_DrawID] * vec4(vPos + voxelPos, 1.0);
+    vec4 worldPos = meshTransform * vec4(vPos + voxelPos, 1.0);
 
     // Set position
     gl_Position = viewProj * vec4(worldPos.xyz, 1.0);
 
     // Set fragment shader outputs
-    // fragPos = worldPos.xyz;
-    fragNormal = normalize((inverse(transpose(transforms[gl_DrawID])) * vec4(vNorm, 1.0)).xyz);
+    fragNormal = normalize((inverse(transpose(meshTransform)) * vec4(vNorm, 1.0)).xyz);
     fragMaterial = voxelMaterial;
 }

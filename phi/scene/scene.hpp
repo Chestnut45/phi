@@ -237,7 +237,6 @@ namespace Phi
 
             // Geometry framebuffer and textures
             Framebuffer* gBuffer = nullptr;
-            Texture2D* gTexPosition = nullptr;
             Texture2D* gTexNormal = nullptr;
             Texture2D* gTexMaterial = nullptr;
             Texture2D* gTexDepthStencil = nullptr;

@@ -20,9 +20,8 @@ in flat mat3 voxelRotation;
 in flat mat3 invVoxelRotation;
 
 // Geometry buffer outputs
-layout(location = 0) out vec3 gPosition;
-layout(location = 1) out vec3 gNormal;
-layout(location = 2) out uint gMaterial;
+layout(location = 0) out vec3 gNormal;
+layout(location = 1) out uint gMaterial;
 
 // Function declarations
 bool rayAABB(vec3 rayOrigin, vec3 rayDirection, vec3 boxCenter, vec3 boxRadius, mat3 rotation, mat3 invRotation, out float dist, out vec3 normal);
@@ -56,7 +55,6 @@ void main()
         vec3 surfacePos = cameraPos.xyz + rayDirection * dist;
 
         // Output to geometry buffer directly
-        gPosition = surfacePos;
         gNormal = normal;
         gMaterial = material;
 

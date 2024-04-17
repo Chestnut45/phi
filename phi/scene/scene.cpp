@@ -71,7 +71,6 @@ namespace Phi
         delete rTexColor;
         delete rTexDepthStencil;
         delete gBuffer;
-        delete gTexPosition;
         delete gTexNormal;
         delete gTexMaterial;
         delete gTexDepthStencil;
@@ -328,9 +327,9 @@ namespace Phi
             glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
             // Bind the geometry buffer textures
-            gTexPosition->Bind(0);
-            gTexNormal->Bind(1);
-            gTexMaterial->Bind(2);
+            gTexNormal->Bind(0);
+            gTexMaterial->Bind(1);
+            gTexDepthStencil->Bind(2);
         }
 
         // Basic materials first
@@ -715,7 +714,6 @@ namespace Phi
         {
             // Delete framebuffers and textures if they exist
             delete gBuffer;
-            delete gTexPosition;
             delete gTexNormal;
             delete gTexMaterial;
             delete gTexDepthStencil;
@@ -724,7 +722,6 @@ namespace Phi
         // Create textures
         rTexColor = new Texture2D(renderWidth, renderHeight, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
         rTexDepthStencil = new Texture2D(renderWidth, renderHeight, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
-        gTexPosition = new Texture2D(renderWidth, renderHeight, GL_RGB32F, GL_RGB, GL_FLOAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
         gTexNormal = new Texture2D(renderWidth, renderHeight, GL_RGB16F, GL_RGB, GL_FLOAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
         gTexMaterial = new Texture2D(renderWidth, renderHeight, GL_R8UI, GL_RED_INTEGER, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
         gTexDepthStencil = new Texture2D(renderWidth, renderHeight, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
@@ -738,14 +735,13 @@ namespace Phi
 
         gBuffer = new Framebuffer();
         gBuffer->Bind();
-        gBuffer->AttachTexture(gTexPosition, GL_COLOR_ATTACHMENT0);
-        gBuffer->AttachTexture(gTexNormal, GL_COLOR_ATTACHMENT1);
-        gBuffer->AttachTexture(gTexMaterial, GL_COLOR_ATTACHMENT2);
+        gBuffer->AttachTexture(gTexNormal, GL_COLOR_ATTACHMENT0);
+        gBuffer->AttachTexture(gTexMaterial, GL_COLOR_ATTACHMENT1);
         gBuffer->AttachTexture(gTexDepthStencil, GL_DEPTH_STENCIL_ATTACHMENT);
 
         // Set the draw buffers for the currently bound FBO
-        GLenum drawBuffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
-        glDrawBuffers(3, drawBuffers);
+        GLenum drawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+        glDrawBuffers(2, drawBuffers);
 
         // :)
         gBuffer->CheckCompleteness();

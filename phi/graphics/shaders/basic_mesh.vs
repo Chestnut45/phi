@@ -21,7 +21,6 @@ layout(location = 2) in mat4 iTransform;
 layout(location = 6) in uint iMaterial;
 
 // Fragment shader outputs
-out vec3 fragPos;
 out vec3 normal;
 out flat uint material;
 
@@ -32,7 +31,6 @@ void main()
     gl_Position = viewProj * worldSpacePos;
 
     // Send per fragment outputs
-    fragPos = worldSpacePos.xyz;
-    normal = normalize((inverse(transpose(iTransform)) * vec4(vNorm, 1.0)).xyz); // World space normals
+    normal = normalize((inverse(transpose(iTransform)) * vec4(vNorm, 1.0)).xyz);
     material = iMaterial;
 }
