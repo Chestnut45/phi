@@ -6,11 +6,19 @@
 
 namespace Phi
 {
+
+    Camera::Camera() : position(0, 4, 16), forward(0, 0, -1), up(0, 1, 0), right(1, 0, 0)
+    {
+        // Ensure our matrices are in a valid state
+        UpdateView();
+        SetResolution(width, height);
+    }
+
     Camera::Camera(int width, int height) : position(0, 4, 16), forward(0, 0, -1), up(0, 1, 0), right(1, 0, 0)
     {
         // Ensure our matrices are in a valid state
         UpdateView();
-        UpdateViewport(width, height);
+        SetResolution(width, height);
     }
 
     Camera::~Camera()
@@ -100,7 +108,7 @@ namespace Phi
         if (transform) transform->SetPosition(position);
     };
 
-    void Camera::UpdateViewport(int width, int height)
+    void Camera::SetResolution(int width, int height)
     {
         this->width = width;
         this->height = height;

@@ -36,9 +36,12 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     voxelObject = &scene.CreateNode3D()->AddComponent<VoxelObject>();
     voxelObject->Load("data://models/teapot.pvox");
 
+    DirectionalLight& dl = skybox.GetNode()->AddComponent<DirectionalLight>();
+    dl.Activate(DirectionalLight::Slot::SLOT_0);
+
     // Add a test point light to the camera
-    PointLight& pointLight = camera.GetNode()->AddComponent<PointLight>();
-    pointLight.SetRadius(64);
+    // PointLight& pointLight = camera.GetNode()->AddComponent<PointLight>();
+    // pointLight.SetRadius(64);
 
     // DEBUG: A bunch of models
     // for (int i = 0; i < 16; ++i)

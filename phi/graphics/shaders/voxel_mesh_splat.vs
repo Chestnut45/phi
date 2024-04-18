@@ -10,7 +10,7 @@ layout(std140, binding = 0) uniform CameraBlock
     mat4 proj;
     mat4 invProj;
     vec4 cameraPos;
-    vec2 hres;
+    vec4 viewport; // (x, y, width / 2, height / 2)
 };
 
 // Vertex data
@@ -39,7 +39,7 @@ void main()
     gl_Position = viewProj * worldSpacePos;
 
     // Fast Quadratic Proj to determine the AABB covering the projected voxel
-    quadricProj(worldSpacePos.xyz, 0.5, viewProj, hres, gl_Position, gl_PointSize);
+    quadricProj(worldSpacePos.xyz, 0.5, viewProj, viewport.zw, gl_Position, gl_PointSize);
 
     // Send per fragment outputs
     voxelCenter = worldSpacePos.xyz;

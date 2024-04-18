@@ -10,7 +10,7 @@ layout(std140, binding = 0) uniform CameraBlock
     mat4 proj;
     mat4 invProj;
     vec4 cameraPos;
-    vec2 hres;
+    vec4 viewport; // (x, y, width / 2, height / 2)
 };
 
 // Vertex Inputs
@@ -32,8 +32,8 @@ void main()
     // Calculate clip space coordinates
     // TODO: This is likely the slowest part of the fragment shader, can the vs help us at all here?
     vec4 clip = vec4(
-        (gl_FragCoord.x / hres.x - 1),
-        (gl_FragCoord.y / hres.y - 1),
+        (gl_FragCoord.x / viewport.z - 1),
+        (gl_FragCoord.y / viewport.w - 1),
         (2 * gl_FragCoord.z - gl_DepthRange.near - gl_DepthRange.far) / (gl_DepthRange.far - gl_DepthRange.near),
         1.0
     ) / gl_FragCoord.w;

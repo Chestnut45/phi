@@ -671,8 +671,8 @@ namespace Phi
         this->renderWidth = width;
         this->renderHeight = height;
 
-        // Perform any updates that need to happen when resolution changes
-        if (activeCamera) activeCamera->UpdateViewport(width, height);
+        // Update camera viewport if render mode matches
+        if (activeCamera) activeCamera->SetResolution(width, height);
         RegenerateFramebuffers();
     }
 
@@ -757,7 +757,7 @@ namespace Phi
         cameraBuffer.Write(proj);
         cameraBuffer.Write(glm::inverse(proj));
         cameraBuffer.Write(glm::vec4(activeCamera->GetPosition(), 1.0f));
-        cameraBuffer.Write(glm::vec4(activeCamera->GetWidth() * 0.5f, activeCamera->GetHeight() * 0.5f, 0.0f, 0.0f));
+        cameraBuffer.Write(glm::vec4(viewportX, viewportY, viewportWidth * 0.5f, viewportHeight * 0.5f));
     }
 
     void Scene::BuildQuadtree()

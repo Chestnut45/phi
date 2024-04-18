@@ -47,7 +47,7 @@ namespace Phi
 
             // Light data
             glm::vec3 color{1.0f};
-            float radius = 8.0f;
+            float radius = 32.0f;
 
             // Static resources
             static inline Shader* basicShader = nullptr;

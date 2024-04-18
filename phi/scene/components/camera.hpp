@@ -30,7 +30,8 @@ namespace Phi
                 Cutscene
             };
 
-            Camera(int width = 1280, int height = 720);
+            Camera();
+            Camera(int width, int height);
             ~Camera();
 
             // Delete copy constructor/assignment
@@ -55,10 +56,11 @@ namespace Phi
 
             // Processes input according to the current control mode
             void Update(float delta);
-
-            // Needs to be public so caller can tell the camera when the window size changes
-            void UpdateViewport(int width, int height);
             
+            // Updates the camera's resolution
+            // NOTE: Automatically called by scene on active camera when Scene::SetViewport() is used
+            void SetResolution(int width, int height);
+
             // Vector accessors
             inline const glm::vec3& GetDirection() const { return forward; };
             inline const glm::vec3& GetPosition() const { return position; };
@@ -100,8 +102,8 @@ namespace Phi
             mutable bool projDirty = false;
 
             // View properties (Sensible defaults)
-            int width;
-            int height;
+            int width = 1280;
+            int height = 720;
             float aspect = 1.0f;
             float near = 0.1f;
             float far = 1000.0f;

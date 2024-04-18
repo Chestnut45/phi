@@ -10,7 +10,7 @@ layout(std140, binding = 0) uniform CameraBlock
     mat4 proj;
     mat4 invProj;
     vec4 cameraPos;
-    vec2 hres;
+    vec4 viewport; // (x, y, width / 2, height / 2)
 };
 
 layout(std430, binding = 0) buffer InstanceData

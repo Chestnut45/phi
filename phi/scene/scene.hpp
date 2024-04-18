@@ -163,13 +163,14 @@ namespace Phi
             // Resolution management
 
             // Updates the resolution the scene is rendered at
-            // Affects the camera's viewport and internal framebuffer texture resolutions
+            // Updates the current active camera's viewport and internal framebuffer texture resolutions
             // NOTE: Nonpositive (negative or zero) values are rejected (no behaviour)
             // TODO: Add auto setting that updates when the window is resized
             // RATIONALE: Tying the scene's resolution to a window should be opt-in, not opt-out
             void SetResolution(int width, int height);
 
             // Updates the viewport to render to in window-relative coordinates (Bottom-left is (0, 0))
+            // Updates the currently active camera's viewport to match
             // NOTE: Only affects output when using RenderMode::CustomViewport
             void SetViewport(int x, int y, int width, int height);
 

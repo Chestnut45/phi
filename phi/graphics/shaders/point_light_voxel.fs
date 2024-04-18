@@ -13,7 +13,7 @@ layout(std140, binding = 0) uniform CameraBlock
     mat4 proj;
     mat4 invProj;
     vec4 cameraPos;
-    vec2 hres;
+    vec4 viewport; // (x, y, width / 2, height / 2)
 };
 
 // Voxel material definition
@@ -55,7 +55,7 @@ vec3 getWorldPos(vec2 texCoords, float depth)
 void main()
 {
     // Calculate texture coordinates
-    vec2 texCoords = gl_FragCoord.xy * 0.5 / hres;
+    vec2 texCoords = (gl_FragCoord.xy - viewport.xy) * 0.5 / viewport.zw;
 
     // Grab data from geometry buffer
     float depth = texture(gDepth, texCoords).r;

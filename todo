@@ -2,7 +2,6 @@ Immediate TODO:
 
 
 - point light components
-    - identify bug with current implementation (works in voxel editor, not in effect editor, likely to do with custom viewport)
     - move icosphere generation outside of BasicMesh so we can use it to have different LODs for point light proxy geometry
 
 
