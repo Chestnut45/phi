@@ -45,7 +45,7 @@ namespace Phi
             GPUBuffer(GPUBuffer&& other) = delete;
             void operator=(GPUBuffer&& other) = delete;
 
-            // Sets the internal buffer's current offset
+            // Sets the internal buffer's current offset (relative to the current section)
             inline void SetOffset(GLuint offset) { pCurrent = offset < size ? (pData + currentSection * size + offset) : pCurrent; };
 
             // Write operations for dynamic buffers only

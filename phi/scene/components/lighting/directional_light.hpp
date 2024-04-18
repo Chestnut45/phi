@@ -6,7 +6,7 @@
 
 namespace Phi
 {
-    // Represents a single directional light
+    // Represents a single directional light component
     class DirectionalLight : public BaseComponent
     {
         // Interface

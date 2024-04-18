@@ -37,6 +37,7 @@
 #include "scene/components/transform.hpp"
 #include "scene/components/collision/bounding_sphere.hpp"
 #include "scene/components/lighting/directional_light.hpp"
+#include "scene/components/lighting/point_light.hpp"
 #include "scene/components/renderable/basic_mesh.hpp"
 #include "scene/components/renderable/cpu_particle_effect.hpp"
 #include "scene/components/renderable/cpu_particle_emitter.hpp"

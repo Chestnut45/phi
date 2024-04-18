@@ -8,6 +8,7 @@
 #include <phi/scene/node.hpp>
 #include <phi/scene/components/collision/bounding_sphere.hpp>
 #include <phi/scene/components/renderable/cpu_particle_effect.hpp>
+#include <phi/scene/components/lighting/point_light.hpp>
 
 namespace Phi
 {
@@ -353,14 +354,19 @@ namespace Phi
             glDrawArrays(GL_TRIANGLES, 0, 3);
         }
 
-        // Disable stencil testing
-        glDisable(GL_STENCIL_TEST);
-
         // Lock global light buffer
         globalLightBuffer.Lock();
         globalLightBuffer.SwapSections();
 
-        // TODO: Point light pass
+        // Point light pass
+        for (auto&&[id, light] : registry.view<PointLight>().each())
+        {
+            light.Render();
+        }
+        PointLight::FlushRenderQueue(basicPass, voxelPass);
+
+        // Disable stencil testing
+        glDisable(GL_STENCIL_TEST);
 
         // Environment pass
 

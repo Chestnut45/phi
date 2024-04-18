@@ -19,7 +19,7 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     // Initialize the scene
 
     // Add a camera
-    Camera& camera = scene.CreateNode()->AddComponent<Camera>();
+    Camera& camera = scene.CreateNode3D()->AddComponent<Camera>();
     camera.SetPosition({0, 32, 96});
     camera.SetMode(Camera::Mode::Target);
     camera.LookAt(glm::vec3(0, 0, 0));
@@ -29,17 +29,16 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     Skybox& skybox = camera.GetNode()->AddComponent<Skybox>("data://textures/skybox_day", "data://textures/skybox_night_old");
     scene.SetActiveSkybox(skybox);
 
-    // Add a directional light
-    DirectionalLight& light = skybox.GetNode()->AddComponent<DirectionalLight>();
-    light.SetDirection(glm::normalize(glm::vec3(-0.5f, -0.5f, 0.0f)));
-    light.Activate(DirectionalLight::Slot::SLOT_0);
-
     // Load test materials
     scene.LoadMaterials("data://materials.yaml");
 
     // Add the test voxel object and load the model
     voxelObject = &scene.CreateNode3D()->AddComponent<VoxelObject>();
     voxelObject->Load("data://models/teapot.pvox");
+
+    // Add a test point light to the camera
+    PointLight& pointLight = camera.GetNode()->AddComponent<PointLight>();
+    pointLight.SetRadius(64);
 
     // DEBUG: A bunch of models
     // for (int i = 0; i < 16; ++i)

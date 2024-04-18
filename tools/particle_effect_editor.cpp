@@ -25,8 +25,11 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
 
     // Add a camera
     node = scene.CreateNode3D();
-    Phi::Camera& camera = node->AddComponent<Phi::Camera>(sceneRenderWidth, sceneRenderHeight);
+    Phi::Camera& camera = scene.CreateNode()->AddComponent<Phi::Camera>(sceneRenderWidth, sceneRenderHeight);
     scene.SetActiveCamera(camera);
+
+    // DEBUG: Test point light
+    camera.GetNode()->AddComponent<Phi::PointLight>().SetRadius(64);
 
     // Add a skybox
     Phi::Skybox& skybox = camera.GetNode()->AddComponent<Phi::Skybox>("data://textures/skybox_day", "data://textures/skybox_night_old");
@@ -110,8 +113,8 @@ void ParticleEffectEditor::Update(float delta)
 
     // Move the guy
     Phi::Transform* transform = node->Get<Phi::Transform>();
-    transform->SetPositionXYZ(cos(programLifetime) * 4, sin(programLifetime) * 4, sin(programLifetime) * 4);
-    transform->RotateXYZDeg(0.0f, -90.0f * delta, 0.0f);
+    // transform->SetPositionXYZ(cos(programLifetime) * 4, sin(programLifetime) * 4, sin(programLifetime) * 4);
+    // transform->RotateXYZDeg(0.0f, -90.0f * delta, 0.0f);
 
     // Update all nodes / components in the scene
     scene.Update(delta);

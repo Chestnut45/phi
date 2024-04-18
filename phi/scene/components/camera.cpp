@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <phi/scene/scene.hpp>
+#include <phi/scene/node.hpp>
 
 namespace Phi
 {
@@ -93,6 +94,10 @@ namespace Phi
 
                 break;
         }
+
+        // DEBUG: Sync with any existing transform
+        Transform* transform = GetNode()->Get<Transform>();
+        if (transform) transform->SetPosition(position);
     };
 
     void Camera::UpdateViewport(int width, int height)

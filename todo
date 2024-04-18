@@ -14,9 +14,9 @@ design / features
 --------------------------------
 
 high priority:
-- point light components (move icosphere generation outside of BasicMesh so we can use it to have different LODs for point light proxy geometry)
-    - must be instanced using transform's global position as instanced vertex attribute
-    - must have a basic material + voxel material
+- point light components
+    - identify bug with current implementation
+    - move icosphere generation outside of BasicMesh so we can use it to have different LODs for point light proxy geometry
 - input buffering
 - terrain, flora, fluid sim (in that order)
 - design voxel editor gui
