@@ -1,6 +1,7 @@
 #pragma once
 
 #include <phi/scene/components/base_component.hpp>
+#include <phi/scene/components/renderable/voxel_mesh_implicit.hpp>
 #include <phi/scene/components/renderable/voxel_mesh_instanced.hpp>
 #include <phi/scene/components/renderable/voxel_mesh_splat.hpp>
 
@@ -20,6 +21,7 @@ namespace Phi
             {
                 Instanced,
                 RayTraced,
+                Implicit,
             };
 
             // Creates an empty voxel object
@@ -61,6 +63,7 @@ namespace Phi
             // DEBUG: Testing different rendering implementations
             VoxelMeshSplat* splatMesh = nullptr;
             VoxelMeshInstanced* instancedMesh = nullptr;
+            VoxelMeshImplicit* implicitMesh = nullptr;
             RenderMode renderMode{RenderMode::Instanced};
 
             // Internal statistics

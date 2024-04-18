@@ -39,10 +39,6 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     DirectionalLight& dl = skybox.GetNode()->AddComponent<DirectionalLight>();
     dl.Activate(DirectionalLight::Slot::SLOT_0);
 
-    // Add a test point light to the camera
-    // PointLight& pointLight = camera.GetNode()->AddComponent<PointLight>();
-    // pointLight.SetRadius(64);
-
     // DEBUG: A bunch of models
     // for (int i = 0; i < 16; ++i)
     // {
@@ -151,7 +147,7 @@ void VoxelEditor::ShowInterface()
     ImGui::SeparatorText("Settings");
 
     // Render mode
-    static const char* renderModes[] = {"Instanced", "Ray Traced"};
+    static const char* renderModes[] = {"Instanced", "Ray Traced", "Implicit"};
     const char* currentMode = renderModes[(int)voxelObject->renderMode];
     if (ImGui::BeginCombo("Render Mode", currentMode))
     {

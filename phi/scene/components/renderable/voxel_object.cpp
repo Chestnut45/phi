@@ -12,6 +12,7 @@ namespace Phi
     VoxelObject::~VoxelObject()
     {
         if (splatMesh) delete splatMesh;
+        if (implicitMesh) delete implicitMesh;
         if (instancedMesh) delete instancedMesh;
     }
 
@@ -83,6 +84,8 @@ namespace Phi
             // Create the internal meshes
             if (splatMesh) delete splatMesh;
             splatMesh = new VoxelMeshSplat(voxelData);
+            if (implicitMesh) delete implicitMesh;
+            implicitMesh = new VoxelMeshImplicit(voxelData);
             if (instancedMesh) delete instancedMesh;
             instancedMesh = new VoxelMeshInstanced(voxelData);
 
@@ -105,6 +108,12 @@ namespace Phi
 
         switch (renderMode)
         {
+            case RenderMode::Implicit:
+                if (implicitMesh)
+                {
+                    implicitMesh->Render(transform ? transform->GetGlobalMatrix() : glm::mat4(1.0f));
+                }
+                break;
             case RenderMode::Instanced:
                 if (instancedMesh)
                 {
@@ -127,6 +136,7 @@ namespace Phi
     void VoxelObject::FlushRenderQueue()
     {
         VoxelMeshSplat::FlushRenderQueue();
+        VoxelMeshImplicit::FlushRenderQueue();
         VoxelMeshInstanced::FlushRenderQueue();
     }
 
@@ -134,6 +144,8 @@ namespace Phi
     {
         if (splatMesh) delete splatMesh;
         splatMesh = nullptr;
+        if (implicitMesh) delete implicitMesh;
+        implicitMesh = nullptr;
         if (instancedMesh) delete instancedMesh;
         instancedMesh = nullptr;
     }
