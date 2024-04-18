@@ -35,10 +35,12 @@ namespace Phi
             static void FlushRenderQueue(bool doBasicPass = true, bool doVoxelPass = true);
 
             // Mutators
+            void SetPosition(const glm::vec3& position) { this->position = position; }
             void SetColor(const glm::vec3& color) { this->color = color; }
             void SetRadius(float radius) { this->radius = radius; }
 
             // Accessors
+            const glm::vec3& GetPosition() const { return position; }
             const glm::vec3& GetColor() const { return color; }
             float GetRadius() const { return radius; }
         
@@ -46,6 +48,7 @@ namespace Phi
         private:
 
             // Light data
+            glm::vec3 position{0.0f};
             glm::vec3 color{1.0f};
             float radius = 32.0f;
 

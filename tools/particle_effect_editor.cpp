@@ -70,7 +70,9 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     node->AddComponent<Phi::VoxelObject>().Load("data://models/mushroom.pvox");
 
     // DEBUG: Test point light
-    // camera.GetNode()->AddComponent<Phi::PointLight>();
+    // Phi::PointLight& pointLight = node->AddComponent<Phi::PointLight>();
+    // pointLight.SetColor(glm::vec3(1.0f, 0.1f, 0.0f));
+    // pointLight.SetPosition(glm::vec3(0.0f, 0.0f, 2.0f));
 
     // Log
     Phi::Log(name, " initialized");

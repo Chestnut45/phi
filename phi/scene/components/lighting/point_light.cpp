@@ -78,7 +78,7 @@ namespace Phi
         Transform* transform = GetNode()->Get<Transform>();
 
         // Write position, color, and radius to instance data buffer
-        instanceBuffer->Write(transform ? transform->GetGlobalPosition() : glm::vec3(0.0f));
+        instanceBuffer->Write(transform ? glm::vec3(transform->GetGlobalMatrix() * glm::vec4(position, 1.0f)) : position);
         instanceBuffer->Write(glm::vec4(color.r, color.g, color.b, radius));
 
         // Increase counter
