@@ -1,6 +1,11 @@
 Immediate TODO:
 
 
+- point light components
+    - identify bug with current implementation (works in voxel editor, not in effect editor, likely to do with custom viewport)
+    - move icosphere generation outside of BasicMesh so we can use it to have different LODs for point light proxy geometry
+
+
 Voxel pipeline progress
 - target rendering speed: 0.01667 microseconds/voxel on intel i5 1240p
 - current fastest: 0.0630 microseconds/voxel (on Intel i5 1240p iGPU)
@@ -14,9 +19,6 @@ design / features
 --------------------------------
 
 high priority:
-- point light components
-    - identify bug with current implementation
-    - move icosphere generation outside of BasicMesh so we can use it to have different LODs for point light proxy geometry
 - input buffering
 - terrain, flora, fluid sim (in that order)
 - design voxel editor gui
