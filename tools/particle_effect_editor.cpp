@@ -34,7 +34,7 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
 
     // Add a directional light
     Phi::DirectionalLight& light = skybox.GetNode()->AddComponent<Phi::DirectionalLight>();
-    light.Activate(Phi::DirectionalLight::Slot::SLOT_0);
+    //light.Activate(Phi::DirectionalLight::Slot::SLOT_0);
 
     // Load default fire effect
     currentEffect = &node->AddComponent<Phi::CPUParticleEffect>("data://effects/fire.effect");
@@ -70,9 +70,9 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     node->AddComponent<Phi::VoxelObject>().Load("data://models/mushroom.pvox");
 
     // DEBUG: Test point light
-    // Phi::PointLight& pointLight = node->AddComponent<Phi::PointLight>();
-    // pointLight.SetColor(glm::vec3(1.0f, 0.1f, 0.0f));
-    // pointLight.SetPosition(glm::vec3(0.0f, 0.0f, 2.0f));
+    Phi::PointLight& pointLight = node->AddComponent<Phi::PointLight>();
+    pointLight.SetColor(glm::vec3(1.0f, 0.1f, 0.0f));
+    pointLight.SetPosition(glm::vec3(0.0f, 0.0f, 2.0f));
 
     // Log
     Phi::Log(name, " initialized");
@@ -115,8 +115,8 @@ void ParticleEffectEditor::Update(float delta)
 
     // Move the guy
     Phi::Transform* transform = node->Get<Phi::Transform>();
-    transform->SetPositionXYZ(cos(programLifetime) * 4, sin(programLifetime) * 4, sin(programLifetime) * 4);
-    transform->RotateXYZDeg(0.0f, -90.0f * delta, 0.0f);
+    // transform->SetPositionXYZ(cos(programLifetime) * 4, sin(programLifetime) * 4, sin(programLifetime) * 4);
+    // transform->RotateXYZDeg(0.0f, -90.0f * delta, 0.0f);
 
     // Update all nodes / components in the scene
     scene.Update(delta);
