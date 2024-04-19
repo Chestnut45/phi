@@ -57,6 +57,12 @@ namespace Phi
             static inline Shader* shader = nullptr;
             static inline GLuint dummyVAO = 0;
             static inline GPUBuffer* voxelDataBuffer = nullptr;
+            static inline GPUBuffer* transformBuffer = nullptr;
+            static inline GPUBuffer* indexBuffer = nullptr;
+            static inline GPUBuffer* indirectBuffer = nullptr;
+
+            // Constants
+            static const int MAX_DRAW_CALLS = 1024;
 
             // Reference counting for static resources
             static inline size_t refCount = 0;
