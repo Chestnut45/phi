@@ -46,12 +46,12 @@ void main()
     // Generate cube position
     uvec3 xyz = uvec3(voxelIndex & 0x1, (voxelIndex & 0x2) >> 1, (voxelIndex & 0x4) >> 2);
     vec3 pos = (vec3(xyz) * 2.0 - 1.0) * 0.5;
-    vec3 worldPos = pos + voxelPos;
+    vec4 worldPos = transforms[gl_DrawID] * vec4(pos + voxelPos, 1.0);
 
     // Set position
-    gl_Position = viewProj * transforms[gl_DrawID] * vec4(worldPos, 1.0);
+    gl_Position = viewProj * worldPos;
 
     // Fragment outputs
-    fragPos = worldPos;
+    fragPos = worldPos.xyz;
     fragMaterial = voxelMaterial;
 }
