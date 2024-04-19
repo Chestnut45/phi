@@ -64,7 +64,7 @@ namespace Phi
             VoxelMeshSplat* splatMesh = nullptr;
             VoxelMeshInstanced* instancedMesh = nullptr;
             VoxelMeshImplicit* implicitMesh = nullptr;
-            RenderMode renderMode{RenderMode::Instanced};
+            RenderMode renderMode{RenderMode::Implicit};
 
             // Internal statistics
             int voxelCount = 0;

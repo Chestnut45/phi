@@ -66,5 +66,6 @@ namespace Phi
 
             // Reference counting for static resources
             static inline size_t refCount = 0;
+            static inline int drawCount = 0;
     };
 }

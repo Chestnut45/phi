@@ -18,6 +18,11 @@ layout(std430, binding = 3) buffer VoxelData
     ivec4 voxelData[];
 };
 
+layout(std430, binding = 4) buffer InstanceData
+{
+    mat4 transforms[];
+};
+
 void main()
 {
     // Calculate instance
@@ -36,8 +41,8 @@ void main()
     voxelIndex ^= mask;
 
     // Generate cube
-    uvec3 xyz = uvec3(voxelIndex & 0x1, (voxelIndex & 0x2) >> 2, (voxelIndex & 0x4) >> 1);
+    uvec3 xyz = uvec3(voxelIndex & 0x1, (voxelIndex & 0x4) >> 2, (voxelIndex & 0x2) >> 1);
 
     // Set position
-    gl_Position = viewProj * vec4((xyz + voxelPos) * 2.0 - 1.0, 1.0);
+    gl_Position = viewProj * vec4(vec3(xyz) * 2.0 - 1.0 + voxelPos, 1.0);
 }

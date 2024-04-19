@@ -41,7 +41,7 @@ namespace Phi
 
             // Generate buffers
             indexBuffer = new GPUBuffer(BufferType::Static, sizeof(GLuint) * 36 * MAX_VOXELS, indexData);
-            voxelDataBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(VertexVoxel) * MAX_VOXELS * MAX_DRAW_CALLS);
+            voxelDataBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(VertexVoxel) * MAX_VOXELS);
             transformBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(glm::mat4) * MAX_DRAW_CALLS);
             indirectBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(DrawElementsCommand) * MAX_DRAW_CALLS);
 
@@ -76,18 +76,55 @@ namespace Phi
 
     void VoxelMeshImplicit::Render(const glm::mat4& transform)
     {
-        // Write the voxels to the buffer
-        voxelDataBuffer->Sync();
+        if (drawCount == MAX_DRAW_CALLS) FlushRenderQueue();
+
+        // Sync if necessary
+        if (drawCount == 0) indirectBuffer->Sync();
+
+        // Create indirect command
+        DrawElementsCommand cmd;
+        cmd.count = 36 * vertices.size();
+        cmd.firstIndex = 0;
+        cmd.baseVertex = 0;
+        cmd.instanceCount = 1;
+        cmd.baseInstance = 0;
+
+        // Write the command
+        indirectBuffer->Write(cmd);
+
+        // Write the voxel data and transform
         voxelDataBuffer->Write(vertices.data(), vertices.size() * sizeof(VertexVoxel));
-        voxelDataBuffer->BindRange(GL_SHADER_STORAGE_BUFFER, 3, voxelDataBuffer->GetCurrentSection() * voxelDataBuffer->GetSize(), voxelDataBuffer->GetSize());
-        glBindVertexArray(dummyVAO);
-        glDrawArrays(GL_TRIANGLES, 0, vertices.size() * 18);
-        glBindVertexArray(0);
-        voxelDataBuffer->Lock();
-        voxelDataBuffer->SwapSections();
+        transformBuffer->Write(transform);
+
+        // Update counters
+        drawCount++;
     }
 
     void VoxelMeshImplicit::FlushRenderQueue()
     {
+        if (drawCount == 0) return;
+
+        // Bind resources
+        glBindVertexArray(dummyVAO);
+        shader->Use();
+        indexBuffer->Bind(GL_ELEMENT_ARRAY_BUFFER);
+        indirectBuffer->Bind(GL_DRAW_INDIRECT_BUFFER);
+        voxelDataBuffer->BindRange(GL_SHADER_STORAGE_BUFFER, 3, voxelDataBuffer->GetCurrentSection() * voxelDataBuffer->GetSize(), voxelDataBuffer->GetSize());
+        transformBuffer->BindRange(GL_SHADER_STORAGE_BUFFER, 4, transformBuffer->GetCurrentSection() * transformBuffer->GetSize(), transformBuffer->GetSize());
+
+        // Issue draw call
+        glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, (void*)(indirectBuffer->GetCurrentSection() * indirectBuffer->GetSize()), drawCount, 0);
+
+        // Unbind
+        glBindVertexArray(0);
+
+        // Lock buffers
+        indirectBuffer->Lock();
+        indirectBuffer->SwapSections();
+        voxelDataBuffer->SwapSections();
+        transformBuffer->SwapSections();
+        
+        // Reset counters
+        drawCount = 0;
     }
 }

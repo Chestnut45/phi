@@ -25,7 +25,10 @@ namespace Phi
             glBufferStorage(GL_ARRAY_BUFFER, size * numSections, data, flags);
 
             pData = (unsigned char*)glMapBufferRange(GL_ARRAY_BUFFER, 0, size * numSections, flags | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_INVALIDATE_RANGE_BIT);
-            if (!pData) Error("OpenGL: Failed to map buffer");
+            if (!pData)
+            {
+                Error("OpenGL: Failed to map buffer");
+            }
             pCurrent = pData;
         }
         else
