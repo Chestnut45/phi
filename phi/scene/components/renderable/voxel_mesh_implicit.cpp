@@ -24,7 +24,7 @@ namespace Phi
                 0, 2, 1, 2, 3, 1,
                 5, 4, 1, 1, 4, 0,
                 0, 4, 6, 0, 6, 2,
-                6, 5, 7, 6, 4, 3,
+                6, 5, 7, 6, 4, 5,
                 2, 6, 3, 6, 7, 3,
                 7, 1, 3, 7, 5, 1
             };
@@ -35,7 +35,7 @@ namespace Phi
             {
                 for (int j = 0; j < 36; ++j)
                 {
-                    indexData[i * 36 + j] = cubeInds[j];
+                    indexData[i * 36 + j] = cubeInds[j] + i * 8;
                 }
             }
 

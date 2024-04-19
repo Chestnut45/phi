@@ -4,8 +4,11 @@
 layout(location = 0) out vec3 gNormal;
 layout(location = 1) out uint gMaterial;
 
+in vec3 fragPos;
+in flat int fragMaterial;
+
 void main()
 {
-    gNormal = vec3(0, 1, 0);
-    gMaterial = 0;
+    gNormal = cross(dFdx(fragPos), dFdy(fragPos));
+    gMaterial = fragMaterial;
 }

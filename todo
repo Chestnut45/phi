@@ -7,7 +7,7 @@ Immediate TODO:
 
 Voxel pipeline progress
 - target rendering speed: 0.01667 microseconds/voxel on intel i5 1240p
-- current fastest: 0.0630 microseconds/voxel (on Intel i5 1240p iGPU)
+- current fastest: 0.0527 microseconds/voxel (with implicit cube face generation, no mirroring trick)
 - test vertex shader cube generation
 
 
