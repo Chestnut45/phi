@@ -4,11 +4,15 @@
 layout(location = 0) out vec3 gNormal;
 layout(location = 1) out uint gMaterial;
 
+// Vertex shader inputs
 in vec3 fragPos;
 in flat int fragMaterial;
 
 void main()
 {
+    // Calculate normal from gradient of interpolated position
     gNormal = cross(dFdx(fragPos), dFdy(fragPos));
+
+    // Output material directly
     gMaterial = fragMaterial;
 }

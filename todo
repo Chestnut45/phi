@@ -1,14 +1,11 @@
 Immediate TODO:
 
 
-- point light components
-    - move icosphere generation outside of BasicMesh so we can use it to have different LODs for point light proxy geometry
-
-
-Voxel pipeline progress
-- target rendering speed: 0.01667 microseconds/voxel on intel i5 1240p
-- current fastest: 0.01697 microseconds/voxel!!! (with implicit cube face generation, no mirroring trick, can be faster!)
-- test vertex shader cube generation
+Voxel pipeline progress:
+- 
+target rendering speed: 0.01667 microseconds/voxel on intel i5 1240p
+current fastest (intel i5 1240p): 0.01697 microseconds/voxel
+current fastest (nvidia rtx 3070ti): 0.00986 microseconds/voxel
 
 
 Engine TODO:
@@ -43,6 +40,7 @@ mid priority:
 
 low priority:
 - icosphere flat normals
+- move icosphere generation outside of BasicMesh so we can use it to have different LODs for point light proxy geometry
 - better Texture2D constructors
 - binary mode for File IO?
 - EventManager (wait for a good use case before implementing)

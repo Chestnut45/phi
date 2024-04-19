@@ -42,11 +42,11 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     // DEBUG: A bunch of models
     // for (int i = 0; i < 16; ++i)
     // {
-    //     auto& v = scene.CreateNode()->AddComponent<VoxelObject>();
+    //     auto& v = scene.CreateNode3D()->AddComponent<VoxelObject>();
     //     v.Load("data://models/teapot.pvox");
-    //     auto& t = v.GetNode()->AddComponent<Transform>();
-    //     t.SetPosition(rng.RandomPosition(glm::vec3(-100), glm::vec3(100)));
-    //     t.SetRotation(rng.RandomRotation());
+    //     Transform* t = v.GetNode()->Get<Transform>();
+    //     t->SetPosition(rng.RandomPosition(glm::vec3(-100), glm::vec3(100)));
+    //     t->SetRotation(rng.RandomRotation());
     // }
 
     // Log

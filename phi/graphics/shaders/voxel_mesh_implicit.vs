@@ -23,29 +23,37 @@ layout(std430, binding = 4) buffer InstanceData
     mat4 transforms[];
 };
 
+// Fragment outputs
 out vec3 fragPos;
 out flat int fragMaterial;
 
+// Vertex shader entrypoint
 void main()
 {
-    // Calculate instance
-    uint voxelIndex = gl_VertexID;
-    uint instance = voxelIndex >> 3;
+    // Calculate voxel data index
+    uint vertexID = gl_VertexID;
+    uint voxelIndex = vertexID >> 3;
 
     // Grab voxel data
-    ivec3 voxelPos = voxelData[instance].xyz;
-    int voxelMaterial = voxelData[instance].w;
+    ivec3 voxelPos = voxelData[voxelIndex].xyz;
+    int voxelMaterial = voxelData[voxelIndex].w;
+
+    // TODO: Mirroring hack (render only 3 faces per voxel)
 
     // Calculate local camera position
-    vec3 localCamPos = cameraPos.xyz - voxelPos;
-
+    // vec3 localCamPos = cameraPos.xyz - voxelPos;
+    
     // Calculate mirror mask
     // uint mask = (uint(localCamPos.x > 0) | uint(localCamPos.y > 0) << 1 | uint(localCamPos.z > 0) << 2);
-    // voxelIndex ^= mask;
+    // vertexID ^= mask;
 
-    // Generate cube position
-    uvec3 xyz = uvec3(voxelIndex & 0x1, (voxelIndex & 0x2) >> 1, (voxelIndex & 0x4) >> 2);
-    vec3 pos = (vec3(xyz) * 2.0 - 1.0) * 0.5;
+    // Generate cube position (0, 1)
+    uvec3 xyz = uvec3(vertexID & 0x1, (vertexID & 0x2) >> 1, (vertexID & 0x4) >> 2);
+
+    // Convert to (-0.5, 0.5)
+    vec3 pos = vec3(xyz) - 0.5;
+
+    // Apply mesh transformation to calculate world space position
     vec4 worldPos = transforms[gl_DrawID] * vec4(pos + voxelPos, 1.0);
 
     // Set position
