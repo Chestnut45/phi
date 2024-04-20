@@ -26,9 +26,9 @@ namespace Phi
                 0, 4, 6, 0, 6, 2,
 
                 // Negative faces (unused)
-                6, 5, 7, 6, 4, 5,
-                2, 6, 3, 6, 7, 3,
-                7, 1, 3, 7, 5, 1
+                // 6, 5, 7, 6, 4, 5,
+                // 2, 6, 3, 6, 7, 3,
+                // 7, 1, 3, 7, 5, 1
             };
 
             // Generate static index buffer
@@ -94,7 +94,7 @@ namespace Phi
         // Write the command
         indirectBuffer->Write(cmd);
 
-        // Write the voxel data and transform
+        // Write the voxel and mesh data
         voxelDataBuffer->Write(vertices.data(), vertices.size() * sizeof(VertexVoxel));
         meshDataBuffer->Write(transform);
         meshDataBuffer->Write(glm::inverse(transform));
@@ -117,9 +117,10 @@ namespace Phi
         meshDataBuffer->BindRange(GL_SHADER_STORAGE_BUFFER, 4, meshDataBuffer->GetCurrentSection() * meshDataBuffer->GetSize(), meshDataBuffer->GetSize());
 
         // Issue draw call
-        // glDisable(GL_CULL_FACE);
+        // NOTE: Culling disabled for mirroring optimization
+        glDisable(GL_CULL_FACE);
         glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, (void*)(indirectBuffer->GetCurrentSection() * indirectBuffer->GetSize()), drawCount, 0);
-        // glEnable(GL_CULL_FACE);
+        glEnable(GL_CULL_FACE);
 
         // Unbind
         glBindVertexArray(0);

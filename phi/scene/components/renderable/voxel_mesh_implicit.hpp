@@ -63,7 +63,7 @@ namespace Phi
 
             // Constants
             static const int MAX_DRAW_CALLS = 1024;
-            static const int NUM_CUBE_INDS = 36;
+            static const int NUM_CUBE_INDS = 18;
             static const int NUM_CUBE_VERTS = 8;
 
             // Reference counting for static resources

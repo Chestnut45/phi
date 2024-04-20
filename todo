@@ -1,11 +1,7 @@
 Immediate TODO:
 
 
-Voxel pipeline progress:
-- measure 3 face vs 6 face
-target rendering speed: 0.01667 microseconds/voxel on intel i5 1240p
-current fastest (intel i5 1240p): 0.01697 microseconds/voxel
-current fastest (nvidia rtx 3070ti): 0.00986 microseconds/voxel
+- finalize voxel mesh API
 
 
 Engine TODO:

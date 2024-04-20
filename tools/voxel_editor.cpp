@@ -42,14 +42,14 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     dl.Activate(DirectionalLight::Slot::SLOT_0);
 
     // DEBUG: A bunch of models
-    // for (int i = 0; i < 16; ++i)
-    // {
-    //     auto& v = scene.CreateNode3D()->AddComponent<VoxelObject>();
-    //     v.Load("data://models/teapot.pvox");
-    //     Transform* t = v.GetNode()->Get<Transform>();
-    //     t->SetPosition(rng.RandomPosition(glm::vec3(-100), glm::vec3(100)));
-    //     t->SetRotation(rng.RandomRotation());
-    // }
+    for (int i = 0; i < 35; ++i)
+    {
+        auto& v = scene.CreateNode3D()->AddComponent<VoxelObject>();
+        v.Load("data://models/teapot.pvox");
+        Transform* t = v.GetNode()->Get<Transform>();
+        t->SetPosition(rng.RandomPosition(glm::vec3(-100), glm::vec3(100)));
+        t->SetRotation(rng.RandomRotation());
+    }
 
     // Log
     Log("Voxel Editor initialized");

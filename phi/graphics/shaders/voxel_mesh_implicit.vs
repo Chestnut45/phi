@@ -42,17 +42,16 @@ void main()
     uint voxelIndex = gl_BaseInstance + (vertexID >> 3);
 
     // Grab voxel data
-    vec3 voxelPos = voxelData[voxelIndex].xyz;
-    int voxelMaterial = voxelData[voxelIndex].w;
+    ivec4 voxel = voxelData[voxelIndex];
+    ivec3 voxelPos = voxel.xyz;
+    int voxelMaterial = voxel.w;
 
-    // TODO: Mirroring hack (render only 3 faces per voxel)
-
-    // Calculate local camera position
-    // vec3 localCamPos = (meshData[gl_DrawID].invTransform * cameraPos).xyz - voxelPos;
+    // Mirroring hack (render only 3 faces per voxel)
     
     // Calculate mirror mask
-    // uint mask = (uint(localCamPos.x > 0) | uint(localCamPos.y > 0) << 1 | uint(localCamPos.z > 0) << 2);
-    // vertexID ^= mask;
+    vec3 localCamPos = (meshData[gl_DrawID].invTransform * cameraPos).xyz - voxelPos;
+    uint mask = (uint(localCamPos.x > 0) | uint(localCamPos.y > 0) << 1 | uint(localCamPos.z > 0) << 2);
+    vertexID ^= mask;
 
     // Generate cube position (0, 1)
     uvec3 xyz = uvec3(vertexID & 0x1, (vertexID & 0x2) >> 1, (vertexID & 0x4) >> 2);
