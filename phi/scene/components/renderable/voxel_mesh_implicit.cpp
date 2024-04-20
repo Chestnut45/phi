@@ -23,24 +23,26 @@ namespace Phi
             {
                 0, 2, 1, 2, 3, 1,
                 5, 4, 1, 1, 4, 0,
-                0, 4, 6, 0, 6, 2,
-                6, 5, 7, 6, 4, 5,
-                2, 6, 3, 6, 7, 3,
-                7, 1, 3, 7, 5, 1
+                0, 4, 6, 0, 6, 2
+
+                // Negative faces (unused)
+                // 6, 5, 7, 6, 4, 5,
+                // 2, 6, 3, 6, 7, 3,
+                // 7, 1, 3, 7, 5, 1
             };
 
             // Generate static index buffer
-            GLuint* indexData = new GLuint[36 * MAX_VOXELS];
+            GLuint* indexData = new GLuint[18 * MAX_VOXELS];
             for (int i = 0; i < MAX_VOXELS; ++i)
             {
-                for (int j = 0; j < 36; ++j)
+                for (int j = 0; j < 18; ++j)
                 {
-                    indexData[i * 36 + j] = cubeInds[j] + i * 8;
+                    indexData[i * 18 + j] = cubeInds[j] + i * 8;
                 }
             }
 
             // Generate buffers
-            indexBuffer = new GPUBuffer(BufferType::Static, sizeof(GLuint) * 36 * MAX_VOXELS, indexData);
+            indexBuffer = new GPUBuffer(BufferType::Static, sizeof(GLuint) * 18 * MAX_VOXELS, indexData);
             voxelDataBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(VertexVoxel) * MAX_VOXELS);
             transformBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(glm::mat4) * MAX_DRAW_CALLS);
             indirectBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(DrawElementsCommand) * MAX_DRAW_CALLS);
@@ -83,7 +85,7 @@ namespace Phi
 
         // Create indirect command
         DrawElementsCommand cmd;
-        cmd.count = 36 * vertices.size();
+        cmd.count = 18 * vertices.size();
         cmd.firstIndex = 0;
         cmd.baseVertex = 0;
         cmd.instanceCount = 1;
@@ -114,7 +116,9 @@ namespace Phi
         transformBuffer->BindRange(GL_SHADER_STORAGE_BUFFER, 4, transformBuffer->GetCurrentSection() * transformBuffer->GetSize(), transformBuffer->GetSize());
 
         // Issue draw call
+        glDisable(GL_CULL_FACE);
         glMultiDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, (void*)(indirectBuffer->GetCurrentSection() * indirectBuffer->GetSize()), drawCount, 0);
+        glEnable(GL_CULL_FACE);
 
         // Unbind
         glBindVertexArray(0);

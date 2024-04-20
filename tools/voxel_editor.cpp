@@ -24,6 +24,7 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     camera.SetMode(Camera::Mode::Target);
     camera.LookAt(glm::vec3(0, 0, 0));
     scene.SetActiveCamera(camera);
+    // camera.GetNode()->AddComponent<PointLight>().SetColor(glm::vec3(0, 0, 1));
 
     // Add a skybox
     Skybox& skybox = camera.GetNode()->AddComponent<Skybox>("data://textures/skybox_day", "data://textures/skybox_night_old");
@@ -37,6 +38,7 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     voxelObject->Load("data://models/teapot.pvox");
 
     DirectionalLight& dl = skybox.GetNode()->AddComponent<DirectionalLight>();
+    dl.SetDirection(glm::vec3(-0.5f, -0.5f, 0.5f));
     dl.Activate(DirectionalLight::Slot::SLOT_0);
 
     // DEBUG: A bunch of models
