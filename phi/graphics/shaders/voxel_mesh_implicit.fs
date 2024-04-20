@@ -11,7 +11,7 @@ in flat uint fragMaterial;
 void main()
 {
     // Calculate normal from gradient of interpolated position
-    gNormal = cross(dFdx(fragPos), dFdy(fragPos));
+    gNormal = normalize(cross(dFdx(fragPos), dFdy(fragPos)));
 
     // Output material directly
     gMaterial = fragMaterial;
