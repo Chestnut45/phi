@@ -31,8 +31,9 @@ out flat int fragMaterial;
 void main()
 {
     // Calculate voxel data index
+    // NOTE: gl_BaseInstance holds the index of the first voxel for the current mesh
     uint vertexID = gl_VertexID;
-    uint voxelIndex = vertexID >> 3;
+    uint voxelIndex = gl_BaseInstance + (vertexID >> 3);
 
     // Grab voxel data
     ivec3 voxelPos = voxelData[voxelIndex].xyz;

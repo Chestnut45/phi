@@ -87,7 +87,7 @@ namespace Phi
         cmd.firstIndex = 0;
         cmd.baseVertex = 0;
         cmd.instanceCount = 1;
-        cmd.baseInstance = 0;
+        cmd.baseInstance = queuedVoxels; // So the vs knows where to start in the voxel buffer for this object
 
         // Write the command
         indirectBuffer->Write(cmd);
@@ -98,6 +98,7 @@ namespace Phi
 
         // Update counters
         drawCount++;
+        queuedVoxels += vertices.size();
     }
 
     void VoxelMeshImplicit::FlushRenderQueue()
@@ -126,5 +127,6 @@ namespace Phi
         
         // Reset counters
         drawCount = 0;
+        queuedVoxels = 0;
     }
 }
