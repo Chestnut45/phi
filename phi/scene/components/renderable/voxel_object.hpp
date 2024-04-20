@@ -2,8 +2,6 @@
 
 #include <phi/scene/components/base_component.hpp>
 #include <phi/scene/components/renderable/voxel_mesh_implicit.hpp>
-#include <phi/scene/components/renderable/voxel_mesh_instanced.hpp>
-#include <phi/scene/components/renderable/voxel_mesh_splat.hpp>
 
 // Forward declaration
 class VoxelEditor;
@@ -15,14 +13,6 @@ namespace Phi
     {
         // Interface
         public:
-
-            // Different rendering modes
-            enum class RenderMode
-            {
-                Instanced,
-                RayTraced,
-                Implicit,
-            };
 
             // Creates an empty voxel object
             VoxelObject();
@@ -38,7 +28,7 @@ namespace Phi
 
             // Loading
 
-            // Loads a voxel object from a .pvox file
+            // Loads voxel data from a .pvox file, replacing any existing data
             // Accepts local paths like data:// and user://
             bool Load(const std::string& path);
 
@@ -60,14 +50,8 @@ namespace Phi
         // Data / implementation
         private:
 
-            // DEBUG: Testing different rendering implementations
-            VoxelMeshSplat* splatMesh = nullptr;
-            VoxelMeshInstanced* instancedMesh = nullptr;
-            VoxelMeshImplicit* implicitMesh = nullptr;
-            RenderMode renderMode{RenderMode::Implicit};
-
-            // Internal statistics
-            int voxelCount = 0;
+            // Internal mesh
+            VoxelMeshImplicit* mesh = nullptr;
 
             // Friends
 

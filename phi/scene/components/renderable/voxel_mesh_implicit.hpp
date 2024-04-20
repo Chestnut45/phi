@@ -23,8 +23,14 @@ namespace Phi
             // Constants
             static inline const size_t MAX_VOXELS = 1'048'576;
 
+            // Typedefs
+            typedef VertexVoxelHalfPrecision Vertex;
+
+            // Creates an empty voxel mesh
+            VoxelMeshImplicit();
+
             // Creates a voxel mesh with the given voxel data
-            VoxelMeshImplicit(const std::vector<VertexVoxelHalfPrecision>& voxels);
+            VoxelMeshImplicit(const std::vector<Vertex>& voxels);
             ~VoxelMeshImplicit();
 
             // Delete copy constructor/assignment
@@ -45,13 +51,16 @@ namespace Phi
             // Flushes internal render queue and displays all meshes
             static void FlushRenderQueue();
 
-            // TODO: Procedural generation
+            // Data access
+
+            // Read-write access to the internal voxel vertex buffer
+            std::vector<Vertex>& Vertices() { return vertices; }
         
         // Data / implementation
         private:
 
             // Vertex data
-            std::vector<VertexVoxelHalfPrecision> vertices;
+            std::vector<Vertex> vertices;
 
             // Static mesh resources
             static inline Shader* shader = nullptr;
@@ -70,5 +79,7 @@ namespace Phi
             static inline size_t refCount = 0;
             static inline int drawCount = 0;
             static inline int queuedVoxels = 0;
+
+            static void IncreaseReferences();
     };
 }

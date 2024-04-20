@@ -1,7 +1,6 @@
 Immediate TODO:
 
-
-- finalize voxel mesh API
+- arraygrid3d and voxel data struct
 - start retesting terrain generation
     - VoxelScene wrapper? Or VoxelWorld entirely separate? (research design patterns)
 

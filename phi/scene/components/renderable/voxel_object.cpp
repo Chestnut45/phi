@@ -11,9 +11,7 @@ namespace Phi
 
     VoxelObject::~VoxelObject()
     {
-        if (splatMesh) delete splatMesh;
-        if (implicitMesh) delete implicitMesh;
-        if (instancedMesh) delete instancedMesh;
+        if (mesh) delete mesh;
     }
 
     bool VoxelObject::Load(const std::string& path)
@@ -24,8 +22,7 @@ namespace Phi
         {
             // Container for material ids
             std::vector<int> loadedMaterialIDs;
-            std::vector<VertexVoxel> voxelData;
-            std::vector<VertexVoxelHalfPrecision> voxelDataHalf;
+            std::vector<VertexVoxelHalfPrecision> voxelData;
 
             // Parse the file
             std::string line;
@@ -65,8 +62,7 @@ namespace Phi
                 if (phase == 2)
                 {
                     // Parse the voxel data
-                    VertexVoxel v;
-                    VertexVoxelHalfPrecision vh;
+                    VertexVoxelHalfPrecision v;
 
                     if (zAxisVertical)
                     {
@@ -80,26 +76,13 @@ namespace Phi
                     // Translate to the currently loaded ID and add to the vector
                     v.material = loadedMaterialIDs[v.material];
                     voxelData.push_back(v);
-
-                    // Half precision version
-                    vh.x = v.x;
-                    vh.y = v.y;
-                    vh.z = v.z;
-                    vh.material = v.material;
-                    voxelDataHalf.push_back(vh);
                 }
             }
 
-            // Create the internal meshes
-            if (splatMesh) delete splatMesh;
-            splatMesh = new VoxelMeshSplat(voxelData);
-            if (implicitMesh) delete implicitMesh;
-            implicitMesh = new VoxelMeshImplicit(voxelDataHalf);
-            if (instancedMesh) delete instancedMesh;
-            instancedMesh = new VoxelMeshInstanced(voxelData);
+            // Create the internal mesh
+            if (mesh) delete mesh;
+            mesh = new VoxelMeshImplicit(voxelData);
 
-            // Update size and return
-            voxelCount = voxelData.size();
             return true;
         }
         else
@@ -115,47 +98,18 @@ namespace Phi
         // Grab the current transform if it exists
         Transform* transform = GetNode()->Get<Transform>();
 
-        switch (renderMode)
-        {
-            case RenderMode::Implicit:
-                if (implicitMesh)
-                {
-                    implicitMesh->Render(transform ? transform->GetGlobalMatrix() : glm::mat4(1.0f));
-                }
-                break;
-            case RenderMode::Instanced:
-                if (instancedMesh)
-                {
-                    instancedMesh->Render(transform ? transform->GetGlobalMatrix() : glm::mat4(1.0f));
-                }
-                break;
-            
-            case RenderMode::RayTraced:
-                if (splatMesh)
-                {
-                    if (transform)
-                        splatMesh->Render(transform->GetGlobalMatrix(), glm::mat3_cast(transform->GetGlobalRotation()));
-                    else
-                        splatMesh->Render(glm::mat4(1.0f), glm::mat3(1.0f));
-                }
-                break;
-        }
+        // Render the mesh if it exists
+        if (mesh) mesh->Render(transform ? transform->GetGlobalMatrix() : glm::mat4(1.0f));
     }
 
     void VoxelObject::FlushRenderQueue()
     {
-        VoxelMeshSplat::FlushRenderQueue();
         VoxelMeshImplicit::FlushRenderQueue();
-        VoxelMeshInstanced::FlushRenderQueue();
     }
 
     void VoxelObject::Reset()
     {
-        if (splatMesh) delete splatMesh;
-        splatMesh = nullptr;
-        if (implicitMesh) delete implicitMesh;
-        implicitMesh = nullptr;
-        if (instancedMesh) delete instancedMesh;
-        instancedMesh = nullptr;
+        if (mesh) delete mesh;
+        mesh = nullptr;
     }
 }

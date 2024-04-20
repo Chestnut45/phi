@@ -4,7 +4,37 @@
 
 namespace Phi
 {
-    VoxelMeshImplicit::VoxelMeshImplicit(const std::vector<VertexVoxelHalfPrecision>& voxels)
+
+    VoxelMeshImplicit::VoxelMeshImplicit()
+    {
+        IncreaseReferences();
+    }
+
+    VoxelMeshImplicit::VoxelMeshImplicit(const std::vector<Vertex>& voxels)
+    {
+        IncreaseReferences();
+
+        // Copy voxel data
+        vertices = voxels;
+    }
+
+    VoxelMeshImplicit::~VoxelMeshImplicit()
+    {
+        refCount--;
+
+        if (refCount == 0)
+        {
+            // Cleanup static resources
+            delete shader;
+            delete voxelDataBuffer;
+            delete meshDataBuffer;
+            delete indexBuffer;
+            delete indirectBuffer;
+            glDeleteVertexArrays(1, &dummyVAO);
+        }
+    }
+
+    void VoxelMeshImplicit::IncreaseReferences()
     {
         if (refCount == 0)
         {
@@ -43,7 +73,7 @@ namespace Phi
 
             // Generate buffers
             indexBuffer = new GPUBuffer(BufferType::Static, sizeof(GLuint) * NUM_CUBE_INDS * MAX_VOXELS, indexData);
-            voxelDataBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(VertexVoxelHalfPrecision) * MAX_VOXELS);
+            voxelDataBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(Vertex) * MAX_VOXELS);
             meshDataBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(glm::mat4) * 2 * MAX_DRAW_CALLS);
             indirectBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(DrawElementsCommand) * MAX_DRAW_CALLS);
 
@@ -53,27 +83,8 @@ namespace Phi
             // Debug Logging
             Phi::Log("VoxelMeshImplicit resources initialized");
         }
-        
-        // Copy voxel data
-        vertices = voxels;
 
         refCount++;
-    }
-
-    VoxelMeshImplicit::~VoxelMeshImplicit()
-    {
-        refCount--;
-
-        if (refCount == 0)
-        {
-            // Cleanup static resources
-            delete shader;
-            delete voxelDataBuffer;
-            delete meshDataBuffer;
-            delete indexBuffer;
-            delete indirectBuffer;
-            glDeleteVertexArrays(1, &dummyVAO);
-        }
     }
 
     void VoxelMeshImplicit::Render(const glm::mat4& transform)
@@ -95,7 +106,7 @@ namespace Phi
         indirectBuffer->Write(cmd);
 
         // Write the voxel and mesh data
-        voxelDataBuffer->Write(vertices.data(), vertices.size() * sizeof(VertexVoxelHalfPrecision));
+        voxelDataBuffer->Write(vertices.data(), vertices.size() * sizeof(Vertex));
         meshDataBuffer->Write(transform);
         meshDataBuffer->Write(glm::inverse(transform));
 

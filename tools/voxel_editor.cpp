@@ -24,7 +24,7 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     camera.SetMode(Camera::Mode::Target);
     camera.LookAt(glm::vec3(0, 0, 0));
     scene.SetActiveCamera(camera);
-    // camera.GetNode()->AddComponent<PointLight>().SetColor(glm::vec3(0, 0, 1));
+    // camera.GetNode()->AddComponent<PointLight>();
 
     // Add a skybox
     Skybox& skybox = camera.GetNode()->AddComponent<Skybox>("data://textures/skybox_day", "data://textures/skybox_night_old");
@@ -42,14 +42,14 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     dl.Activate(DirectionalLight::Slot::SLOT_0);
 
     // DEBUG: A bunch of models
-    for (int i = 0; i < 35; ++i)
-    {
-        auto& v = scene.CreateNode3D()->AddComponent<VoxelObject>();
-        v.Load("data://models/teapot.pvox");
-        Transform* t = v.GetNode()->Get<Transform>();
-        t->SetPosition(rng.RandomPosition(glm::vec3(-100), glm::vec3(100)));
-        t->SetRotation(rng.RandomRotation());
-    }
+    // for (int i = 0; i < 35; ++i)
+    // {
+    //     auto& v = scene.CreateNode3D()->AddComponent<VoxelObject>();
+    //     v.Load("data://models/teapot.pvox");
+    //     Transform* t = v.GetNode()->Get<Transform>();
+    //     t->SetPosition(rng.RandomPosition(glm::vec3(-100), glm::vec3(100)));
+    //     t->SetRotation(rng.RandomRotation());
+    // }
 
     // Log
     Log("Voxel Editor initialized");
@@ -143,26 +143,11 @@ void VoxelEditor::ShowInterface()
     }
     
     // Statistics
-    ImGui::Text("# Voxels: %d", voxelObject->voxelCount);
+    ImGui::SeparatorText("Statistics");
+    ImGui::Text("# Voxels: %ld", voxelObject->mesh->Vertices().size());
 
     // Settings
     ImGui::SeparatorText("Settings");
-
-    // Render mode
-    static const char* renderModes[] = {"Instanced", "Ray Traced", "Implicit"};
-    const char* currentMode = renderModes[(int)voxelObject->renderMode];
-    if (ImGui::BeginCombo("Render Mode", currentMode))
-    {
-        for (int n = 0; n < IM_ARRAYSIZE(renderModes); n++)
-        {
-            bool is_selected = (currentMode == renderModes[n]);
-            if (ImGui::Selectable(renderModes[n], is_selected)) voxelObject->renderMode = (VoxelObject::RenderMode)n;
-            if (is_selected) ImGui::SetItemDefaultFocus();
-        }
-        ImGui::EndCombo();
-    }
-    
-    // Other general settings
     ImGui::Checkbox("Rotate Model", &rotateModel);
     if (ImGui::Checkbox("Free Camera", &freeCamera))
     {
