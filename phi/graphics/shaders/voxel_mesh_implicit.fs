@@ -6,7 +6,7 @@ layout(location = 1) out uint gMaterial;
 
 // Vertex shader inputs
 in vec3 fragPos;
-in flat int fragMaterial;
+in flat uint fragMaterial;
 
 void main()
 {

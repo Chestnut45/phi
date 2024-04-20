@@ -21,7 +21,8 @@ namespace Phi
         POS_NORM,
         POS_NORM_UV,
         POS_UV,
-        VOXEL
+        VOXEL,
+        VOXEL_HALF_PRECISION
     };
 
     // Common internal vertex formats that can be used with GPUBuffers, VAOs, and Meshes
@@ -90,5 +91,11 @@ namespace Phi
     struct VertexVoxel
     {
         GLint x, y, z, material;
+    };
+
+    struct VertexVoxelHalfPrecision
+    {
+        GLshort x, y, z;
+        GLushort material;
     };
 }

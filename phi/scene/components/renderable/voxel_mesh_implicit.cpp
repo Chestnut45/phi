@@ -4,7 +4,7 @@
 
 namespace Phi
 {
-    VoxelMeshImplicit::VoxelMeshImplicit(const std::vector<VertexVoxel>& voxels)
+    VoxelMeshImplicit::VoxelMeshImplicit(const std::vector<VertexVoxelHalfPrecision>& voxels)
     {
         if (refCount == 0)
         {
@@ -43,7 +43,7 @@ namespace Phi
 
             // Generate buffers
             indexBuffer = new GPUBuffer(BufferType::Static, sizeof(GLuint) * NUM_CUBE_INDS * MAX_VOXELS, indexData);
-            voxelDataBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(VertexVoxel) * MAX_VOXELS);
+            voxelDataBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(VertexVoxelHalfPrecision) * MAX_VOXELS);
             meshDataBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(glm::mat4) * 2 * MAX_DRAW_CALLS);
             indirectBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(DrawElementsCommand) * MAX_DRAW_CALLS);
 
@@ -78,7 +78,7 @@ namespace Phi
 
     void VoxelMeshImplicit::Render(const glm::mat4& transform)
     {
-        if (drawCount == MAX_DRAW_CALLS) FlushRenderQueue();
+        if (drawCount == MAX_DRAW_CALLS || queuedVoxels + vertices.size() > MAX_VOXELS) FlushRenderQueue();
 
         // Sync if necessary
         if (drawCount == 0) indirectBuffer->Sync();
@@ -95,7 +95,7 @@ namespace Phi
         indirectBuffer->Write(cmd);
 
         // Write the voxel and mesh data
-        voxelDataBuffer->Write(vertices.data(), vertices.size() * sizeof(VertexVoxel));
+        voxelDataBuffer->Write(vertices.data(), vertices.size() * sizeof(VertexVoxelHalfPrecision));
         meshDataBuffer->Write(transform);
         meshDataBuffer->Write(glm::inverse(transform));
 

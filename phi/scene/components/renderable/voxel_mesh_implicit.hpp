@@ -24,7 +24,7 @@ namespace Phi
             static inline const size_t MAX_VOXELS = 1'048'576;
 
             // Creates a voxel mesh with the given voxel data
-            VoxelMeshImplicit(const std::vector<VertexVoxel>& voxels);
+            VoxelMeshImplicit(const std::vector<VertexVoxelHalfPrecision>& voxels);
             ~VoxelMeshImplicit();
 
             // Delete copy constructor/assignment
@@ -51,7 +51,7 @@ namespace Phi
         private:
 
             // Vertex data
-            std::vector<VertexVoxel> vertices;
+            std::vector<VertexVoxelHalfPrecision> vertices;
 
             // Static mesh resources
             static inline Shader* shader = nullptr;

@@ -25,6 +25,7 @@ namespace Phi
             // Container for material ids
             std::vector<int> loadedMaterialIDs;
             std::vector<VertexVoxel> voxelData;
+            std::vector<VertexVoxelHalfPrecision> voxelDataHalf;
 
             // Parse the file
             std::string line;
@@ -65,6 +66,7 @@ namespace Phi
                 {
                     // Parse the voxel data
                     VertexVoxel v;
+                    VertexVoxelHalfPrecision vh;
 
                     if (zAxisVertical)
                     {
@@ -78,6 +80,13 @@ namespace Phi
                     // Translate to the currently loaded ID and add to the vector
                     v.material = loadedMaterialIDs[v.material];
                     voxelData.push_back(v);
+
+                    // Half precision version
+                    vh.x = v.x;
+                    vh.y = v.y;
+                    vh.z = v.z;
+                    vh.material = v.material;
+                    voxelDataHalf.push_back(vh);
                 }
             }
 
@@ -85,7 +94,7 @@ namespace Phi
             if (splatMesh) delete splatMesh;
             splatMesh = new VoxelMeshSplat(voxelData);
             if (implicitMesh) delete implicitMesh;
-            implicitMesh = new VoxelMeshImplicit(voxelData);
+            implicitMesh = new VoxelMeshImplicit(voxelDataHalf);
             if (instancedMesh) delete instancedMesh;
             instancedMesh = new VoxelMeshInstanced(voxelData);
 

@@ -21,7 +21,7 @@ struct MeshData
 
 layout(std430, binding = 3) buffer VoxelData
 {
-    ivec4 voxelData[];
+    uvec2 voxelData[];
 };
 
 layout(std430, binding = 4) buffer InstanceData
@@ -31,7 +31,7 @@ layout(std430, binding = 4) buffer InstanceData
 
 // Fragment outputs
 out vec3 fragPos;
-out flat int fragMaterial;
+out flat uint fragMaterial;
 
 // Vertex shader entrypoint
 void main()
@@ -42,9 +42,9 @@ void main()
     uint voxelIndex = gl_BaseInstance + (vertexID >> 3);
 
     // Grab voxel data
-    ivec4 voxel = voxelData[voxelIndex];
-    ivec3 voxelPos = voxel.xyz;
-    int voxelMaterial = voxel.w;
+    uvec2 voxel = voxelData[voxelIndex];
+    ivec3 voxelPos = ivec3(bitfieldExtract(int(voxel.x), 0, 16), bitfieldExtract(int(voxel.x), 16, 16), bitfieldExtract(int(voxel.y), 0, 16));
+    uint voxelMaterial = bitfieldExtract(voxel.y, 16, 16);
 
     // Mirroring hack (render only 3 faces per voxel)
     
