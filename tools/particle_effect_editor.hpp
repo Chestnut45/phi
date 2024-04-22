@@ -6,6 +6,9 @@
 // Phi engine
 #include <phi/phi.hpp>
 
+// Convenience
+using namespace Phi;
+
 class ParticleEffectEditor : public Phi::App
 {
     // Interface
@@ -42,8 +45,8 @@ class ParticleEffectEditor : public Phi::App
         int sceneRenderHeight = wHeight;
 
         // The current particle effect to edit
-        Phi::Node* node = nullptr;
-        Phi::CPUParticleEffect* currentEffect = nullptr;
+        Node* node = nullptr;
+        CPUParticleEffect* currentEffect = nullptr;
 
         // Displays the main effect editor window
         void ShowEditorWindow();
