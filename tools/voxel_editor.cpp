@@ -24,7 +24,7 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     camera.SetMode(Camera::Mode::Target);
     camera.LookAt(glm::vec3(0, 0, 0));
     scene.SetActiveCamera(camera);
-    // camera.GetNode()->AddComponent<PointLight>();
+    camera.GetNode()->AddComponent<PointLight>();
 
     // Add a skybox
     Skybox& skybox = camera.GetNode()->AddComponent<Skybox>("data://textures/skybox_day", "data://textures/skybox_night_old");
@@ -88,9 +88,10 @@ void VoxelEditor::Update(float delta)
     // Update all nodes / components in the scene
     scene.Update(delta);
     
-    // Display debug window
+    // Display debug windows
     ShowDebug();
     ShowInterface();
+    scene.ShowDebug();
 }
 
 void VoxelEditor::Render()
@@ -100,7 +101,7 @@ void VoxelEditor::Render()
 
 void VoxelEditor::ShowInterface()
 {
-    ImGui::Begin("Voxel Editor", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove);
+    ImGui::Begin("Voxel Editor", nullptr, ImGuiWindowFlags_MenuBar);
 
     // Main menu bar
     bool loadModelFlag = false;
@@ -145,6 +146,7 @@ void VoxelEditor::ShowInterface()
     // Statistics
     ImGui::SeparatorText("Statistics");
     ImGui::Text("# Voxels: %ld", voxelObject->mesh->Vertices().size());
+    ImGui::NewLine();
 
     // Settings
     ImGui::SeparatorText("Settings");
@@ -164,7 +166,11 @@ void VoxelEditor::ShowInterface()
     }
     bool v = vsync;
     bool f = fullscreen;
-    if (ImGui::Checkbox("Fullscreen", &f)) ToggleFullscreen();
+    if (ImGui::Checkbox("Fullscreen", &f))
+    {
+        ToggleFullscreen();
+        
+    }
     if (ImGui::Checkbox("Vsync", &v)) ToggleVsync();
 
 

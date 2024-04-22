@@ -272,6 +272,7 @@ namespace Phi
             size_t nodeCount = 0;
 
             // Settings
+            bool ssao = false;
             bool cullingEnabled = false;
             bool cullWithQuadtree = false;
             bool showQuadtree = false;

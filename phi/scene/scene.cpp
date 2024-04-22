@@ -424,14 +424,12 @@ namespace Phi
     {
         ImGui::Begin("Scene");
 
-        ImGui::Text("Statistics");
-        ImGui::Separator();
+        ImGui::SeparatorText("Statistics");
         ImGui::Text("Nodes: %lu", nodeCount);
         ImGui::Text("Voxel objects rendered: %lu", voxelObjectRenderQueue.size());
         ImGui::NewLine();
 
-        ImGui::Text("Active Camera");
-        ImGui::Separator();
+        ImGui::SeparatorText("Active Camera");
         if (activeCamera)
         {
             const glm::vec3& pos = activeCamera->GetPosition();
@@ -446,9 +444,11 @@ namespace Phi
         }
         ImGui::NewLine();
 
-        ImGui::Text("Settings");
-        ImGui::Separator();
-        
+        ImGui::SeparatorText("Graphics Settings");
+        ImGui::Checkbox("SSAO", &ssao);
+        ImGui::NewLine();
+
+        ImGui::SeparatorText("Experimental Settings");
         ImGui::Checkbox("Frustum culling", &cullingEnabled);
         if (cullingEnabled)
         {
@@ -757,7 +757,7 @@ namespace Phi
         cameraBuffer.Write(proj);
         cameraBuffer.Write(glm::inverse(proj));
         cameraBuffer.Write(glm::vec4(activeCamera->GetPosition(), 1.0f));
-        cameraBuffer.Write(glm::vec4(viewportX, viewportY, viewportWidth * 0.5f, viewportHeight * 0.5f));
+        cameraBuffer.Write(glm::vec4(viewportX, viewportY, activeCamera->GetWidth() * 0.5f, activeCamera->GetHeight() * 0.5f));
     }
 
     void Scene::BuildQuadtree()
