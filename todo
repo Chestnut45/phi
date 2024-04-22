@@ -1,8 +1,9 @@
 Immediate TODO:
 
+
+- ssao
+- voxelmap api design
 - arraygrid3d and voxel data struct
-- start retesting terrain generation
-    - VoxelScene wrapper? Or VoxelWorld entirely separate? (research design patterns)
 
 
 Engine TODO:
