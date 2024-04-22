@@ -273,10 +273,6 @@ namespace Phi
 
             // Settings
             bool ssao = false;
-            bool cullingEnabled = false;
-            bool cullWithQuadtree = false;
-            bool showQuadtree = false;
-            bool dynamicQuadtree = false;
 
             // Helper functions
             void UpdateCameraBuffer();
@@ -297,6 +293,12 @@ namespace Phi
         // Experimental features
         private:
 
+            // Settings
+            bool cullingEnabled = false;
+            bool cullWithQuadtree = false;
+            bool showQuadtree = false;
+            bool dynamicQuadtree = false;
+            
             // Builds up a quadtree containing every node that satisfies the following:
             // 1. Has a bounding volume component
             // 2. Has some renderable component (i.e. BasicMesh)
