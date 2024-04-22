@@ -27,7 +27,8 @@ namespace Phi
                       GLint internalFormat, GLint format, GLenum type,
                       GLint wrapU, GLint wrapV,
                       GLenum minFilter, GLenum magFilter,
-                      bool mipmap = false);
+                      bool mipmap = false,
+                      void* data = nullptr);
             
             // Loads a texture from disk with the given formats and parameters
             // Accepts local paths like data:// and user://

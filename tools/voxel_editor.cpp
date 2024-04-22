@@ -17,6 +17,7 @@ int main(int, char**)
 VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
 {   
     // Initialize the scene
+    scene.SetRenderMode(Scene::RenderMode::CustomViewport);
 
     // Add a camera
     Camera& camera = scene.CreateNode3D()->AddComponent<Camera>();
@@ -65,7 +66,8 @@ void VoxelEditor::Update(float delta)
     // Manually update scene resolution on window resize
     if (windowResized)
     {
-        scene.SetResolution(wWidth, wHeight);
+        scene.SetResolution(wWidth - 256, wHeight);
+        scene.SetViewport(256, 0, wWidth - 256, wHeight);
         windowResized = false;
     }
 
@@ -90,8 +92,8 @@ void VoxelEditor::Update(float delta)
     
     // Display debug windows
     ShowDebug();
-    ShowInterface();
     scene.ShowDebug();
+    ShowInterface();
 }
 
 void VoxelEditor::Render()

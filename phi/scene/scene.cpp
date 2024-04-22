@@ -58,6 +58,51 @@ namespace Phi
         wireframeShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/wireframe.fs");
         wireframeShader.Link();
 
+        // SSAO
+        ssaoShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/ssao_pass.vs");
+        ssaoShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/ssao_pass.fs");
+        ssaoShader.Link();
+
+        // Initialize SSAO data
+
+        // Generate kernel data
+        RNG rng;
+        GLfloat kernelData[SSAO_SAMPLE_SIZE * 4];
+        for (int i = 0; i < SSAO_SAMPLE_SIZE * 4; i += 4)
+        {
+            // Generate the sample
+            glm::vec3 sample;
+            sample.x = rng.NextFloat(-1.0f, 1.0f);
+            sample.y = rng.NextFloat(-1.0f, 1.0f);
+            sample.z = rng.NextFloat(0.0f, 1.0f);
+
+            // Normalize, distribute, and scale the sample
+            sample = glm::normalize(sample);
+            float scale = (float)i / SSAO_SAMPLE_SIZE;
+            scale = glm::mix(0.1f, 1.0f, scale * scale);
+            sample *= scale;
+
+            // Write the data to the buffer
+            kernelData[i] = sample.x;
+            kernelData[i + 1] = sample.y;
+            kernelData[i + 2] = sample.z;
+            kernelData[i + 3] = 0.0f;
+        }
+        
+        // Create static buffer
+        ssaoKernelUBO = new GPUBuffer(BufferType::Static, sizeof(GLfloat) * 4 * SSAO_SAMPLE_SIZE, kernelData);
+
+        // Generate kernel rotation vector texture
+        GLfloat rotationTextureData[32];
+        for (int i = 0; i < 32; i += 2)
+        {
+            rotationTextureData[i] = rng.NextFloat(-1.0f, 1.0f);
+            rotationTextureData[i + 1] = rng.NextFloat(-1.0f, 1.0f);
+        }
+
+        // Create the texture
+        ssaoBlurTexture = new Texture2D(4, 4, GL_RG16F, GL_RG, GL_FLOAT, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST, false, rotationTextureData);
+
         // Initialize the framebuffers
         RegenerateFramebuffers();
     }
@@ -70,14 +115,22 @@ namespace Phi
         // Destroy all components / nodes
         registry.clear();
 
-        // Delete framebuffers and textures
+        // Render targets
         delete renderTarget;
         delete rTexColor;
         delete rTexDepthStencil;
+
+        // Geometry buffer / textures
         delete gBuffer;
         delete gTexNormal;
         delete gTexMaterial;
         delete gTexDepthStencil;
+
+        // SSAO resources
+        delete ssaoKernelUBO;
+        delete ssaoBlurTexture;
+        delete ssaoScreenTexture;
+        delete ssaoFBO;
     }
 
     Node* Scene::CreateNode()
@@ -336,6 +389,21 @@ namespace Phi
             gTexNormal->Bind(0);
             gTexMaterial->Bind(1);
             gTexDepthStencil->Bind(2);
+
+            // SSAO pass (only runs if there are any viable rendered components)
+            if (ssao)
+            {
+                // Bind resources
+                ssaoFBO->Bind(GL_DRAW_FRAMEBUFFER);
+                ssaoBlurTexture->Bind(3);
+                ssaoShader.Use();
+
+                // Issue draw call
+                glDrawArrays(GL_TRIANGLES, 0, 3);
+
+                // Unbind (back to default FBO for lighting)
+                ssaoFBO->Unbind(GL_DRAW_FRAMEBUFFER);
+            }
         }
 
         // Basic materials
@@ -700,20 +768,22 @@ namespace Phi
         if (gBuffer)
         {
             // Delete framebuffers and textures if they exist
+            delete rTexColor;
+            delete rTexDepthStencil;
+            delete renderTarget;
+
             delete gBuffer;
             delete gTexNormal;
             delete gTexMaterial;
             delete gTexDepthStencil;
+
+            delete ssaoFBO;
+            delete ssaoScreenTexture;
         }
 
         // Create render target textures
         // rTexColor = new Texture2D(renderWidth, renderHeight, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
         // rTexDepthStencil = new Texture2D(renderWidth, renderHeight, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
-
-        // Create geometry buffer textures
-        gTexNormal = new Texture2D(renderWidth, renderHeight, GL_RGB16F, GL_RGB, GL_FLOAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
-        gTexMaterial = new Texture2D(renderWidth, renderHeight, GL_R8UI, GL_RED_INTEGER, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
-        gTexDepthStencil = new Texture2D(renderWidth, renderHeight, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
 
         // Create render target FBO and attach textures
         // renderTarget = new Framebuffer();
@@ -721,6 +791,24 @@ namespace Phi
         // renderTarget->AttachTexture(rTexColor, GL_COLOR_ATTACHMENT0);
         // renderTarget->AttachTexture(rTexDepthStencil, GL_DEPTH_STENCIL_ATTACHMENT);
         // renderTarget->CheckCompleteness();
+
+        // Create SSAO texture
+        ssaoScreenTexture = new Texture2D(renderWidth, renderHeight, GL_R8, GL_RED, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+
+        // Create SSAO FBO
+        ssaoFBO = new Framebuffer();
+        ssaoFBO->Bind();
+        ssaoFBO->AttachTexture(ssaoScreenTexture, GL_COLOR_ATTACHMENT0);
+        ssaoFBO->CheckCompleteness();
+
+        // Set draw buffer
+        GLenum buf[1] = { GL_COLOR_ATTACHMENT0 };
+        glDrawBuffers(1, buf);
+
+        // Create geometry buffer textures
+        gTexNormal = new Texture2D(renderWidth, renderHeight, GL_RGB16F, GL_RGB, GL_FLOAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+        gTexMaterial = new Texture2D(renderWidth, renderHeight, GL_R8UI, GL_RED_INTEGER, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+        gTexDepthStencil = new Texture2D(renderWidth, renderHeight, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
 
         // Create geometry buffer and attach textures
         gBuffer = new Framebuffer();

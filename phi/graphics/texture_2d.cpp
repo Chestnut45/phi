@@ -9,7 +9,8 @@ namespace Phi
                          GLint internalFormat, GLint format, GLenum type,
                          GLint wrapU, GLint wrapV,
                          GLenum minFilter, GLenum magFilter,
-                         bool mipmap)
+                         bool mipmap,
+                         void* data)
     {
         // Generate the texture object
         glGenTextures(1, &textureID);
@@ -22,7 +23,7 @@ namespace Phi
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
 
         // Specify the texture details
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, data);
         if (mipmap) glGenerateMipmap(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, 0);
 
