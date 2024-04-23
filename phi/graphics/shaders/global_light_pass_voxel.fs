@@ -48,6 +48,9 @@ layout(binding = 0) uniform sampler2D gNorm;
 layout(binding = 1) uniform usampler2D gMaterial;
 layout(binding = 2) uniform sampler2D gDepth;
 
+// SSAO sampler
+layout(binding = 3) uniform sampler2D ssaoTex;
+
 in vec2 texCoords;
 
 out vec4 finalColor;
@@ -72,6 +75,7 @@ void main()
     float depth = texture(gDepth, texCoords).r;
     vec3 fragNorm = normalize(texture(gNorm, texCoords).xyz);
     uint materialID = texture(gMaterial, texCoords).r;
+    float occlusion = texture(ssaoTex, texCoords).r;
 
     // Calculate fragment position in world space
     vec3 fragPos = getWorldPos(texCoords, depth);
@@ -99,7 +103,7 @@ void main()
         float alignment = dot(fragNorm, lightDir);
 
         // Ambient lighting
-        vec3 ambient = vec3(lightAmbience) * lightColor * materialColor;
+        vec3 ambient = vec3(lightAmbience) * lightColor * materialColor * occlusion;
 
         // Diffuse lighting
         vec3 diffuse = max(alignment, 0.0) * lightColor * materialColor;

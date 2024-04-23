@@ -330,12 +330,6 @@ namespace Phi
         // Bind the main render target to draw to
         gBuffer->Unbind(GL_DRAW_FRAMEBUFFER);
 
-        // Clear the render target (not needed if using viewport / blit method)
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-        // Use custom viewport instead of renderTarget
-        if (renderMode == RenderMode::CustomViewport) glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
-
         // Lighting passes
         
         // Lighting pass setup
@@ -404,8 +398,17 @@ namespace Phi
 
                 // Unbind (back to default FBO for lighting)
                 ssaoFBO->Unbind(GL_DRAW_FRAMEBUFFER);
+
+                // Bind the SSAO texture for the lighting pass
+                ssaoScreenTexture->Bind(3);
             }
         }
+
+        // Clear the render target (not needed if using viewport / blit method)
+        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+        // Use custom viewport instead of renderTarget
+        if (renderMode == RenderMode::CustomViewport) glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
 
         // Basic materials
         if (basicPass)

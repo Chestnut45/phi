@@ -281,7 +281,7 @@ namespace Phi
             size_t nodeCount = 0;
 
             // Settings
-            bool ssao = false;
+            bool ssao = true;
 
             // Helper functions
             void UpdateCameraBuffer();
