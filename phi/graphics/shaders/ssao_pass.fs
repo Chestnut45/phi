@@ -46,6 +46,17 @@ vec3 getWorldPos(vec2 texCoords, float depth)
     return worldSpacePos.xyz;
 }
 
+// Gets the view position from texCoords and (non-linear!) depth
+vec3 getViewPos(vec2 texCoords, float depth)
+{
+    // Calculate view space position
+    vec4 viewSpacePos = invProj * vec4(texCoords * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
+
+    // Perspective division
+    viewSpacePos.xyz /= viewSpacePos.w;
+    return viewSpacePos.xyz;
+}
+
 void main()
 {
     // Calculate the scale for tiling the SSAO rotation vectors
@@ -53,21 +64,22 @@ void main()
 
     // Grab data from gbuffer textures
     float depth = texture(gDepth, texCoords).r;
-    vec3 fragPos = (invProj * vec4(texCoords * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0)).xyz;
-    vec3 fragNorm = normalize(texture(gNorm, texCoords).xyz);
-    vec3 rotation = texture(ssaoRotation, texCoords * tileScale).xyz;
+    vec3 fragPos = getViewPos(texCoords, depth);
+    vec3 fragNorm = normalize((view * vec4(texture(gNorm, texCoords).xyz, 1.0)).xyz);
+    vec3 rotation = vec3(texture(ssaoRotation, texCoords * tileScale).rg, 0.0);
 
     // Construct TBN matrix
     vec3 tangent = normalize(rotation - fragNorm * dot(rotation, fragNorm));
     vec3 bitangent = cross(fragNorm, tangent);
     mat3 tbn = mat3(tangent, bitangent, fragNorm);
 
+    // Sample around the fragment
     float occlusion = 0.0;
     for (int i = 0; i < SAMPLE_COUNT; ++i)
     {
         // Calculate view space sample position
-        const float radius = 0.5;
-        vec3 samplePos = fragPos + (tbn * samples[i].xyz) * radius;
+        const float radius = 1.0;
+        vec3 samplePos = tbn * samples[i].xyz * radius + fragPos;
 
         // Transform to screen space
         vec4 sampleCoords = proj * vec4(samplePos, 1.0);
@@ -82,5 +94,5 @@ void main()
     }
 
     // Output final value
-    finalOcclusion = 1.0 - occlusion / SAMPLE_COUNT;
+    finalOcclusion = 1.0 - (occlusion / SAMPLE_COUNT);
 }

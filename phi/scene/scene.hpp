@@ -229,7 +229,7 @@ namespace Phi
 
             // SSAO data
             GPUBuffer* ssaoKernelUBO = nullptr;
-            Texture2D* ssaoBlurTexture = nullptr;
+            Texture2D* ssaoRotationTexture = nullptr;
             Texture2D* ssaoScreenTexture = nullptr;
             Framebuffer* ssaoFBO = nullptr;
             Shader ssaoShader;

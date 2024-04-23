@@ -1,7 +1,8 @@
 Immediate TODO:
 
 
-- ssao
+- finish ssao (add near/far to camera ubo and linearize depth)
+- switch geometry buffer and lighting shaders to use view-space vectors?
 - voxelmap api design
 - arraygrid3d and voxel data struct
 

@@ -86,7 +86,7 @@ namespace Phi
             kernelData[i] = sample.x;
             kernelData[i + 1] = sample.y;
             kernelData[i + 2] = sample.z;
-            kernelData[i + 3] = 0.0f;
+            kernelData[i + 3] = 1.0f;
         }
         
         // Create static buffer
@@ -101,7 +101,7 @@ namespace Phi
         }
 
         // Create the texture
-        ssaoBlurTexture = new Texture2D(4, 4, GL_RG16F, GL_RG, GL_FLOAT, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST, false, rotationTextureData);
+        ssaoRotationTexture = new Texture2D(4, 4, GL_RG32F, GL_RG, GL_FLOAT, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST, false, rotationTextureData);
 
         // Initialize the framebuffers
         RegenerateFramebuffers();
@@ -128,7 +128,7 @@ namespace Phi
 
         // SSAO resources
         delete ssaoKernelUBO;
-        delete ssaoBlurTexture;
+        delete ssaoRotationTexture;
         delete ssaoScreenTexture;
         delete ssaoFBO;
     }
@@ -390,7 +390,7 @@ namespace Phi
                 // Bind resources
                 ssaoFBO->Bind(GL_DRAW_FRAMEBUFFER);
                 ssaoKernelUBO->BindBase(GL_UNIFORM_BUFFER, (int)UniformBindingIndex::SSAO);
-                ssaoBlurTexture->Bind(3);
+                ssaoRotationTexture->Bind(3);
                 ssaoShader.Use();
 
                 // Issue draw call
