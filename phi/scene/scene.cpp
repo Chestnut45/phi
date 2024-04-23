@@ -395,6 +395,7 @@ namespace Phi
             {
                 // Bind resources
                 ssaoFBO->Bind(GL_DRAW_FRAMEBUFFER);
+                ssaoKernelUBO->BindBase(GL_UNIFORM_BUFFER, (int)UniformBindingIndex::SSAO);
                 ssaoBlurTexture->Bind(3);
                 ssaoShader.Use();
 

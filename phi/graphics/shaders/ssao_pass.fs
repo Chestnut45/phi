@@ -1,5 +1,8 @@
 #version 460
 
+// Sample count
+const int SAMPLE_COUNT = 32;
+
 // Camera uniform block
 layout(std140, binding = 0) uniform CameraBlock
 {
@@ -11,6 +14,12 @@ layout(std140, binding = 0) uniform CameraBlock
     mat4 invProj;
     vec4 cameraPos;
     vec4 viewport; // (x, y, width / 2, height / 2)
+};
+
+// Sample kernel block
+layout(std140, binding = 2) uniform SSAOBlock
+{
+    vec4 samples[SAMPLE_COUNT];
 };
 
 // Geometry buffer texture samplers
@@ -25,5 +34,9 @@ out float finalOcclusion;
 
 void main()
 {
-    
+    // Calculate the scale for tiling the SSAO rotation vectors
+    const vec2 tileScale = viewport.zw * 2.0 / textureSize(ssaoRotation);
+
+    // Output final value
+    finalOcclusion = 0;
 }

@@ -52,6 +52,7 @@ namespace Phi
             {
                 Camera = 0,
                 GlobalLights = 1,
+                SSAO = 2,
             };
 
             // Reserved internal shader storage buffer binding indices
