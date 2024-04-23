@@ -75,7 +75,7 @@ void main()
     float depth = texture(gDepth, texCoords).r;
     vec3 fragNorm = normalize(texture(gNorm, texCoords).xyz);
     uint materialID = texture(gMaterial, texCoords).r;
-    float occlusion = texture(ssaoTex, texCoords).r;
+    // float occlusion = texture(ssaoTex, texCoords).r;
 
     // Calculate fragment position in world space
     vec3 fragPos = getWorldPos(texCoords, depth);
@@ -103,7 +103,7 @@ void main()
         float alignment = dot(fragNorm, lightDir);
 
         // Ambient lighting
-        vec3 ambient = vec3(lightAmbience) * lightColor * materialColor * occlusion;
+        vec3 ambient = vec3(lightAmbience) * lightColor * materialColor;// * occlusion;
 
         // Diffuse lighting
         vec3 diffuse = max(alignment, 0.0) * lightColor * materialColor;
