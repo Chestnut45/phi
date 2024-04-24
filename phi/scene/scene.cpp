@@ -47,11 +47,17 @@ namespace Phi
         globalLightBasicShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light_pass.vs");
         globalLightBasicShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pass_basic.fs");
         globalLightBasicShader.Link();
+        globalLightBasicSSAOShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light_pass.vs");
+        globalLightBasicSSAOShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pass_basic_ssao.fs");
+        globalLightBasicSSAOShader.Link();
 
         // Voxel material
         globalLightVoxelShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light_pass.vs");
         globalLightVoxelShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pass_voxel.fs");
         globalLightVoxelShader.Link();
+        globalLightVoxelSSAOShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light_pass.vs");
+        globalLightVoxelSSAOShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pass_voxel_ssao.fs");
+        globalLightVoxelSSAOShader.Link();
 
         // Wireframes
         wireframeShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/wireframe.vs");
@@ -352,8 +358,11 @@ namespace Phi
                     activeLights++;
                 }
             }
+
+            // Write number of lights and base ambient light value
             globalLightBuffer.SetOffset((sizeof(glm::vec4) * 2) * MAX_DIRECTIONAL_LIGHTS);
             globalLightBuffer.Write(activeLights);
+            globalLightBuffer.Write(ambientLight);
 
             // Blit the geometry buffer's depth and stencil textures to the main render target
             switch (renderMode)
@@ -413,7 +422,8 @@ namespace Phi
         // Basic materials
         if (basicPass)
         {
-            globalLightBasicShader.Use();
+            // Use correct shader based on SSAO state
+            ssao ? globalLightBasicSSAOShader.Use() : globalLightBasicShader.Use();
             glStencilFunc(GL_EQUAL, (GLint)StencilValue::BasicMaterial, 0xff);
             glDrawArrays(GL_TRIANGLES, 0, 3);
         }
@@ -421,7 +431,8 @@ namespace Phi
         // Voxel materials
         if (voxelPass)
         {
-            globalLightVoxelShader.Use();
+            // Use correct shader based on SSAO state
+            ssao ? globalLightVoxelSSAOShader.Use() : globalLightVoxelShader.Use();
             glStencilFunc(GL_EQUAL, (GLint)StencilValue::VoxelMaterial, 0xff);
             glDrawArrays(GL_TRIANGLES, 0, 3);
         }

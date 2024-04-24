@@ -36,6 +36,7 @@ layout(std140, binding = 1) uniform GlobalLightBlock
 {
     DirectionalLight globalLights[MAX_DIRECTIONAL_LIGHTS];
     int globalLightCount;
+    float baseAmbientLight;
 };
 
 // Basic material buffer
@@ -88,7 +89,8 @@ void main()
     vec3 viewDir = normalize(cameraPos.xyz - fragPos);
 
     // Calculate influence from all active global lights
-    vec3 result = vec3(0.0);
+    // Start with the base ambient light of the scene
+    vec3 result = materialColor * baseAmbientLight;
     for (int i = 0; i < globalLightCount; i++)
     {
         // Grab light information

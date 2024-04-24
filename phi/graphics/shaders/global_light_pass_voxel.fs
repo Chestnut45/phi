@@ -36,6 +36,7 @@ layout(std140, binding = 1) uniform GlobalLightBlock
 {
     DirectionalLight globalLights[MAX_DIRECTIONAL_LIGHTS];
     int globalLightCount;
+    float baseAmbientLight;
 };
 
 // Voxel material buffer
@@ -48,9 +49,6 @@ layout(std430, binding = 2) buffer VoxelMaterialBlock
 layout(binding = 0) uniform sampler2D gNorm;
 layout(binding = 1) uniform usampler2D gMaterial;
 layout(binding = 2) uniform sampler2D gDepth;
-
-// SSAO sampler
-layout(binding = 3) uniform sampler2D ssaoTex;
 
 in vec2 texCoords;
 
@@ -76,7 +74,6 @@ void main()
     float depth = texture(gDepth, texCoords).r;
     vec3 fragNorm = normalize(texture(gNorm, texCoords).xyz);
     uint materialID = texture(gMaterial, texCoords).r;
-    float occlusion = texture(ssaoTex, texCoords).r;
 
     // Calculate fragment position in world space
     vec3 fragPos = getWorldPos(texCoords, depth);
@@ -92,8 +89,8 @@ void main()
     vec3 viewDir = normalize(cameraPos.xyz - fragPos);
 
     // Calculate influence from all active global lights
-    // TODO: Add ambient light value to scene, independant of directional lights
-    vec3 result = materialColor * 0.25 * occlusion;
+    // Start with the base ambient light of the scene
+    vec3 result = materialColor * baseAmbientLight;
     for (int i = 0; i < globalLightCount; i++)
     {
         // Grab light information

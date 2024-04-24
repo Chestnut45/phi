@@ -69,11 +69,6 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     // DEBUG: Add a voxel mesh to make sure scenes with custom viewports doesn't mess up stencil buffer transfers
     node->AddComponent<VoxelObject>().Load("data://models/mushroom.pvox");
 
-    // DEBUG: Test point light
-    PointLight& pointLight = node->AddComponent<PointLight>();
-    pointLight.SetColor(glm::vec3(1.0f, 0.1f, 0.0f));
-    pointLight.SetPosition(glm::vec3(0.0f, 0.0f, 2.0f));
-
     // Log
     Log(name, " initialized");
 }

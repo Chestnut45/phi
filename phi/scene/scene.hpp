@@ -161,6 +161,12 @@ namespace Phi
             // Removes the currently active skybox
             void RemoveSkybox();
 
+            // Sets the base ambient light amount in the scene, clamped to [0, 1]
+            void SetAmbientLight(float ambient) { ambientLight = std::clamp(ambient, 0.0f, 1.0f); }
+
+            // Gets the base ambient light amount in the scene
+            float GetAmbientLight() const { return ambientLight; }
+
             // Resolution management
 
             // Updates the resolution the scene is rendered at
@@ -250,11 +256,7 @@ namespace Phi
             GPUBuffer voxelMaterialBuffer{BufferType::Dynamic, MAX_VOXEL_MATERIALS * sizeof(glm::vec4)};
 
             // Render queues and lists
-
-            // Queue of basic meshes to be rendered this frame
             std::vector<BasicMesh*> basicMeshRenderQueue;
-
-            // Queue of voxel objects to be rendered this frame
             std::vector<VoxelObject*> voxelObjectRenderQueue;
 
             // Wireframe resources
@@ -269,9 +271,12 @@ namespace Phi
             DirectionalLight* globalLights[(int)DirectionalLight::Slot::NUM_SLOTS];
 
             // Global lighting resources
-            GPUBuffer globalLightBuffer{BufferType::DynamicDoubleBuffer, MAX_DIRECTIONAL_LIGHTS * (sizeof(glm::vec4) * 2) + sizeof(GLint)};
+            GPUBuffer globalLightBuffer{BufferType::DynamicDoubleBuffer, MAX_DIRECTIONAL_LIGHTS * (sizeof(glm::vec4) * 2) + (sizeof(GLint) * 2)};
             Shader globalLightBasicShader;
+            Shader globalLightBasicSSAOShader;
             Shader globalLightVoxelShader;
+            Shader globalLightVoxelSSAOShader;
+            float ambientLight = 0.1f;
 
             // A dummy VAO used for attributeless rendering
             GLuint dummyVAO = 0;

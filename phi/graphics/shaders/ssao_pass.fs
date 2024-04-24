@@ -66,15 +66,15 @@ void main()
     vec3 bitangent = cross(fragNorm, tangent);
     mat3 tbn = mat3(tangent, bitangent, fragNorm);
 
-    // Sample around the fragment
+    // Sample around the fragment in view space
     float occlusion = 0.0;
     for (int i = 0; i < SAMPLE_COUNT; ++i)
     {
         // Calculate view space sample position
-        const float radius = 1.0;
+        const float radius = 0.5;
         vec3 samplePos = tbn * samples[i].xyz * radius + fragPos;
 
-        // Transform to screen space
+        // Project the sample coordinates
         vec4 sampleCoords = proj * vec4(samplePos, 1.0);
         sampleCoords.xyz /= sampleCoords.w;
         sampleCoords.xyz = sampleCoords.xyz * 0.5 + 0.5;
