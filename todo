@@ -1,8 +1,6 @@
 Immediate TODO:
 
 
-- finish ssao (add near/far to camera ubo and linearize depth)
-- switch geometry buffer and lighting shaders to use view-space vectors?
 - voxelmap api design
 - arraygrid3d and voxel data struct
 
@@ -57,7 +55,7 @@ bugs / fixes
 --------------------------------
 
 high priority:
-- 
+- ssao changes when zoomed in? (fov dependant...)
 
 mid priority:
 - move glew dll in windows from system32 to executable folder?
