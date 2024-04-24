@@ -215,7 +215,7 @@ namespace Phi
             int viewportHeight = renderHeight;
 
             // Camera UBO
-            GPUBuffer cameraBuffer{BufferType::DynamicDoubleBuffer, sizeof(glm::mat4) * 6 + sizeof(glm::vec4) * 2};
+            GPUBuffer cameraBuffer{BufferType::DynamicDoubleBuffer, sizeof(glm::mat4) * 6 + sizeof(glm::vec4) * 3};
 
             // Main render target
             Framebuffer* renderTarget = nullptr;

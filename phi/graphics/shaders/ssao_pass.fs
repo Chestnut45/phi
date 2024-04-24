@@ -14,6 +14,7 @@ layout(std140, binding = 0) uniform CameraBlock
     mat4 invProj;
     vec4 cameraPos;
     vec4 viewport; // (x, y, width / 2, height / 2)
+    vec4 nearFar; // x = near, y = far, z = null, w = null
 };
 
 // Sample kernel block
@@ -32,21 +33,7 @@ in vec2 texCoords;
 
 out float finalOcclusion;
 
-// Gets the world position from texCoords and depth
-vec3 getWorldPos(vec2 texCoords, float depth)
-{
-    // Calculate view space position
-    vec4 viewSpacePos = invProj * vec4(texCoords * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
-
-    // Perspective division
-    viewSpacePos /= viewSpacePos.w;
-
-    // Calculate world space position
-    vec4 worldSpacePos = invView * viewSpacePos;
-    return worldSpacePos.xyz;
-}
-
-// Gets the view position from texCoords and (non-linear!) depth
+// Gets the view position from texCoords and depth
 vec3 getViewPos(vec2 texCoords, float depth)
 {
     // Calculate view space position
@@ -57,6 +44,12 @@ vec3 getViewPos(vec2 texCoords, float depth)
     return viewSpacePos.xyz;
 }
 
+// Linearizes a depth value based on the camera's near and far plane distances
+float linearizeDepth(float depth)
+{
+    return nearFar.x * nearFar.y / (nearFar.y - depth * (nearFar.y - nearFar.x));
+}
+
 void main()
 {
     // Calculate the scale for tiling the SSAO rotation vectors
@@ -65,7 +58,7 @@ void main()
     // Grab data from gbuffer textures
     float depth = texture(gDepth, texCoords).r;
     vec3 fragPos = getViewPos(texCoords, depth);
-    vec3 fragNorm = normalize((view * vec4(texture(gNorm, texCoords).xyz, 1.0)).xyz);
+    vec3 fragNorm = normalize((view * vec4(texture(gNorm, texCoords).xyz, 0.0)).xyz);
     vec3 rotation = vec3(texture(ssaoRotation, texCoords * tileScale).rg, 0.0);
 
     // Construct TBN matrix
@@ -87,7 +80,7 @@ void main()
         sampleCoords.xyz = sampleCoords.xyz * 0.5 + 0.5;
 
         // Sample depth
-        float sampleDepth = texture(gDepth, sampleCoords.xy).r;
+        float sampleDepth = -linearizeDepth(texture(gDepth, sampleCoords.xy).r);
 
         // Add occlusion with range check
         occlusion += (sampleDepth >= samplePos.z ? 1.0 : 0.0) * smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));

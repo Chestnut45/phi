@@ -18,6 +18,7 @@ layout(std140, binding = 0) uniform CameraBlock
     mat4 invProj;
     vec4 cameraPos;
     vec4 viewport; // (x, y, width / 2, height / 2)
+    vec4 nearFar; // x = near, y = far, z = null, w = null
 };
 
 // Emitter data SSBO (Each emitter gets their own indirect draw command,

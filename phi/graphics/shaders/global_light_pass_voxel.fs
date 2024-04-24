@@ -28,6 +28,7 @@ layout(std140, binding = 0) uniform CameraBlock
     mat4 invProj;
     vec4 cameraPos;
     vec4 viewport; // (x, y, width / 2, height / 2)
+    vec4 nearFar; // x = near, y = far, z = null, w = null
 };
 
 // Lighting uniform block
@@ -75,7 +76,7 @@ void main()
     float depth = texture(gDepth, texCoords).r;
     vec3 fragNorm = normalize(texture(gNorm, texCoords).xyz);
     uint materialID = texture(gMaterial, texCoords).r;
-    // float occlusion = texture(ssaoTex, texCoords).r;
+    float occlusion = texture(ssaoTex, texCoords).r;
 
     // Calculate fragment position in world space
     vec3 fragPos = getWorldPos(texCoords, depth);
@@ -91,7 +92,8 @@ void main()
     vec3 viewDir = normalize(cameraPos.xyz - fragPos);
 
     // Calculate influence from all active global lights
-    vec3 result = vec3(0.0);
+    // TODO: Add ambient light value to scene, independant of directional lights
+    vec3 result = materialColor * 0.25 * occlusion;
     for (int i = 0; i < globalLightCount; i++)
     {
         // Grab light information
@@ -103,7 +105,7 @@ void main()
         float alignment = dot(fragNorm, lightDir);
 
         // Ambient lighting
-        vec3 ambient = vec3(lightAmbience) * lightColor * materialColor;// * occlusion;
+        vec3 ambient = vec3(lightAmbience) * lightColor * materialColor;
 
         // Diffuse lighting
         vec3 diffuse = max(alignment, 0.0) * lightColor * materialColor;

@@ -850,6 +850,7 @@ namespace Phi
         cameraBuffer.Write(glm::inverse(proj));
         cameraBuffer.Write(glm::vec4(activeCamera->GetPosition(), 1.0f));
         cameraBuffer.Write(glm::vec4(viewportX, viewportY, activeCamera->GetWidth() * 0.5f, activeCamera->GetHeight() * 0.5f));
+        cameraBuffer.Write(glm::vec4(activeCamera->near, activeCamera->far, 0.0f, 0.0f));
     }
 
     void Scene::BuildQuadtree()
