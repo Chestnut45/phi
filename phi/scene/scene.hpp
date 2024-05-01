@@ -101,6 +101,9 @@ namespace Phi
             // Creates and registers a new node with a transform component into the scene
             Node* CreateNode3D();
 
+            // TODO: Register & create template nodes / factories
+            // e.g. RegisterNodeTemplate(string templateName, Node* node), CreateNode(string templateName)
+
             // Returns a pointer to the given node, or nullptr if id is invalid
             Node* Get(NodeID id);
 
@@ -286,7 +289,7 @@ namespace Phi
             size_t nodeCount = 0;
 
             // Settings
-            bool ssao = false;
+            bool ssao = true;
 
             // Helper functions
             void UpdateCameraBuffer();
