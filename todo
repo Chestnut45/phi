@@ -41,6 +41,7 @@ low priority:
 - design world building workflow (gui app? text format? biomes, landmasses, structures, models, entities, stamps...)
 - physics bodies (rigidbody.cpp, etc.)
 - tunable SSAO (radius, blur, samples, etc.)
+- directional light separate brightness and color?
 
 bugs / fixes
 --------------------------------

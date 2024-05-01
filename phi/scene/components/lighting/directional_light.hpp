@@ -67,8 +67,8 @@ namespace Phi
             static constexpr auto in_place_delete = true;
 
             // Light data
-            glm::vec3 color{1.0f};
-            glm::vec3 direction{0.0f, -1.0f, 0.0f};
+            glm::vec3 color{0.5f};
+            glm::vec3 direction{-1.0f, -1.0f, 0.0f};
             float ambient = 0.1f;
 
             // State
