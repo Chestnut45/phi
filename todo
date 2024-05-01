@@ -1,19 +1,9 @@
-Immediate TODO:
-
-
-- voxelmap api design
-- arraygrid3d and voxel data struct
-
-
-Engine TODO:
-
-
 design / features
 --------------------------------
 
 high priority:
+- voxelmap / .vmap file format design
 - input buffering
-- terrain, flora, fluid sim (in that order)
 - design voxel editor gui
 - raycasting mouse to select voxel on grid for edit / painting
 
@@ -56,7 +46,7 @@ bugs / fixes
 --------------------------------
 
 high priority:
-- ssao changes when zoomed in? (fov dependant...)
+- 
 
 mid priority:
 - move glew dll in windows from system32 to executable folder?

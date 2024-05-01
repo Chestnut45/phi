@@ -191,7 +191,7 @@ namespace Phi
             static const int MAX_BASIC_MATERIALS = 1024;
             static const int MAX_VOXEL_MATERIALS = 1024;
             static const int MAX_DIRECTIONAL_LIGHTS = 4;
-            static const int SSAO_SAMPLE_SIZE = 32;
+            static const int SSAO_SAMPLE_SIZE = 16;
 
         // Data / implementation
         private:

@@ -1,7 +1,7 @@
 #version 460
 
 // Sample count
-const int SAMPLE_COUNT = 32;
+const int SAMPLE_COUNT = 16;
 
 // Camera uniform block
 layout(std140, binding = 0) uniform CameraBlock
