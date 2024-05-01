@@ -10,13 +10,13 @@
 #include <phi/graphics/materials.hpp>
 #include <phi/graphics/framebuffer.hpp>
 #include <phi/graphics/texture_2d.hpp>
+#include <phi/scene/components/camera.hpp>
+#include <phi/scene/components/transform.hpp>
 #include <phi/scene/components/renderable/basic_mesh.hpp>
 #include <phi/scene/components/collision/bounding_sphere.hpp>
-#include <phi/scene/components/camera.hpp>
 #include <phi/scene/components/renderable/skybox.hpp>
-#include <phi/scene/components/transform.hpp>
 #include <phi/scene/components/lighting/directional_light.hpp>
-#include <phi/scene/components/renderable/voxel_object.hpp>
+#include <phi/scene/components/voxel/voxel_object.hpp>
 
 namespace Phi
 {

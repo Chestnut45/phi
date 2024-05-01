@@ -7,7 +7,7 @@
 #include <phi/core/file.hpp>
 #include <phi/scene/node.hpp>
 #include <phi/scene/components/collision/bounding_sphere.hpp>
-#include <phi/scene/components/renderable/cpu_particle_effect.hpp>
+#include <phi/scene/components/particles/cpu_particle_effect.hpp>
 #include <phi/scene/components/lighting/point_light.hpp>
 
 namespace Phi
