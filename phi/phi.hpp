@@ -42,6 +42,7 @@
 #include "scene/components/particles/cpu_particle_effect.hpp"
 #include "scene/components/particles/cpu_particle_emitter.hpp"
 #include "scene/components/renderable/skybox.hpp"
+#include "scene/components/voxel/voxel_map.hpp"
 #include "scene/components/voxel/voxel_mesh_implicit.hpp"
 #include "scene/components/voxel/voxel_mesh_splat.hpp"
 #include "scene/components/voxel/voxel_object.hpp"
