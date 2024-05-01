@@ -15,41 +15,81 @@ namespace Phi
         public:
 
             // Creates a 3D array with the following bounds:
-            // [xOrigin, xOrigin + width)
-            // [yOrigin, yOrigin + height)
-            // [zOrigin, zOrigin + depth)
-            ArrayGrid3D(size_t width, size_t height, size_t depth, int32_t xOrigin = 0, int32_t yOrigin = 0, int32_t zOrigin = 0);
+            // [0, width - 1]
+            // [0, height - 1]
+            // [0, depth - 1]
+            ArrayGrid3D(int32_t width, int32_t height, int32_t depth);
             ~ArrayGrid3D();
 
-            // Default copy constructor/assignment
-            ArrayGrid3D(const ArrayGrid3D&) = default;
-            ArrayGrid3D& operator=(const ArrayGrid3D&) = default;
+            // Delete copy constructor/assignment
+            ArrayGrid3D(const ArrayGrid3D&) = delete;
+            ArrayGrid3D& operator=(const ArrayGrid3D&) = delete;
 
-            // Default move constructor/assignment
-            ArrayGrid3D(ArrayGrid3D&& other) = default;
-            ArrayGrid3D& operator=(ArrayGrid3D&& other) = default;
+            // Delete move constructor/assignment
+            ArrayGrid3D(ArrayGrid3D&& other) = delete;
+            ArrayGrid3D& operator=(ArrayGrid3D&& other) = delete;
 
             // Data access / modification
 
             // Fast read-write access, no bounds checking
-            T& operator()(int32_t x, int32_t y, int32_t z)
+            inline T& Get(int32_t x, int32_t y, int32_t z)
             {
-
+                return data[Index(x, y, z)];
             }
 
-            // Resizes the grid, 
+            // Clears the grid (default initializes each entry)
+            void Clear();
+
+            // Resizes and clears the grid
+            void Resize(int32_t width, int32_t height, int32_t depth);
 
         // Data / implementation
         private:
 
             // Grid dimension boundaries
-            size_t width, height, depth;
-            int32_t xOrigin, yOrigin, zOrigin;
+            int32_t width, height, depth;
+
+            // Data
+            std::vector<T> data;
 
             // Calculate index into the internal array from 3D position
             inline uint32_t Index(int32_t x, int32_t y, int32_t z) const
             {
-                return (x - xOrigin) + width * ((y - yOrigin) + depth * (z - zOrigin));
+                return x + width * (y + depth * z);
             }
     };
+
+    // Template implementation
+
+    template <typename T>
+    ArrayGrid3D<T>::ArrayGrid3D(int32_t width, int32_t height, int32_t depth)
+    {
+        // Initialize the grid
+        Resize(width, height, depth);
+    }
+
+    template <typename T>
+    ArrayGrid3D<T>::~ArrayGrid3D()
+    {
+    }
+
+    template <typename T>
+    void ArrayGrid3D<T>::Clear()
+    {
+        Resize(width, height, depth);
+    }
+
+    template <typename T>
+    void ArrayGrid3D<T>::Resize(int32_t width, int32_t height, int32_t depth)
+    {
+        // Set new dimensions
+        this->width = width;
+        this->height = height;
+        this->depth = depth;
+
+        // Calculate new data element size and default construct each object
+        size_t totalElementSize = width * height * depth;
+        data.clear();
+        data.insert(data.end(), totalElementSize, T());
+    }
 }

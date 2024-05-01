@@ -2,7 +2,9 @@ design / features
 --------------------------------
 
 high priority:
-- voxelmap / .vmap file format design
+- design voxel map pipeline (design, import, usage, simulation, serialization)
+    - is it a component? does it own nodes? a scene?
+- .vmap file format design
 - input buffering
 - design voxel editor gui
 - raycasting mouse to select voxel on grid for edit / painting

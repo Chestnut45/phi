@@ -2,5 +2,11 @@
 
 namespace Phi
 {
-    
+    VoxelMap::VoxelMap()
+    {
+    }
+
+    VoxelMap::~VoxelMap()
+    {
+    }
 }
