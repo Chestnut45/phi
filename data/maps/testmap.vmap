@@ -1,0 +1,23 @@
+# voxel map format example
+
+materials: {file: data://materials.yaml} # external file or embedded?
+
+biomes: [
+    {},
+    {},
+    ...
+]
+
+landmasses: [
+    {},
+    {},
+    ...
+]
+
+structures: [
+    {file: data://models/teapot.pvox, position: {x: 0, y: 0, z: 0}},
+    {},
+    ...
+]
+
+...
