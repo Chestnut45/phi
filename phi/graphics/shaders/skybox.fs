@@ -1,5 +1,19 @@
 #version 460
 
+// Camera uniform block
+layout(std140, binding = 0) uniform CameraBlock
+{
+    mat4 viewProj;
+    mat4 invViewProj;
+    mat4 view;
+    mat4 invView;
+    mat4 proj;
+    mat4 invProj;
+    vec4 cameraPos;
+    vec4 viewport; // (x, y, width / 2, height / 2)
+    vec4 nearFar; // x = near, y = far, z = null, w = null
+};
+
 // Normalized time of day: 0 = noon, 1 = midnight
 uniform float timeOfDay;
 
@@ -7,17 +21,19 @@ uniform float timeOfDay;
 layout(binding = 0) uniform samplerCube dayCube;
 layout(binding = 1) uniform samplerCube nightCube;
 
-// Direction vector
-in vec3 texCoords;
+in vec2 texCoords;
 
 out vec4 finalColor;
 
 void main()
 {
-    // Sample both skyboxes directly
-    vec4 dayTexel = texture(dayCube, texCoords);
-    vec4 nightTexel = texture(nightCube, texCoords);
+    // Calculate direction to fragment
+    vec3 direction = (invViewProj * vec4(texCoords, 1.0, 1.0)).xyz;
 
-    // Blend both texels based on normalized time of day and influence from sun + moon
+    // Sample both skyboxes
+    vec4 dayTexel = texture(dayCube, direction);
+    vec4 nightTexel = texture(nightCube, direction);
+
+    // Blend both texels based on normalized time of day
     finalColor = mix(dayTexel, nightTexel, timeOfDay);
 }

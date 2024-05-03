@@ -5,51 +5,6 @@
 
 namespace Phi
 {
-    static const Phi::VertexPos SKYBOX_VERTICES[] =
-    {
-        {-1.0f,  1.0f, -1.0f},
-        {-1.0f, -1.0f, -1.0f},
-        {1.0f, -1.0f, -1.0f},
-        {1.0f, -1.0f, -1.0f},
-        {1.0f,  1.0f, -1.0f},
-        {-1.0f,  1.0f, -1.0f},
-
-        {-1.0f, -1.0f,  1.0f},
-        {-1.0f, -1.0f, -1.0f},
-        {-1.0f,  1.0f, -1.0f},
-        {-1.0f,  1.0f, -1.0f},
-        {-1.0f,  1.0f,  1.0f},
-        {-1.0f, -1.0f,  1.0f},
-
-        {1.0f, -1.0f, -1.0f},
-        {1.0f, -1.0f,  1.0f},
-        {1.0f,  1.0f,  1.0f},
-        {1.0f,  1.0f,  1.0f},
-        {1.0f,  1.0f, -1.0f},
-        {1.0f, -1.0f, -1.0f},
-
-        {-1.0f, -1.0f,  1.0f},
-        {-1.0f,  1.0f,  1.0f},
-        {1.0f,  1.0f,  1.0f},
-        {1.0f,  1.0f,  1.0f},
-        {1.0f, -1.0f,  1.0f},
-        {-1.0f, -1.0f,  1.0f},
-
-        {-1.0f,  1.0f, -1.0f},
-        {1.0f,  1.0f, -1.0f},
-        {1.0f,  1.0f,  1.0f},
-        {1.0f,  1.0f,  1.0f},
-        {-1.0f,  1.0f,  1.0f},
-        {-1.0f,  1.0f, -1.0f},
-
-        {-1.0f, -1.0f, -1.0f},
-        {-1.0f, -1.0f,  1.0f},
-        {1.0f, -1.0f, -1.0f},
-        {1.0f, -1.0f, -1.0f},
-        {-1.0f, -1.0f,  1.0f},
-        {1.0f, -1.0f,  1.0f}
-    };
-
     Skybox::Skybox(const std::string& dayMapPath, const std::string& nightMapPath)
         :
         dayMap({dayMapPath + "/right.png",
@@ -69,15 +24,14 @@ namespace Phi
         // If first instance, initialize static resources
         if (refCount == 0)
         {
-            // Create VAO / VBO / Shader for skyboxes
-            skyboxVBO = new Phi::GPUBuffer(Phi::BufferType::Static, sizeof(SKYBOX_VERTICES), SKYBOX_VERTICES);
-            skyboxVAO = new Phi::VertexAttributes(Phi::VertexFormat::POS, skyboxVBO);
+            // Load shader
             skyboxShader = new Phi::Shader();
-
-            // Load shader source
             skyboxShader->LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/skybox.vs");
             skyboxShader->LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/skybox.fs");
             skyboxShader->Link();
+
+            // Generate dummy VAO for attributeless rendering
+            glGenVertexArrays(1, &dummyVAO);
         }
 
         refCount++;
@@ -93,9 +47,11 @@ namespace Phi
         // If last instance, cleanup static resources
         if (refCount == 0)
         {
-            delete skyboxVBO;
-            delete skyboxVAO;
+            // Delete the shader
             delete skyboxShader;
+
+            // Delete dummy vao
+            glDeleteVertexArrays(1, &dummyVAO);
         }
     }
 
@@ -103,18 +59,16 @@ namespace Phi
     {
         // Bind resources
         skyboxShader->Use();
-        skyboxVAO->Bind();
         dayMap.Bind(0);
         nightMap.Bind(1);
 
         // Write normalized time uniform to interpolate skyboxes
         skyboxShader->SetUniform("timeOfDay", timeOfDay);
 
-        // Change depth function so max distance still renders
+        // Draw and unbind
         glDepthFunc(GL_LEQUAL);
-        
-        // Draw, unbind, and reset depth function
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(dummyVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
         glDepthFunc(GL_LESS);
     }

@@ -1,33 +1,18 @@
 #version 460
 
-// Camera uniform block
-layout(std140, binding = 0) uniform CameraBlock
+// Fullscreen triangle vertices
+const vec2 verts[3] =
 {
-    mat4 viewProj;
-    mat4 invViewProj;
-    mat4 view;
-    mat4 invView;
-    mat4 proj;
-    mat4 invProj;
-    vec4 cameraPos;
-    vec4 viewport; // (x, y, width / 2, height / 2)
-    vec4 nearFar; // x = near, y = far, z = null, w = null
+    vec2(-1, -1),
+    vec2(3, -1),
+    vec2(-1, 3)
 };
 
-// Vertex data
-in vec3 vPos;
-
-// Output vertex data directly as texture coordinates.
-// Since the skyboxes will always be centered around the camera,
-// we can use the interpolated fragment coordinates as an
-// unnormalized direction vector to sample the cube textures with.
-out vec3 texCoords;
+// Output texture coordinates in [-1, 1] (NDC)
+out vec2 texCoords;
 
 void main()
 {
-    texCoords = vPos;
-    vec4 pos = viewProj * vec4(vPos + cameraPos.xyz, 1.0);
-    
-    // Ensure NDCs have max depth value
-    gl_Position = pos.xyww;
+    gl_Position = vec4(verts[gl_VertexID], 1.0, 1.0);
+    texCoords = gl_Position.xy;
 }

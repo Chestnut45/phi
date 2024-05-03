@@ -18,6 +18,12 @@ namespace Phi
         // Interface
         public:
 
+            // Convenient normalized time of day constants
+            static inline float SUNRISE = 0.0f;
+            static inline float NOON = 0.25f;
+            static inline float SUNSET = 0.5f;
+            static inline float MIDNIGHT = 0.75f;
+
             // Loads a skybox from 2 folders containing all the images for day / night cubemaps
             // Accepts local paths like data:// and user://
             Skybox(const std::string& dayMapPath, const std::string& nightMapPath);
@@ -31,9 +37,8 @@ namespace Phi
             Skybox(Skybox&& other) = delete;
             void operator=(Skybox&& other) = delete;
 
-            // Set blend factor between day / night textures
-            // 0 = noon, 1 = midnight
-            // Values outside of those bounds will be clamped
+            // Sets the time of the sky
+            // NOTE: Can use human readable constants from above
             void SetTime(float time) { timeOfDay = std::clamp(time, 0.0f, 1.0f); };
             float GetTime() const { return timeOfDay; };
 
@@ -47,14 +52,20 @@ namespace Phi
             Phi::Cubemap dayMap;
             Phi::Cubemap nightMap;
 
-            // Blend factor between textures
-            // 0 = noon, 1 = midnight
-            float timeOfDay = 1.0f;
+            // Timing variables
+
+            // Day / night lengths in seconds
+            float dayLength = 10.0f;
+            float nightLength = 2.0f;
+
+            // Normalized time of day
+            // NOTE: See public constants for readable conversions
+            // NOTE: Advances at different rates depending on dayLength / nightLength
+            float timeOfDay = 0.0f;
 
             // Static internal resources
-            static inline Phi::GPUBuffer* skyboxVBO = nullptr;
-            static inline Phi::VertexAttributes* skyboxVAO = nullptr;
             static inline Phi::Shader* skyboxShader = nullptr;
+            static inline GLuint dummyVAO = 0;
 
             // Reference counting for static resources
             static inline int refCount = 0;

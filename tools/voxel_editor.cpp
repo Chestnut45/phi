@@ -22,8 +22,6 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     // Add a camera
     Camera& camera = scene.CreateNode3D()->AddComponent<Camera>();
     camera.SetPosition({0, 32, 96});
-    camera.SetMode(Camera::Mode::Target);
-    camera.LookAt(glm::vec3(0, 0, 0));
     scene.SetActiveCamera(camera);
 
     // Add a skybox

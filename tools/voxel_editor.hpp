@@ -35,7 +35,7 @@ class VoxelEditor : public Phi::App
 
         // Settings
         bool rotateModel = false;
-        bool freeCamera = false;
+        bool freeCamera = true;
 
         // Displays the main interface
         void ShowInterface();
