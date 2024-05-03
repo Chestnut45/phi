@@ -22,7 +22,6 @@ layout(binding = 0) uniform samplerCube dayCube;
 layout(binding = 1) uniform samplerCube nightCube;
 
 in vec2 texCoords;
-
 out vec4 finalColor;
 
 void main()

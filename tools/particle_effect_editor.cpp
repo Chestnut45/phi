@@ -29,7 +29,7 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     scene.SetActiveCamera(camera);
 
     // Add a skybox
-    Skybox& skybox = camera.GetNode()->AddComponent<Skybox>("data://textures/skybox_day", "data://textures/skybox_night_old");
+    Sky& skybox = camera.GetNode()->AddComponent<Sky>("data://textures/skybox_day", "data://textures/skybox_night_old");
     scene.SetActiveSkybox(skybox);
 
     // Add a directional light

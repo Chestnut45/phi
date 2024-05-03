@@ -25,7 +25,7 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     scene.SetActiveCamera(camera);
 
     // Add a skybox
-    Skybox& skybox = camera.GetNode()->AddComponent<Skybox>("data://textures/skybox_day", "data://textures/skybox_night_old");
+    Sky& skybox = camera.GetNode()->AddComponent<Sky>("data://textures/skybox_day", "data://textures/skybox_night_old");
     scene.SetActiveSkybox(skybox);
 
     // Add a global directional light

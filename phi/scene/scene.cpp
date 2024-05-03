@@ -454,7 +454,7 @@ namespace Phi
         // Environment pass
 
         // Draw the skybox
-        if (activeSkybox) activeSkybox->Render();
+        if (activeSkybox) activeSkybox->RenderSkybox();
 
         // Particle pass
 
@@ -714,7 +714,7 @@ namespace Phi
         }
     }
 
-    void Scene::SetActiveSkybox(Skybox& skybox)
+    void Scene::SetActiveSkybox(Sky& skybox)
     {
         // Check if the skybox is already attached to a scene
         if (skybox.activeScene)
