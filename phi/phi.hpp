@@ -8,6 +8,7 @@
 #include "core/input.hpp"
 #include "core/logging.hpp"
 #include "core/resource_manager.hpp"
+#include "core/math/constants.hpp"
 #include "core/math/noise.hpp"
 #include "core/math/rng.hpp"
 #include "core/math/shapes.hpp"

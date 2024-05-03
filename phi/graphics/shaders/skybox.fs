@@ -14,8 +14,8 @@ layout(std140, binding = 0) uniform CameraBlock
     vec4 nearFar; // x = near, y = far, z = null, w = null
 };
 
-// Normalized time of day: 0 = noon, 1 = midnight
-uniform float timeOfDay;
+// Blend factor between day (0) and night (1)
+uniform float blendFactor;
 
 // Skybox texture samplers
 layout(binding = 0) uniform samplerCube dayCube;
@@ -27,13 +27,13 @@ out vec4 finalColor;
 
 void main()
 {
-    // Calculate direction to fragment
-    vec3 direction = (invViewProj * vec4(texCoords, 1.0, 1.0)).xyz;
+    // Calculate unnormalized world-space direction to fragment
+    vec3 direction = (invViewProj * vec4(texCoords * 2.0 - 1.0, 1.0, 1.0)).xyz;
 
     // Sample both skyboxes
     vec4 dayTexel = texture(dayCube, direction);
     vec4 nightTexel = texture(nightCube, direction);
 
-    // Blend both texels based on normalized time of day
-    finalColor = mix(dayTexel, nightTexel, timeOfDay);
+    // Mix both samples using the blend factor
+    finalColor = mix(dayTexel, nightTexel, blendFactor);
 }

@@ -1,5 +1,6 @@
 #include "skybox.hpp"
 
+#include <phi/core/math/constants.hpp>
 #include <phi/core/file.hpp>
 #include <phi/scene/scene.hpp>
 
@@ -62,8 +63,9 @@ namespace Phi
         dayMap.Bind(0);
         nightMap.Bind(1);
 
-        // Write normalized time uniform to interpolate skyboxes
-        skyboxShader->SetUniform("timeOfDay", timeOfDay);
+        // Write blend factor to mix day and night skyboxes
+        float blendFactor = (1 - sin(timeOfDay * TAU)) / 2.0f;
+        skyboxShader->SetUniform("blendFactor", blendFactor);
 
         // Draw and unbind
         glDepthFunc(GL_LEQUAL);

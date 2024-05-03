@@ -1,3 +1,4 @@
+#include <phi/core/math/constants.hpp>
 #include <phi/graphics/vertex_attributes.hpp>
 #include <phi/graphics/vertex.hpp>
 
@@ -5,10 +6,6 @@
 // All specific shapes are wrapped in a namespace so globals can be constrained to their scope
 namespace Phi
 {
-    // Global geometric constants
-    static constexpr float PHI = 1.61803398875f;
-    static constexpr float TAU = 6.28318530718f;
-
     namespace Cube
     {
         // Half length of unit cube
