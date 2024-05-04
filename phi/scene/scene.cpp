@@ -69,6 +69,11 @@ namespace Phi
         ssaoShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/ssao_pass.fs");
         ssaoShader.Link();
 
+        // Light scattering shader
+        lightScatteringShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/light_scatter.vs");
+        lightScatteringShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/light_scatter.fs");
+        lightScatteringShader.Link();
+
         // Initialize SSAO data
 
         // Generate kernel data
@@ -210,6 +215,9 @@ namespace Phi
         
         // Update the camera
         activeCamera->Update(delta);
+
+        // Update the sky
+        if (activeSky) activeSky->Update(delta);
 
         // Update all particle effects
         for (auto&&[id, effect] : registry.view<CPUParticleEffect>().each())
@@ -371,11 +379,6 @@ namespace Phi
                     glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
                     glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
                     break;
-                
-                case RenderMode::CustomViewport:
-                    glBlitFramebuffer(0, 0, renderWidth, renderHeight, viewportX, viewportY, viewportX + viewportWidth, viewportY + viewportHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-                    glBlitFramebuffer(0, 0, renderWidth, renderHeight, viewportX, viewportY, viewportX + viewportWidth, viewportY + viewportHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
-                    break;
             }
 
             // Disable depth testing / writing
@@ -413,12 +416,6 @@ namespace Phi
             }
         }
 
-        // Clear the render target (not needed if using viewport / blit method)
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-        // Use custom viewport instead of renderTarget
-        if (renderMode == RenderMode::CustomViewport) glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
-
         // Basic materials
         if (basicPass)
         {
@@ -454,7 +451,30 @@ namespace Phi
         // Environment pass
 
         // Draw the skybox
-        if (activeSkybox) activeSkybox->RenderSkybox();
+        if (activeSky) 
+        {
+            // Render the skybox texture
+            activeSky->RenderSkybox();
+
+            if (activeSky->renderSun)
+            {
+                // Bind the proper FBO and render the sun
+                sunlightFBO->Bind(GL_DRAW_FRAMEBUFFER);
+                glClear(GL_COLOR_BUFFER_BIT);
+                activeSky->RenderSun();
+
+                // Apply light scattering post-process effect
+                sunlightFBO->Unbind(GL_DRAW_FRAMEBUFFER);
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_ONE, GL_ONE);
+                lightScatteringShader.Use();
+                sunlightTexture->Bind(4);
+                glBindVertexArray(dummyVAO);
+                glDrawArrays(GL_TRIANGLES, 0, 3);
+                glBindVertexArray(0);
+                glDisable(GL_BLEND);
+            }
+        }
 
         // Particle pass
 
@@ -486,10 +506,6 @@ namespace Phi
         // {
         //     case RenderMode::MatchInternalResolution:
         //         glBlitNamedFramebuffer(renderTarget->GetID(), 0, 0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-        //         break;
-            
-        //     case RenderMode::CustomViewport:
-        //         glBlitNamedFramebuffer(renderTarget->GetID(), 0, 0, 0, renderWidth, renderHeight, viewportX, viewportY, viewportX + viewportWidth, viewportY + viewportHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
         //         break;
         // }
         // renderTarget->Unbind();
@@ -730,16 +746,16 @@ namespace Phi
         RemoveSkybox();
 
         // Make the skybox this scene's active skybox
-        activeSkybox = &skybox;
+        activeSky = &skybox;
         skybox.activeScene = this;
     }
 
     void Scene::RemoveSkybox()
     {
-        if (activeSkybox)
+        if (activeSky)
         {
-            activeSkybox->activeScene = nullptr;
-            activeSkybox = nullptr;
+            activeSky->activeScene = nullptr;
+            activeSky = nullptr;
         }
     }
 
@@ -757,20 +773,6 @@ namespace Phi
         // Update camera viewport if render mode matches
         if (activeCamera) activeCamera->SetResolution(width, height);
         RegenerateFramebuffers();
-    }
-
-    void Scene::SetViewport(int x, int y, int width, int height)
-    {
-        if (width < 1 || height < 1)
-        {
-            Phi::Error("Scene custom viewport width and height must both be positive");
-            return;
-        }
-
-        viewportX = x;
-        viewportY = y;
-        viewportWidth = std::clamp(width, 1, MAX_RESOLUTION.x);
-        viewportHeight = std::clamp(height, 1, MAX_RESOLUTION.y);
     }
 
     void Scene::SetRenderMode(RenderMode mode)
@@ -794,6 +796,9 @@ namespace Phi
 
             delete ssaoFBO;
             delete ssaoScreenTexture;
+
+            delete sunlightFBO;
+            delete sunlightTexture;
         }
 
         // Create render target textures
@@ -807,6 +812,19 @@ namespace Phi
         // renderTarget->AttachTexture(rTexDepthStencil, GL_DEPTH_STENCIL_ATTACHMENT);
         // renderTarget->CheckCompleteness();
 
+        // Create sun texture
+        sunlightTexture = new Texture2D(renderWidth, renderHeight, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+
+        // Create light scattering FBO
+        sunlightFBO = new Framebuffer();
+        sunlightFBO->Bind();
+        sunlightFBO->AttachTexture(sunlightTexture, GL_COLOR_ATTACHMENT0);
+        sunlightFBO->CheckCompleteness();
+
+        // Set draw buffer
+        GLenum buf[1] = { GL_COLOR_ATTACHMENT0 };
+        glDrawBuffers(1, buf);
+
         // Create SSAO texture
         ssaoScreenTexture = new Texture2D(renderWidth, renderHeight, GL_R8, GL_RED, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
 
@@ -817,7 +835,6 @@ namespace Phi
         ssaoFBO->CheckCompleteness();
 
         // Set draw buffer
-        GLenum buf[1] = { GL_COLOR_ATTACHMENT0 };
         glDrawBuffers(1, buf);
 
         // Create geometry buffer textures
@@ -860,7 +877,7 @@ namespace Phi
         cameraBuffer.Write(proj);
         cameraBuffer.Write(glm::inverse(proj));
         cameraBuffer.Write(glm::vec4(activeCamera->GetPosition(), 1.0f));
-        cameraBuffer.Write(glm::vec4(viewportX, viewportY, activeCamera->GetWidth() * 0.5f, activeCamera->GetHeight() * 0.5f));
+        cameraBuffer.Write(glm::vec4(0, 0, activeCamera->GetWidth() * 0.5f, activeCamera->GetHeight() * 0.5f));
         cameraBuffer.Write(glm::vec4(activeCamera->near, activeCamera->far, 0.0f, 0.0f));
     }
 

@@ -3,9 +3,6 @@ design / features
 
 high priority:
 - skybox rework
-    - suns? moons? (CelestialBody struct)
-    - god rays (occlusion, bloom)
-    - lens flares
 - design voxel map pipeline (design, import, usage, simulation, serialization)
     - is it a component? does it own nodes? a scene?
 - .vmap file format design

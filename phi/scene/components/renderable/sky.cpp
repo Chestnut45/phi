@@ -3,6 +3,7 @@
 #include <phi/core/math/constants.hpp>
 #include <phi/core/file.hpp>
 #include <phi/scene/scene.hpp>
+#include <phi/core/resource_manager.hpp>
 
 namespace Phi
 {
@@ -25,14 +26,22 @@ namespace Phi
         // If first instance, initialize static resources
         if (refCount == 0)
         {
-            // Load shader
+            // Load shaders
             skyboxShader = new Phi::Shader();
             skyboxShader->LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/skybox.vs");
             skyboxShader->LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/skybox.fs");
             skyboxShader->Link();
 
+            sunShader = new Shader();
+            sunShader->LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/sun.vs");
+            sunShader->LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/sun.fs");
+            sunShader->Link();
+
             // Generate dummy VAO for attributeless rendering
             glGenVertexArrays(1, &dummyVAO);
+
+            // Load sun texture
+            sunTexture = new Texture2D("data://textures/particles/shapes/circle_6.png", GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST, true);
         }
 
         refCount++;
@@ -48,11 +57,26 @@ namespace Phi
         // If last instance, cleanup static resources
         if (refCount == 0)
         {
-            // Delete the shader
+            // Delete the shader and texture
             delete skyboxShader;
+            delete sunTexture;
 
             // Delete dummy vao
             glDeleteVertexArrays(1, &dummyVAO);
+        }
+    }
+
+    void Sky::Update(float delta)
+    {
+        if (advanceTime)
+        {
+            // Update time
+            float weightedDelta = (timeOfDay < 0.5f) ? delta / dayLength : delta / nightLength;
+            weightedDelta *= 0.5f;
+            timeOfDay += weightedDelta;
+            if (timeOfDay > 1.0f) timeOfDay -= 1.0f;
+
+            // TODO: Calculate sun position
         }
     }
 
@@ -73,5 +97,17 @@ namespace Phi
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
         glDepthFunc(GL_LESS);
+    }
+
+    void Sky::RenderSun()
+    {
+        // Bind, draw, and unbind
+        sunTexture->Bind(5);
+        sunShader->Use();
+        sunShader->SetUniform("sunColor", sunColor);
+        sunShader->SetUniform("sunPos", sunPos);
+        glBindVertexArray(dummyVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
     }
 }

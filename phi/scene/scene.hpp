@@ -37,10 +37,7 @@ namespace Phi
             enum class RenderMode
             {
                 // Renders the final image to the default framebuffer with viewport (0, 0, renderWidth, renderHeight)
-                MatchInternalResolution,
-
-                // Renders the final image to the default framebuffer with the scene's viewport
-                CustomViewport,
+                MatchInternalResolution
 
                 // TODO: TextureBlit
                 // Renders the final image to a texture at internal rendering resolution,
@@ -179,11 +176,6 @@ namespace Phi
             // RATIONALE: Tying the scene's resolution to a window should be opt-in, not opt-out
             void SetResolution(int width, int height);
 
-            // Updates the viewport to render to in window-relative coordinates (Bottom-left is (0, 0))
-            // Updates the currently active camera's viewport to match
-            // NOTE: Only affects output when using RenderMode::CustomViewport
-            void SetViewport(int x, int y, int width, int height);
-
             // Changes the rendering mode
             void SetRenderMode(RenderMode mode);
 
@@ -205,8 +197,8 @@ namespace Phi
             // Currently active camera
             Camera* activeCamera = nullptr;
 
-            // Currently active skybox
-            Sky* activeSkybox = nullptr;
+            // Currently active sky
+            Sky* activeSky = nullptr;
 
             // Render data
 
@@ -216,12 +208,6 @@ namespace Phi
             // Internal rendering resolution
             int renderWidth = 1280;
             int renderHeight = 720;
-
-            // Custom viewport data
-            int viewportX = 0;
-            int viewportY = 0;
-            int viewportWidth = renderWidth;
-            int viewportHeight = renderHeight;
 
             // Camera UBO
             GPUBuffer cameraBuffer{BufferType::DynamicDoubleBuffer, sizeof(glm::mat4) * 6 + sizeof(glm::vec4) * 3};
@@ -243,6 +229,11 @@ namespace Phi
             Texture2D* ssaoScreenTexture = nullptr;
             Framebuffer* ssaoFBO = nullptr;
             Shader ssaoShader;
+
+            // Light scattering / god rays (sun / sky)
+            Framebuffer* sunlightFBO = nullptr;
+            Texture2D* sunlightTexture = nullptr;
+            Shader lightScatteringShader;
 
             // Material data
 

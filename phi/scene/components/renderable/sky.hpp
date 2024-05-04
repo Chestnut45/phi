@@ -6,6 +6,7 @@
 
 #include <phi/graphics/cubemap.hpp>
 #include <phi/graphics/gpu_buffer.hpp>
+#include <phi/graphics/texture_2d.hpp>
 #include <phi/graphics/vertex_attributes.hpp>
 #include <phi/graphics/shader.hpp>
 #include <phi/scene/components/base_component.hpp>
@@ -42,6 +43,9 @@ namespace Phi
             void SetTime(float time) { timeOfDay = std::clamp(time, 0.0f, 1.0f); };
             float GetTime() const { return timeOfDay; };
 
+            // Updates the sky, advancing time by delta
+            void Update(float delta);
+
             // Renders the skybox texture to the current framebuffer
             void RenderSkybox();
 
@@ -58,22 +62,23 @@ namespace Phi
             // Timing variables
 
             // Day / night lengths in seconds
-            float dayLength = 10.0f;
-            float nightLength = 2.0f;
-
-            // Normalized time of day
-            // NOTE: See public constants for readable conversions
+            float dayLength = 15.0f;
+            float nightLength = 10.0f;
             float timeOfDay = 0.0f;
+            bool advanceTime = true;
 
             // Visual settings
 
-            // Enables the sun
-            bool sun = false;
-            bool godRays = false;
+            // Sun data
+            glm::vec3 sunColor{1.0f, 0.8f, 0.45f};
+            glm::vec3 sunPos{0.0f, 64.0f, 0.0f};
+            bool renderSun = true;
             bool lensFlare = false;
 
             // Static internal resources
-            static inline Phi::Shader* skyboxShader = nullptr;
+            static inline Texture2D* sunTexture = nullptr;
+            static inline Shader* sunShader = nullptr;
+            static inline Shader* skyboxShader = nullptr;
             static inline GLuint dummyVAO = 0;
 
             // Reference counting for static resources

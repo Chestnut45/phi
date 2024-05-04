@@ -16,17 +16,14 @@ int main(int, char**)
 
 VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
 {   
-    // Initialize the scene
-    scene.SetRenderMode(Scene::RenderMode::CustomViewport);
-
     // Add a camera
     Camera& camera = scene.CreateNode3D()->AddComponent<Camera>();
     camera.SetPosition({0, 32, 96});
     scene.SetActiveCamera(camera);
 
-    // Add a skybox
-    Sky& skybox = camera.GetNode()->AddComponent<Sky>("data://textures/skybox_day", "data://textures/skybox_night_old");
-    scene.SetActiveSkybox(skybox);
+    // Add a sky
+    Sky& sky = camera.GetNode()->AddComponent<Sky>("data://textures/skybox_day", "data://textures/skybox_night_old");
+    scene.SetActiveSkybox(sky);
 
     // Add a global directional light
     auto& light = camera.GetNode()->AddComponent<DirectionalLight>();
@@ -63,8 +60,7 @@ void VoxelEditor::Update(float delta)
     // Manually update scene resolution on window resize
     if (windowResized)
     {
-        scene.SetResolution(wWidth - 256, wHeight);
-        scene.SetViewport(256, 0, wWidth - 256, wHeight);
+        scene.SetResolution(wWidth, wHeight);
         windowResized = false;
     }
 
