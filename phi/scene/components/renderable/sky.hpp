@@ -70,15 +70,17 @@ namespace Phi
 
             // Sun data
             glm::vec3 sunColor{1.0f, 0.8f, 0.45f};
-            glm::vec3 sunPos{0.0f, 0.0f, -256.0f};
+            glm::vec3 sunPos{0.0f};
+            float sunAmbient = 0.1f;
             float sunSize = 64.0f;
+            float sunDistance = 256.0f;
             bool renderSun = true;
+            bool lensFlare = false;
             bool godRays = true;
             float exposure = 0.24f;
             float decay = 0.974f;
             float density = 0.95f;
             float weight = 0.25f;
-            bool lensFlare = false;
 
             // Static internal resources
             static inline Texture2D* sunTexture = nullptr;

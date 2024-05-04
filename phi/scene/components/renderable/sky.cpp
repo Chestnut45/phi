@@ -75,9 +75,12 @@ namespace Phi
             weightedDelta *= 0.5f;
             timeOfDay += weightedDelta;
             if (timeOfDay > 1.0f) timeOfDay -= 1.0f;
-
-            // TODO: Calculate sun position
         }
+
+        // Calculate sun position
+        sunPos.x = 0.0f;
+        sunPos.y = glm::sin(TAU * timeOfDay) * sunDistance;
+        sunPos.z = -glm::cos(TAU * timeOfDay) * sunDistance;
     }
 
     void Sky::RenderSkybox()

@@ -185,7 +185,7 @@ namespace Phi
             static inline glm::ivec2 MAX_RESOLUTION = glm::ivec2(4096, 2160);
             static const int MAX_BASIC_MATERIALS = 1024;
             static const int MAX_VOXEL_MATERIALS = 1024;
-            static const int MAX_DIRECTIONAL_LIGHTS = 4;
+            static const int MAX_USER_DIRECTIONAL_LIGHTS = 4;
             static const int SSAO_SAMPLE_SIZE = 16;
 
         // Data / implementation
@@ -266,12 +266,12 @@ namespace Phi
             DirectionalLight* globalLights[(int)DirectionalLight::Slot::NUM_SLOTS];
 
             // Global lighting resources
-            GPUBuffer globalLightBuffer{BufferType::DynamicDoubleBuffer, MAX_DIRECTIONAL_LIGHTS * (sizeof(glm::vec4) * 2) + (sizeof(GLint) * 2)};
+            GPUBuffer globalLightBuffer{BufferType::DynamicDoubleBuffer, (MAX_USER_DIRECTIONAL_LIGHTS + 1) * (sizeof(glm::vec4) * 2) + (sizeof(GLint) * 2)};
             Shader globalLightBasicShader;
             Shader globalLightBasicSSAOShader;
             Shader globalLightVoxelShader;
             Shader globalLightVoxelSSAOShader;
-            float ambientLight = 0.1f;
+            float ambientLight = 0.01f;
 
             // A dummy VAO used for attributeless rendering
             GLuint dummyVAO = 0;

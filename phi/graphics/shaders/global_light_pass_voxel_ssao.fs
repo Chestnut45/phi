@@ -1,6 +1,6 @@
 #version 460
 
-const int MAX_DIRECTIONAL_LIGHTS = 4;
+const int MAX_DIRECTIONAL_LIGHTS = 5; // 4 for user, 1 for active sky
 const int MAX_MATERIALS = 1024;
 const float GAMMA = 2.2;
 
@@ -113,7 +113,7 @@ void main()
 
         // Specular reflections
         vec3 lightHalfDir = normalize(lightDir + viewDir);
-        float specLight = max(pow(max(dot(fragNorm, lightHalfDir), 0.0), materialShininess * 256.0), 0.0);
+        float specLight = alignment >= -0.0001 ? max(pow(max(dot(fragNorm, lightHalfDir), 0.0), materialShininess * 256.0), 0.0) : 0.0;
         vec3 specular = specLight * lightColor * vec3(materialShininess);
 
         // Final color composition

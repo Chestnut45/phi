@@ -89,7 +89,7 @@ void main()
 
     // Specular reflections
     vec3 lightHalfDir = normalize(lightDir + viewDir);
-    float specLight = max(pow(max(dot(fragNorm, lightHalfDir), 0.0), materialShininess * 256.0), 0.0);
+    float specLight = alignment >= -0.0001 ? max(pow(max(dot(fragNorm, lightHalfDir), 0.0), materialShininess * 256.0), 0.0) : 0.0;
     vec3 specular = specLight * lightColor * vec3(materialShininess);
 
     // Apply attenuation

@@ -2,10 +2,6 @@ design / features
 --------------------------------
 
 high priority:
-- finish sky changes
-    - tie sun position to time of day
-    - implicit directional light from sun
-    - blur god rays pass?
 - design voxel map pipeline (design, import, usage, simulation, serialization)
     - is it a component? does it own nodes? a scene?
 - .vmap file format design
@@ -41,13 +37,12 @@ low priority:
 - text rendering
 - audio library choice (likely OpenAL)
 - pbr materials
-- ColorRGBAFloat / ColorRGBByte wrappers?
 - extend quadtree to octree (may be useful for speeding up raycast queries in voxel editor?)
 - implement rehash / resize + write unit tests for HashMap
 - design world building workflow (gui app? text format? biomes, landmasses, structures, models, entities, stamps...)
 - physics bodies (rigidbody.cpp, etc.)
 - tunable SSAO (radius, blur, samples, etc.)
-- directional light separate brightness and color?
+- blur for sun light scattering dither?
 
 bugs / fixes
 --------------------------------

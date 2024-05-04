@@ -364,8 +364,16 @@ namespace Phi
             }
         }
 
+        // Write the sun if it's active
+        if (activeSky && activeSky->renderSun)
+        {
+            globalLightBuffer.Write(glm::vec4(activeSky->sunColor, 1.0f));
+            globalLightBuffer.Write(glm::vec4(glm::normalize(-activeSky->sunPos), activeSky->sunAmbient));
+            activeLights++;
+        }
+
         // Write number of lights and base ambient light value
-        globalLightBuffer.SetOffset((sizeof(glm::vec4) * 2) * MAX_DIRECTIONAL_LIGHTS);
+        globalLightBuffer.SetOffset((sizeof(glm::vec4) * 2) * (MAX_USER_DIRECTIONAL_LIGHTS + 1));
         globalLightBuffer.Write(activeLights);
         globalLightBuffer.Write(ambientLight);
 
@@ -533,7 +541,7 @@ namespace Phi
     void Scene::ShowDebug()
     {
         ImGui::SetNextWindowPos(ImVec2(4, 4));
-        ImGui::SetNextWindowSize(ImVec2(256, renderHeight - 8));
+        ImGui::SetNextWindowSize(ImVec2(320, renderHeight - 8));
         ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
         ImGui::SeparatorText("Statistics");
@@ -559,40 +567,42 @@ namespace Phi
         if (activeSky)
         {
             ImGui::SeparatorText("Active Sky");
+
+            ImGui::Text("Timing:");
+            ImGui::Separator();
+            if (ImGui::Button("Sunrise")) activeSky->SetTime(Sky::SUNRISE); ImGui::SameLine();
+            if (ImGui::Button("Noon")) activeSky->SetTime(Sky::NOON); ImGui::SameLine();
+            if (ImGui::Button("Sunset")) activeSky->SetTime(Sky::SUNSET); ImGui::SameLine();
+            if (ImGui::Button("Midnight")) activeSky->SetTime(Sky::MIDNIGHT);
+            ImGui::DragFloat("Day Length", &activeSky->dayLength, 1.0f, 0.0f, INT32_MAX);
+            ImGui::DragFloat("Night Length", &activeSky->nightLength, 1.0f, 0.0f, INT32_MAX);
+            ImGui::DragFloat("Time", &activeSky->timeOfDay, 0.001f, 0.0f, 1.0f);
+            ImGui::Checkbox("Advance Time", &activeSky->advanceTime);
+            ImGui::NewLine();
+
+            ImGui::Text("Sun Properties:");
+            ImGui::Separator();
             ImGui::Checkbox("Render Sun", &activeSky->renderSun);
             if (activeSky->renderSun)
             {
-                ImGui::Text("Sun Properties:");
-                ImGui::Separator();
                 ImGui::DragFloat("Sun Size", &activeSky->sunSize, 0.1f, 0.0f, 16'384.0f);
+                ImGui::DragFloat("Sun Distance", &activeSky->sunDistance, 0.1f, 0.0f, 16'384.0f);
+                ImGui::DragFloat("Sun Ambience", &activeSky->sunAmbient, 0.001f, 0.0f, 1.0f);
                 ImGui::ColorEdit3("Sun Color", &activeSky->sunColor.r);
-                ImGui::Text("Render Settings:");
-                ImGui::Separator();
                 ImGui::Checkbox("God Rays", &activeSky->godRays);
                 if (activeSky->godRays)
                 {
-                    ImGui::DragFloat("exposure", &activeSky->exposure, 0.001f, 0.0f, 1.0f);
-                    ImGui::DragFloat("decay", &activeSky->decay, 0.001f, 0.0f, 1.0f);
-                    ImGui::DragFloat("density", &activeSky->density, 0.001f, 0.0f, 1.0f);
-                    ImGui::DragFloat("weight", &activeSky->weight, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat("Exposure", &activeSky->exposure, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat("Decay", &activeSky->decay, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat("Density", &activeSky->density, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat("Weight", &activeSky->weight, 0.001f, 0.0f, 1.0f);
                 }
             }
+            ImGui::NewLine();
         }
 
         ImGui::SeparatorText("Graphics Settings");
         ImGui::Checkbox("SSAO", &ssao);
-        ImGui::NewLine();
-        ImGui::SeparatorText("Experimental Settings");
-        ImGui::Checkbox("Frustum culling", &cullingEnabled);
-        if (cullingEnabled)
-        {
-            ImGui::Checkbox("Use quadtree for culling", &cullWithQuadtree);
-            if (cullWithQuadtree)
-            {
-                ImGui::Checkbox("Dynamic quadtree", &dynamicQuadtree);
-                ImGui::Checkbox("Show quadtree", &showQuadtree);
-            }
-        }
 
         ImGui::End();
     }

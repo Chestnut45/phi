@@ -27,10 +27,6 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     Sky& skybox = camera.GetNode()->AddComponent<Sky>("data://textures/skybox_day", "data://textures/skybox_night_old");
     scene.SetActiveSkybox(skybox);
 
-    // Add a directional light
-    DirectionalLight& light = skybox.GetNode()->AddComponent<DirectionalLight>();
-    //light.Activate(DirectionalLight::Slot::SLOT_0);
-
     // Load default fire effect
     currentEffect = &node->AddComponent<CPUParticleEffect>("data://effects/fire.effect");
 
@@ -110,8 +106,8 @@ void ParticleEffectEditor::Render()
 
 void ParticleEffectEditor::ShowEditorWindow()
 {
-    ImGui::SetNextWindowPos(ImVec2(wWidth - 364, wHeight - 454));
-    ImGui::SetNextWindowSize(ImVec2(360, 450));
+    ImGui::SetNextWindowPos(ImVec2(wWidth - 364, wHeight - 516));
+    ImGui::SetNextWindowSize(ImVec2(360, 512));
     ImGui::Begin("Effect Editor", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
     // Main menu bar
