@@ -2,7 +2,10 @@ design / features
 --------------------------------
 
 high priority:
-- skybox rework
+- finish sky changes
+    - tie sun position to time of day
+    - implicit directional light from sun
+    - blur god rays pass?
 - design voxel map pipeline (design, import, usage, simulation, serialization)
     - is it a component? does it own nodes? a scene?
 - .vmap file format design
