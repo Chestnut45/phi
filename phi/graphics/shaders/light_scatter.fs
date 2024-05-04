@@ -8,7 +8,7 @@ uniform vec2 lightPos;
 uniform vec4 exposureDecayDensityWeight;
 
 in vec2 texCoords;
-out vec4 finalColor;
+out vec3 finalColor;
 
 void main()
 {
@@ -19,20 +19,19 @@ void main()
     const float weight = exposureDecayDensityWeight.w;
 
     // Calculate delta and initialize values
-    vec2 deltaTex = (texCoords - lightPos) * (1.0 / float(SAMPLES) * density);
-    vec2 coords = texCoords;
+    vec2 deltaTex = (texCoords - lightPos) / float(SAMPLES) * density;
     float illuminationDecay = 1.0;
     vec3 result = vec3(0.0);
 
     // Sample along ray
     for (int i = 0; i < SAMPLES; ++i)
     {
-        coords = texCoords - (deltaTex * i);
+        vec2 coords = texCoords - (deltaTex * i);
         vec3 s = texture(sunlightTexture, coords).rgb;
         s *= illuminationDecay * weight;
         result += s;
         illuminationDecay *= decay;
     }
 
-    finalColor = vec4(result * exposure, 1.0);
+    finalColor = result * exposure;
 }
