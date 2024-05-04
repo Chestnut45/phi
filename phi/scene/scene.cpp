@@ -305,22 +305,19 @@ namespace Phi
         bool basicPass = basicMeshRenderQueue.size() > 0;
         bool voxelPass = voxelObjectRenderQueue.size() > 0;
 
-        if (basicPass || voxelPass)
-        {
-            // Geometry passes
+        // Geometry passes
 
-            // Bind the material buffers
-            basicMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::BasicMaterial);
-            voxelMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::VoxelMaterial);
+        // Bind the material buffers
+        basicMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::BasicMaterial);
+        voxelMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::VoxelMaterial);
 
-            // Bind the geometry buffer and clear it
-            gBuffer->Bind();
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        // Bind the geometry buffer and clear it
+        gBuffer->Bind();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-            // Setup stencil state
-            glEnable(GL_STENCIL_TEST);
-            glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-        }
+        // Setup stencil state
+        glEnable(GL_STENCIL_TEST);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
         // Basic material pass
 
@@ -349,74 +346,70 @@ namespace Phi
 
         // Lighting passes
         
-        // Lighting pass setup
-        if (basicPass || voxelPass)
+        // Update global light buffer
+        globalLightBuffer.Sync();
+        globalLightBuffer.BindRange(GL_UNIFORM_BUFFER, (GLuint)UniformBindingIndex::GlobalLights,
+            globalLightBuffer.GetCurrentSection() * globalLightBuffer.GetSize(), globalLightBuffer.GetSize());
+
+        // Write all active global lights to the buffer
+        int activeLights = 0;
+        for (int i = 0; i < (int)DirectionalLight::Slot::NUM_SLOTS; i++)
         {
-            // Update global light buffer
-            globalLightBuffer.Sync();
-            globalLightBuffer.BindRange(GL_UNIFORM_BUFFER, (GLuint)UniformBindingIndex::GlobalLights,
-                globalLightBuffer.GetCurrentSection() * globalLightBuffer.GetSize(), globalLightBuffer.GetSize());
-
-            // Write all active global lights to the buffer
-            int activeLights = 0;
-            for (int i = 0; i < (int)DirectionalLight::Slot::NUM_SLOTS; i++)
+            DirectionalLight* light = globalLights[i];
+            if (light)
             {
-                DirectionalLight* light = globalLights[i];
-                if (light)
-                {
-                    globalLightBuffer.Write(glm::vec4(light->color, 1.0f));
-                    globalLightBuffer.Write(glm::vec4(light->direction, light->ambient));
-                    activeLights++;
-                }
+                globalLightBuffer.Write(glm::vec4(light->color, 1.0f));
+                globalLightBuffer.Write(glm::vec4(light->direction, light->ambient));
+                activeLights++;
             }
+        }
 
-            // Write number of lights and base ambient light value
-            globalLightBuffer.SetOffset((sizeof(glm::vec4) * 2) * MAX_DIRECTIONAL_LIGHTS);
-            globalLightBuffer.Write(activeLights);
-            globalLightBuffer.Write(ambientLight);
+        // Write number of lights and base ambient light value
+        globalLightBuffer.SetOffset((sizeof(glm::vec4) * 2) * MAX_DIRECTIONAL_LIGHTS);
+        globalLightBuffer.Write(activeLights);
+        globalLightBuffer.Write(ambientLight);
 
-            // Blit the geometry buffer's depth and stencil textures to the main render target
-            switch (renderMode)
-            {
-                case RenderMode::MatchInternalResolution:
-                    glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-                    glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
-                    break;
-            }
+        // Blit the geometry buffer's depth and stencil textures to the main render target
+        switch (renderMode)
+        {
+            case RenderMode::MatchInternalResolution:
+                glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+                glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+                break;
+        }
 
-            // Disable depth testing / writing
-            glDepthFunc(GL_ALWAYS);
-            glDepthMask(GL_FALSE);
+        // Disable depth testing / writing
+        glDepthFunc(GL_ALWAYS);
+        glDepthMask(GL_FALSE);
 
-            // Bind the empty VAO for attributeless rendering
-            glBindVertexArray(dummyVAO);
+        // Bind the empty VAO for attributeless rendering
+        glBindVertexArray(dummyVAO);
 
-            // Ensure no stencil values are updated
-            glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+        // Ensure no stencil values are updated
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-            // Bind the geometry buffer textures
-            gTexNormal->Bind(0);
-            gTexMaterial->Bind(1);
-            gTexDepthStencil->Bind(2);
+        // Bind the geometry buffer textures
+        gTexNormal->Bind(0);
+        gTexMaterial->Bind(1);
+        gTexDepthStencil->Bind(2);
 
-            // SSAO pass (only runs if there are any viable rendered components)
-            if (ssao)
-            {
-                // Bind resources
-                ssaoFBO->Bind(GL_DRAW_FRAMEBUFFER);
-                ssaoKernelUBO->BindBase(GL_UNIFORM_BUFFER, (int)UniformBindingIndex::SSAO);
-                ssaoRotationTexture->Bind(3);
-                ssaoShader.Use();
+        // SSAO pass (only runs if there are any viable rendered components)
+        if (ssao)
+        {
+            // Bind resources
+            ssaoFBO->Bind(GL_DRAW_FRAMEBUFFER);
+            ssaoKernelUBO->BindBase(GL_UNIFORM_BUFFER, (int)UniformBindingIndex::SSAO);
+            ssaoRotationTexture->Bind(3);
+            ssaoShader.Use();
 
-                // Issue draw call
-                glDrawArrays(GL_TRIANGLES, 0, 3);
+            // Issue draw call
+            glDrawArrays(GL_TRIANGLES, 0, 3);
 
-                // Unbind (back to default FBO for lighting)
-                ssaoFBO->Unbind(GL_DRAW_FRAMEBUFFER);
+            // Unbind (back to default FBO for lighting)
+            ssaoFBO->Unbind(GL_DRAW_FRAMEBUFFER);
 
-                // Bind the SSAO texture for the lighting pass
-                ssaoScreenTexture->Bind(3);
-            }
+            // Bind the SSAO texture for the lighting pass
+            ssaoScreenTexture->Bind(3);
         }
 
         // Basic materials
@@ -539,6 +532,8 @@ namespace Phi
 
     void Scene::ShowDebug()
     {
+        ImGui::SetNextWindowPos(ImVec2(4, 4));
+        ImGui::SetNextWindowSize(ImVec2(256, renderHeight - 8));
         ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
         ImGui::SeparatorText("Statistics");
@@ -561,18 +556,18 @@ namespace Phi
         }
         ImGui::NewLine();
 
-        ImGui::SeparatorText("Graphics Settings");
-        ImGui::Checkbox("SSAO", &ssao);
-        ImGui::Separator();
-
         if (activeSky)
         {
-            ImGui::Text("Sky");
+            ImGui::SeparatorText("Active Sky");
             ImGui::Checkbox("Render Sun", &activeSky->renderSun);
             if (activeSky->renderSun)
             {
+                ImGui::Text("Sun Properties:");
+                ImGui::Separator();
                 ImGui::DragFloat("Sun Size", &activeSky->sunSize, 0.1f, 0.0f, 16'384.0f);
                 ImGui::ColorEdit3("Sun Color", &activeSky->sunColor.r);
+                ImGui::Text("Render Settings:");
+                ImGui::Separator();
                 ImGui::Checkbox("God Rays", &activeSky->godRays);
                 if (activeSky->godRays)
                 {
@@ -584,6 +579,8 @@ namespace Phi
             }
         }
 
+        ImGui::SeparatorText("Graphics Settings");
+        ImGui::Checkbox("SSAO", &ssao);
         ImGui::NewLine();
         ImGui::SeparatorText("Experimental Settings");
         ImGui::Checkbox("Frustum culling", &cullingEnabled);

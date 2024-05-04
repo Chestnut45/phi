@@ -39,14 +39,12 @@ class ParticleEffectEditor : public Phi::App
         // Main scene
         Phi::Scene scene;
 
-        // Window layout
-        int editorWidth = 400;
-        int sceneRenderWidth = wWidth - editorWidth;
-        int sceneRenderHeight = wHeight;
-
         // The current particle effect to edit
         Node* node = nullptr;
         CPUParticleEffect* currentEffect = nullptr;
+
+        // Toggle for showing debug gui
+        bool showGUI = true;
 
         // Displays the main effect editor window
         void ShowEditorWindow();

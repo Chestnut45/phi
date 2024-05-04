@@ -20,7 +20,7 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
 
     // Add a camera
     node = scene.CreateNode3D();
-    Camera& camera = scene.CreateNode3D()->AddComponent<Camera>(sceneRenderWidth, sceneRenderHeight);
+    Camera& camera = scene.CreateNode3D()->AddComponent<Camera>();
     scene.SetActiveCamera(camera);
 
     // Add a skybox
@@ -84,32 +84,23 @@ void ParticleEffectEditor::Update(float delta)
         // Reset flag
         windowResized = false;
     }
-
+    
     // Toggle mouse with escape key
-    if (input.IsKeyJustDown(GLFW_KEY_ESCAPE))
-    {
-        if (input.IsMouseCaptured())
-        {
-            input.ReleaseMouse();
-        }
-        else
-        {
-            input.CaptureMouse();
-        }
-    }
+    if (input.IsKeyJustDown(GLFW_KEY_ESCAPE)) input.IsMouseCaptured() ? input.ReleaseMouse() : input.CaptureMouse();
 
-    // Move the guy
-    Transform* transform = node->Get<Transform>();
-    // transform->SetPositionXYZ(cos(programLifetime) * 4, sin(programLifetime) * 4, sin(programLifetime) * 4);
-    // transform->RotateXYZDeg(0.0f, -90.0f * delta, 0.0f);
+    // Toggle debug GUI with tilde key
+    if (input.IsKeyJustDown(GLFW_KEY_GRAVE_ACCENT)) showGUI = !showGUI;
 
     // Update all nodes / components in the scene
     scene.Update(delta);
     
     // Display GUI windows
-    ShowEditorWindow();
-    scene.ShowDebug();
-    ShowDebug();
+    if (showGUI)
+    {
+        ShowEditorWindow();
+        scene.ShowDebug();
+        ShowDebug();
+    }
 }
 
 void ParticleEffectEditor::Render()
@@ -119,8 +110,8 @@ void ParticleEffectEditor::Render()
 
 void ParticleEffectEditor::ShowEditorWindow()
 {
-    ImGui::SetNextWindowPos(ImVec2(4, 4));
-    ImGui::SetNextWindowSize(ImVec2(360, wHeight - 8));
+    ImGui::SetNextWindowPos(ImVec2(wWidth - 364, wHeight - 454));
+    ImGui::SetNextWindowSize(ImVec2(360, 450));
     ImGui::Begin("Effect Editor", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
     // Main menu bar

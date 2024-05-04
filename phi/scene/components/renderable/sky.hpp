@@ -38,11 +38,6 @@ namespace Phi
             Sky(Sky&& other) = delete;
             void operator=(Sky&& other) = delete;
 
-            // Sets the time of the sky
-            // NOTE: Can use human readable constants from above
-            void SetTime(float time) { timeOfDay = std::clamp(time, 0.0f, 1.0f); };
-            float GetTime() const { return timeOfDay; };
-
             // Updates the sky, advancing time by delta
             void Update(float delta);
 
@@ -51,6 +46,10 @@ namespace Phi
 
             // Renders the sun to the current framebuffer
             void RenderSun();
+
+            // Accessors / Mutators
+            void SetTime(float time) { timeOfDay = std::clamp(time, 0.0f, 1.0f); };
+            float GetTime() const { return timeOfDay; };
 
         // Data / implementation
         private:

@@ -27,11 +27,14 @@ out vec4 finalColor;
 void main()
 {
     // Calculate unnormalized world-space direction to fragment
-    vec3 direction = (invViewProj * vec4(texCoords * 2.0 - 1.0, 1.0, 1.0)).xyz;
+    // NOTE: invView is cast to mat3 to remove translation
+    vec4 direction = invProj * vec4(texCoords * 2.0 - 1.0, 1.0, 1.0);
+    direction.xyz /= direction.w;
+    direction.xyz = mat3(invView) * direction.xyz;
 
     // Sample both skyboxes
-    vec4 dayTexel = texture(dayCube, direction);
-    vec4 nightTexel = texture(nightCube, direction);
+    vec4 dayTexel = texture(dayCube, direction.xyz);
+    vec4 nightTexel = texture(nightCube, direction.xyz);
 
     // Mix both samples using the blend factor
     finalColor = mix(dayTexel, nightTexel, blendFactor);

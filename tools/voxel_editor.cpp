@@ -65,17 +65,10 @@ void VoxelEditor::Update(float delta)
     }
 
     // Toggle mouse with escape key
-    if (input.IsKeyJustDown(GLFW_KEY_ESCAPE))
-    {
-        if (input.IsMouseCaptured())
-        {
-            input.ReleaseMouse();
-        }
-        else
-        {
-            input.CaptureMouse();
-        }
-    }
+    if (input.IsKeyJustDown(GLFW_KEY_ESCAPE)) input.IsMouseCaptured() ? input.ReleaseMouse() : input.CaptureMouse();
+
+    // Toggle debug GUI with tilde key
+    if (input.IsKeyJustDown(GLFW_KEY_GRAVE_ACCENT)) showGUI = !showGUI;
     
     // Rotate the voxel mesh
     if (rotateModel) voxelObject->GetNode()->Get<Transform>()->RotateXYZDeg(0.0f, 45.0f * delta, 0.0f);
@@ -83,10 +76,13 @@ void VoxelEditor::Update(float delta)
     // Update all nodes / components in the scene
     scene.Update(delta);
     
-    // Display debug windows
-    ShowDebug();
-    scene.ShowDebug();
-    ShowInterface();
+    // Display GUI windows
+    if (showGUI)
+    {
+        ShowDebug();
+        scene.ShowDebug();
+        ShowInterface();
+    }
 }
 
 void VoxelEditor::Render()
@@ -96,7 +92,9 @@ void VoxelEditor::Render()
 
 void VoxelEditor::ShowInterface()
 {
-    ImGui::Begin("Voxel Editor", nullptr, ImGuiWindowFlags_MenuBar);
+    ImGui::SetNextWindowPos(ImVec2(wWidth - 260, wHeight - 260));
+    ImGui::SetNextWindowSize(ImVec2(256, 256));
+    ImGui::Begin("Voxel Editor", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove);
 
     // Main menu bar
     bool loadModelFlag = false;
