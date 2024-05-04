@@ -17,11 +17,6 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
 {
     // Initialize mouse input
     input.EnableRawMouseMotion();
-    
-    // Initialize the scene
-
-    // Enable rendering the scene to only part of the default framebuffer
-    scene.SetRenderMode(Scene::RenderMode::CustomViewport);
 
     // Add a camera
     node = scene.CreateNode3D();
@@ -83,13 +78,8 @@ void ParticleEffectEditor::Update(float delta)
     // Manually update scene resolution on window resize
     if (windowResized)
     {
-        // Calculate new scene size
-        sceneRenderWidth = wWidth - editorWidth;
-        sceneRenderHeight = wHeight;
-
         // Update rendering resolution and viewport
-        scene.SetResolution(sceneRenderWidth, sceneRenderHeight);
-        scene.SetViewport(editorWidth, 0, sceneRenderWidth, sceneRenderHeight);
+        scene.SetResolution(wWidth, wHeight);
 
         // Reset flag
         windowResized = false;
@@ -128,6 +118,8 @@ void ParticleEffectEditor::Render()
 
 void ParticleEffectEditor::ShowEditorWindow()
 {
+    ImGui::SetNextWindowPos(ImVec2(4, 4));
+    ImGui::SetNextWindowSize(ImVec2(360, wHeight - 8));
     ImGui::Begin("Effect Editor", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
     // Main menu bar
