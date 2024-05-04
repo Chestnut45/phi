@@ -37,6 +37,7 @@ const vec2 UVS[] =
 };
 
 uniform vec3 sunPos;
+uniform float sunSize;
 
 out vec2 texCoords;
 
@@ -51,7 +52,7 @@ void main()
 
     // Calculate final worldspace position
     // TODO: Size should be configurable
-    vec4 vertexPosWorld = viewProj * vec4(sunPos + (cameraRight * vQuad.x * 16) + (cameraUp * vQuad.y * 16), 1.0);
+    vec4 vertexPosWorld = viewProj * vec4(sunPos + cameraPos.xyz + (cameraRight * vQuad.x * sunSize) + (cameraUp * vQuad.y * sunSize), 1.0);
 
     // Set final position and texture coordinates
     gl_Position = vertexPosWorld;

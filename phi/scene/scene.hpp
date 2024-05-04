@@ -234,6 +234,7 @@ namespace Phi
             Framebuffer* sunlightFBO = nullptr;
             Texture2D* sunlightTexture = nullptr;
             Shader lightScatteringShader;
+            Shader lightTransferShader;
 
             // Material data
 

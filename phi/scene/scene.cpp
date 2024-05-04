@@ -69,10 +69,13 @@ namespace Phi
         ssaoShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/ssao_pass.fs");
         ssaoShader.Link();
 
-        // Light scattering shader
+        // Light scattering shaders
         lightScatteringShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/light_scatter.vs");
         lightScatteringShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/light_scatter.fs");
         lightScatteringShader.Link();
+        lightTransferShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/light_scatter.vs");
+        lightTransferShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/light_transfer.fs");
+        lightTransferShader.Link();
 
         // Initialize SSAO data
 
@@ -466,17 +469,24 @@ namespace Phi
                 // Apply light scattering post-process effect
                 sunlightFBO->Unbind(GL_DRAW_FRAMEBUFFER);
                 glEnable(GL_BLEND);
-                glBlendFunc(GL_ONE, GL_ONE);                
-
-                // Upload uniforms
-                lightScatteringShader.Use();
-                glm::vec4 sunPosScreen = activeCamera->proj * activeCamera->view * glm::vec4(activeSky->sunPos, 1.0f);
-                glm::vec2 lightPos = glm::vec2(sunPosScreen) / sunPosScreen.w * 0.5f + 0.5f;
-                lightScatteringShader.SetUniform("lightPos", lightPos);
-                lightScatteringShader.SetUniform("exposureDecayDensityWeight", glm::vec4(0.24f, 0.974f, 0.95f, 0.25f));
+                glBlendFunc(GL_ONE, GL_ONE);
+                sunlightTexture->Bind(4);
+                
+                if (activeSky->godRays)
+                {
+                    // Upload uniforms
+                    lightScatteringShader.Use();
+                    glm::vec4 sunPosScreen = activeCamera->proj * activeCamera->view * glm::vec4(activeSky->sunPos + activeCamera->position, 1.0f);
+                    glm::vec2 lightPos = glm::vec2(sunPosScreen) / sunPosScreen.w * 0.5f + 0.5f;
+                    lightScatteringShader.SetUniform("lightPos", lightPos);
+                    lightScatteringShader.SetUniform("exposureDecayDensityWeight", glm::vec4(activeSky->exposure, activeSky->decay, activeSky->density, activeSky->weight));
+                }
+                else
+                {
+                    lightTransferShader.Use();
+                }
 
                 // Bind and draw
-                sunlightTexture->Bind(4);
                 glBindVertexArray(dummyVAO);
                 glDrawArrays(GL_TRIANGLES, 0, 3);
                 glBindVertexArray(0);
@@ -529,7 +539,7 @@ namespace Phi
 
     void Scene::ShowDebug()
     {
-        ImGui::Begin("Scene");
+        ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
         ImGui::SeparatorText("Statistics");
         ImGui::Text("Nodes: %lu", nodeCount);
@@ -553,8 +563,28 @@ namespace Phi
 
         ImGui::SeparatorText("Graphics Settings");
         ImGui::Checkbox("SSAO", &ssao);
-        ImGui::NewLine();
+        ImGui::Separator();
 
+        if (activeSky)
+        {
+            ImGui::Text("Sky");
+            ImGui::Checkbox("Render Sun", &activeSky->renderSun);
+            if (activeSky->renderSun)
+            {
+                ImGui::DragFloat("Sun Size", &activeSky->sunSize, 0.1f, 0.0f, 16'384.0f);
+                ImGui::ColorEdit3("Sun Color", &activeSky->sunColor.r);
+                ImGui::Checkbox("God Rays", &activeSky->godRays);
+                if (activeSky->godRays)
+                {
+                    ImGui::DragFloat("exposure", &activeSky->exposure, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat("decay", &activeSky->decay, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat("density", &activeSky->density, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat("weight", &activeSky->weight, 0.001f, 0.0f, 1.0f);
+                }
+            }
+        }
+
+        ImGui::NewLine();
         ImGui::SeparatorText("Experimental Settings");
         ImGui::Checkbox("Frustum culling", &cullingEnabled);
         if (cullingEnabled)

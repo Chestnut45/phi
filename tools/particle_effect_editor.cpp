@@ -108,6 +108,7 @@ void ParticleEffectEditor::Update(float delta)
     
     // Display GUI windows
     ShowEditorWindow();
+    scene.ShowDebug();
     ShowDebug();
 }
 

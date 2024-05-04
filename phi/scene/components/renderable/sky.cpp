@@ -41,7 +41,7 @@ namespace Phi
             glGenVertexArrays(1, &dummyVAO);
 
             // Load sun texture
-            sunTexture = new Texture2D("data://textures/particles/shapes/circle_6.png", GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST, true);
+            sunTexture = new Texture2D("data://textures/particles/shapes/circle_6.png", GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
         }
 
         refCount++;
@@ -106,6 +106,7 @@ namespace Phi
         sunShader->Use();
         sunShader->SetUniform("sunColor", sunColor);
         sunShader->SetUniform("sunPos", sunPos);
+        sunShader->SetUniform("sunSize", sunSize);
         glBindVertexArray(dummyVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
