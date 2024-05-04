@@ -466,8 +466,16 @@ namespace Phi
                 // Apply light scattering post-process effect
                 sunlightFBO->Unbind(GL_DRAW_FRAMEBUFFER);
                 glEnable(GL_BLEND);
-                glBlendFunc(GL_ONE, GL_ONE);
+                glBlendFunc(GL_ONE, GL_ONE);                
+
+                // Upload uniforms
                 lightScatteringShader.Use();
+                glm::vec4 sunPosScreen = activeCamera->proj * activeCamera->view * glm::vec4(activeSky->sunPos, 1.0f);
+                glm::vec2 lightPos = glm::vec2(sunPosScreen) / sunPosScreen.w * 0.5f + 0.5f;
+                lightScatteringShader.SetUniform("lightPos", lightPos);
+                lightScatteringShader.SetUniform("exposureDecayDensityWeight", glm::vec4(0.24f, 0.974f, 0.95f, 0.25f));
+
+                // Bind and draw
                 sunlightTexture->Bind(4);
                 glBindVertexArray(dummyVAO);
                 glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -812,31 +820,6 @@ namespace Phi
         // renderTarget->AttachTexture(rTexDepthStencil, GL_DEPTH_STENCIL_ATTACHMENT);
         // renderTarget->CheckCompleteness();
 
-        // Create sun texture
-        sunlightTexture = new Texture2D(renderWidth, renderHeight, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
-
-        // Create light scattering FBO
-        sunlightFBO = new Framebuffer();
-        sunlightFBO->Bind();
-        sunlightFBO->AttachTexture(sunlightTexture, GL_COLOR_ATTACHMENT0);
-        sunlightFBO->CheckCompleteness();
-
-        // Set draw buffer
-        GLenum buf[1] = { GL_COLOR_ATTACHMENT0 };
-        glDrawBuffers(1, buf);
-
-        // Create SSAO texture
-        ssaoScreenTexture = new Texture2D(renderWidth, renderHeight, GL_R8, GL_RED, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
-
-        // Create SSAO FBO
-        ssaoFBO = new Framebuffer();
-        ssaoFBO->Bind();
-        ssaoFBO->AttachTexture(ssaoScreenTexture, GL_COLOR_ATTACHMENT0);
-        ssaoFBO->CheckCompleteness();
-
-        // Set draw buffer
-        glDrawBuffers(1, buf);
-
         // Create geometry buffer textures
         gTexNormal = new Texture2D(renderWidth, renderHeight, GL_RGB16F, GL_RGB, GL_FLOAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
         gTexMaterial = new Texture2D(renderWidth, renderHeight, GL_R8UI, GL_RED_INTEGER, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
@@ -854,8 +837,30 @@ namespace Phi
         GLenum drawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
         glDrawBuffers(2, drawBuffers);
 
-        // Unbind before returning
-        gBuffer->Unbind();
+        // Create SSAO texture
+        ssaoScreenTexture = new Texture2D(renderWidth, renderHeight, GL_R8, GL_RED, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+
+        // Create SSAO FBO
+        ssaoFBO = new Framebuffer();
+        ssaoFBO->Bind();
+        ssaoFBO->AttachTexture(ssaoScreenTexture, GL_COLOR_ATTACHMENT0);
+        ssaoFBO->CheckCompleteness();
+
+        // Set draw buffer
+        glDrawBuffers(1, drawBuffers);
+
+        // Create sun texture
+        sunlightTexture = new Texture2D(renderWidth, renderHeight, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+
+        // Create light scattering FBO
+        sunlightFBO = new Framebuffer();
+        sunlightFBO->Bind();
+        sunlightFBO->AttachTexture(sunlightTexture, GL_COLOR_ATTACHMENT0);
+        sunlightFBO->AttachTexture(gTexDepthStencil, GL_DEPTH_STENCIL_ATTACHMENT);
+        sunlightFBO->CheckCompleteness();
+
+        // Set draw buffer
+        glDrawBuffers(1, drawBuffers);
     }
 
     void Scene::UpdateCameraBuffer()

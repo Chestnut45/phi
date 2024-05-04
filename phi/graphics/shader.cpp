@@ -116,6 +116,11 @@ namespace Phi
         glUniform1f(GetUniformLocation(name), value);
     }
 
+    void Shader::SetUniform(const std::string& name, const glm::vec2& value)
+    {
+        glUniform2fv(GetUniformLocation(name), 1, glm::value_ptr(value));
+    }
+
     void Shader::SetUniform(const std::string& name, const glm::vec3& value)
     {
         glUniform3fv(GetUniformLocation(name), 1, glm::value_ptr(value));
