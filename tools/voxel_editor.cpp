@@ -16,33 +16,6 @@ int main(int, char**)
 
 VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
 {   
-    // Add a camera
-    Camera& camera = scene.CreateNode3D()->AddComponent<Camera>();
-    camera.SetPosition({0, 32, 96});
-    scene.SetActiveCamera(camera);
-
-    // Add a sky
-    Sky& sky = camera.GetNode()->AddComponent<Sky>("data://textures/skybox_day", "data://textures/skybox_night_old");
-    scene.SetActiveSkybox(sky);
-
-    // Load test materials
-    scene.LoadMaterials("data://materials.yaml");
-
-    // Add the test voxel object and load the model
-    voxelObject = &scene.CreateNode3D()->AddComponent<VoxelObject>();
-    voxelObject->Load("data://models/teapot.pvox");
-
-    // DEBUG: A bunch of models
-    // for (int i = 0; i < 35; ++i)
-    // {
-    //     auto& v = scene.CreateNode3D()->AddComponent<VoxelObject>();
-    //     v.Load("data://models/teapot.pvox");
-    //     Transform* t = v.GetNode()->Get<Transform>();
-    //     t->SetPosition(rng.RandomPosition(glm::vec3(-100), glm::vec3(100)));
-    //     t->SetRotation(rng.RandomRotation());
-    // }
-
-    // Log
     Log("Voxel Editor initialized");
 }
 
@@ -56,7 +29,7 @@ void VoxelEditor::Update(float delta)
     // Manually update scene resolution on window resize
     if (windowResized)
     {
-        scene.SetResolution(wWidth, wHeight);
+        world.GetScene().SetResolution(wWidth, wHeight);
         windowResized = false;
     }
 
@@ -65,25 +38,22 @@ void VoxelEditor::Update(float delta)
 
     // Toggle debug GUI with tilde key
     if (input.IsKeyJustDown(GLFW_KEY_GRAVE_ACCENT)) showGUI = !showGUI;
-    
-    // Rotate the voxel mesh
-    if (rotateModel) voxelObject->GetNode()->Get<Transform>()->RotateXYZDeg(0.0f, 45.0f * delta, 0.0f);
 
-    // Update all nodes / components in the scene
-    scene.Update(delta);
+    // Update the voxel world
+    world.Update(delta);
     
     // Display GUI windows
     if (showGUI)
     {
         ShowDebug();
-        scene.ShowDebug();
+        world.GetScene().ShowDebug();
         ShowInterface();
     }
 }
 
 void VoxelEditor::Render()
 {
-    scene.Render();
+    world.Render();
 }
 
 void VoxelEditor::ShowInterface()
@@ -108,10 +78,10 @@ void VoxelEditor::ShowInterface()
                     auto modelPath = std::filesystem::path(modelFile.result()[0]).generic_string();
 
                     // Load the data into the current voxel object
-                    voxelObject->Load(modelPath);
+                    // voxelObject->Load(modelPath);
 
                     // Reset rotation
-                    voxelObject->GetNode()->Get<Transform>()->SetRotationXYZ(0, 0, 0);
+                    // voxelObject->GetNode()->Get<Transform>()->SetRotationXYZ(0, 0, 0);
                 }
                 lastTime = glfwGetTime();   
             }
@@ -122,46 +92,15 @@ void VoxelEditor::ShowInterface()
             if (ImGui::MenuItem("Reset"))
             {
                 // Reset voxel object
-                voxelObject->Reset();
+                // voxelObject->Reset();
 
                 // Reset rotation
-                voxelObject->GetNode()->Get<Transform>()->SetRotationXYZ(0, 0, 0);
+                // voxelObject->GetNode()->Get<Transform>()->SetRotationXYZ(0, 0, 0);
             }
             ImGui::EndMenu();
         }
         ImGui::EndMenuBar();
     }
-    
-    // Statistics
-    ImGui::SeparatorText("Statistics");
-    ImGui::Text("# Voxels: %ld", voxelObject->mesh->Vertices().size());
-    ImGui::NewLine();
-
-    // Settings
-    ImGui::SeparatorText("Settings");
-    ImGui::Checkbox("Rotate Model", &rotateModel);
-    if (ImGui::Checkbox("Free Camera", &freeCamera))
-    {
-        Camera* c = scene.GetActiveCamera();
-        if (freeCamera)
-        {
-            c->SetMode(Camera::Mode::FirstPerson);
-        }
-        else
-        {
-            c->SetMode(Camera::Mode::Target);
-            c->LookAt(glm::vec3(0.0f));
-        }
-    }
-    bool v = vsync;
-    bool f = fullscreen;
-    if (ImGui::Checkbox("Fullscreen", &f))
-    {
-        ToggleFullscreen();
-        
-    }
-    if (ImGui::Checkbox("Vsync", &v)) ToggleVsync();
-
 
     ImGui::End();
 }

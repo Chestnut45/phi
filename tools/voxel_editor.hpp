@@ -26,16 +26,11 @@ class VoxelEditor : public Phi::App
 
     // Data / implementation
     private:
-
-        // Main scene
-        Scene scene;
-
-        // Voxel object pointer
-        VoxelObject* voxelObject = nullptr;
+        
+        // Internal voxel world
+        VoxelWorld world;
 
         // Settings
-        bool rotateModel = false;
-        bool freeCamera = true;
         bool showGUI = true;
 
         // Displays the main interface

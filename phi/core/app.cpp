@@ -218,12 +218,11 @@ namespace Phi
     {
         // Default window positioning
         ImGui::SetNextWindowPos(ImVec2(wWidth - 260, 4));
-        ImGui::SetNextWindowSize(ImVec2(256, 177));
+        ImGui::SetNextWindowSize(ImVec2(256, 248));
         ImGui::Begin("App Debug", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
         
         // Performance monitoring
-        ImGui::Text("Performance:");
-        ImGui::Separator();
+        ImGui::SeparatorText("Performance:");
         ImGui::Text("Average FPS: %.0f", averageFPS);
         ImGui::PlotLines("Update:", updateSamples.data(), updateSamples.size(), 0, (const char*)nullptr, 0.0f, 16.67f, ImVec2{128.0f, 32.0f});
         ImGui::SameLine();
@@ -234,6 +233,13 @@ namespace Phi
         ImGui::PlotLines("Total:", totalSamples.data(), totalSamples.size(), 0, (const char*)nullptr, 0.0f, 16.67f, ImVec2{128.0f, 32.0f});
         ImGui::SameLine();
         ImGui::Text("%.2fms", elapsedTime * 1000);
+
+        // Window settings
+        ImGui::SeparatorText("Window Settings");
+        bool v = vsync;
+        bool f = fullscreen;
+        if (ImGui::Checkbox("Fullscreen", &f)) ToggleFullscreen();
+        if (ImGui::Checkbox("Vsync", &v)) ToggleVsync();
 
         ImGui::End();
     }

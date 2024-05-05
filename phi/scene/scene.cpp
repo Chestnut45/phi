@@ -542,12 +542,11 @@ namespace Phi
     {
         ImGui::SetNextWindowPos(ImVec2(4, 4));
         ImGui::SetNextWindowSize(ImVec2(320, renderHeight - 8));
-        ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+        ImGui::Begin("Scene Debug", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
         ImGui::SeparatorText("Statistics");
         ImGui::Text("Nodes: %lu", nodeCount);
         ImGui::Text("Voxel objects rendered: %lu", voxelObjectRenderQueue.size());
-        ImGui::NewLine();
 
         ImGui::SeparatorText("Active Camera");
         if (activeCamera)
@@ -562,14 +561,10 @@ namespace Phi
         {
             ImGui::Text("Null");
         }
-        ImGui::NewLine();
 
         if (activeSky)
         {
             ImGui::SeparatorText("Active Sky");
-
-            ImGui::Text("Timing:");
-            ImGui::Separator();
             if (ImGui::Button("Sunrise")) activeSky->SetTime(Sky::SUNRISE); ImGui::SameLine();
             if (ImGui::Button("Noon")) activeSky->SetTime(Sky::NOON); ImGui::SameLine();
             if (ImGui::Button("Sunset")) activeSky->SetTime(Sky::SUNSET); ImGui::SameLine();
@@ -578,10 +573,6 @@ namespace Phi
             ImGui::DragFloat("Night Length", &activeSky->nightLength, 1.0f, 0.0f, INT32_MAX);
             ImGui::DragFloat("Time", &activeSky->timeOfDay, 0.001f, 0.0f, 1.0f);
             ImGui::Checkbox("Advance Time", &activeSky->advanceTime);
-            ImGui::NewLine();
-
-            ImGui::Text("Sun Properties:");
-            ImGui::Separator();
             ImGui::Checkbox("Render Sun", &activeSky->renderSun);
             if (activeSky->renderSun)
             {
@@ -598,7 +589,6 @@ namespace Phi
                     ImGui::DragFloat("Weight", &activeSky->weight, 0.001f, 0.0f, 1.0f);
                 }
             }
-            ImGui::NewLine();
         }
 
         ImGui::SeparatorText("Graphics Settings");
