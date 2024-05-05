@@ -69,7 +69,7 @@ namespace Phi
             // Visual settings
 
             // Sun data
-            glm::vec3 sunColor{1.0f, 0.8f, 0.45f};
+            glm::vec3 sunColor{1.0f, 0.85f, 0.64f};
             glm::vec3 sunPos{0.0f};
             float sunAmbient = 0.032f;
             float sunSize = 64.0f;
