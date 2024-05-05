@@ -271,7 +271,7 @@ namespace Phi
             Shader globalLightBasicSSAOShader;
             Shader globalLightVoxelShader;
             Shader globalLightVoxelSSAOShader;
-            float ambientLight = 0.01f;
+            float ambientLight = 0.008f;
 
             // A dummy VAO used for attributeless rendering
             GLuint dummyVAO = 0;

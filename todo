@@ -43,6 +43,7 @@ low priority:
 - physics bodies (rigidbody.cpp, etc.)
 - tunable SSAO (radius, blur, samples, etc.)
 - blur for sun light scattering dither?
+- allow for multiple solar / lunar bodies in the sky component (sun fades out at night, orbit paths? other light scatterers?)
 
 bugs / fixes
 --------------------------------
