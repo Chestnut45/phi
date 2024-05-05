@@ -13,8 +13,8 @@
 #include "core/math/rng.hpp"
 #include "core/math/shapes.hpp"
 #include "core/structures/free_list.hpp"
+#include "core/structures/grid_3d.hpp"
 #include "core/structures/quadtree.hpp"
-#include "core/structures/experimental/array_grid_3d.hpp"
 #include "core/structures/experimental/hash_grid_3d.hpp"
 #include "core/structures/experimental/hash_map.hpp"
 
@@ -43,7 +43,9 @@
 #include "scene/components/particles/cpu_particle_emitter.hpp"
 #include "scene/components/renderable/basic_mesh.hpp"
 #include "scene/components/renderable/sky.hpp"
-#include "scene/components/voxel/voxel_map.hpp"
 #include "scene/components/voxel/voxel_mesh_implicit.hpp"
 #include "scene/components/voxel/voxel_mesh_splat.hpp"
 #include "scene/components/voxel/voxel_object.hpp"
+
+// Simulation systems
+#include "simulation/voxel_world.hpp"

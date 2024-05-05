@@ -71,12 +71,12 @@ namespace Phi
             // Sun data
             glm::vec3 sunColor{1.0f, 0.85f, 0.64f};
             glm::vec3 sunPos{0.0f};
-            float sunAmbient = 0.032f;
-            float sunSize = 64.0f;
-            float sunDistance = 256.0f;
             bool renderSun = true;
             bool lensFlare = false;
             bool godRays = true;
+            float sunAmbient = 0.032f;
+            float sunSize = 64.0f;
+            float sunDistance = 256.0f;
             float exposure = 0.24f;
             float decay = 0.974f;
             float density = 0.95f;
