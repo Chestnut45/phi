@@ -50,6 +50,7 @@ void main()
     // Mirroring hack (render only 3 faces per voxel)
     
     // Calculate mirror mask
+    // TODO: Profile: Precalculate localCamPos CPU side? Are we ALU limited here?
     vec3 localCamPos = (meshData[gl_DrawID].invTransform * cameraPos).xyz - voxelPos;
     uint mask = (uint(localCamPos.x > 0) | uint(localCamPos.y > 0) << 1 | uint(localCamPos.z > 0) << 2);
     vertexID ^= mask;
