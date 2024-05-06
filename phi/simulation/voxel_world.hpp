@@ -1,6 +1,6 @@
 #pragma once
 
-#include <phi/core/structures/grid_3d.hpp>
+#include <phi/simulation/voxel_chunk.hpp>
 #include <phi/scene/scene.hpp>
 
 namespace Phi
@@ -24,6 +24,22 @@ namespace Phi
             VoxelWorld(VoxelWorld&& other) = delete;
             VoxelWorld& operator=(VoxelWorld&& other) = delete;
 
+            // Generation
+
+            // Loads voxel materials from a YAML file
+            // TODO: Should only accept voxel materials!
+            void LoadMaterials(const std::string& path);
+
+            // Adds a landmass to the voxel world
+            void AddLandmass(...);
+
+            // Loads a voxel map (.vmap) file (materials, landmasses, etc.)
+            bool LoadMap(const std::string& path);
+
+            // Generates the world to disk with its current map / settings
+            // NOTE: Replaces any existing world data in the world folder!
+            void Generate();
+
             // Simulation
 
             // Updates the voxel world with the given elapsed time in seconds
@@ -43,9 +59,6 @@ namespace Phi
 
             // Internal scene instance
             Scene scene;
-
-            // DEBUG: Grid of voxel material IDs for testing chunks
-            Grid3D<int> voxelGrid{64, 64, 64};
 
     };
 }

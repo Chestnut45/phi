@@ -48,4 +48,5 @@
 #include "scene/components/voxel/voxel_object.hpp"
 
 // Simulation systems
+#include "simulation/voxel_chunk.hpp"
 #include "simulation/voxel_world.hpp"
