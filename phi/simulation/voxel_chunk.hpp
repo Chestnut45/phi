@@ -30,5 +30,8 @@ namespace Phi
 
             // DEBUG: Grid of voxel material IDs for testing
             Grid3D<int> voxelGrid{CHUNK_DIM, CHUNK_DIM, CHUNK_DIM};
+
+            // Voxel Worlds should have full access to chunk data
+            friend class VoxelWorld;
     };
 }

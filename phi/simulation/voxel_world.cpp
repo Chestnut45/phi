@@ -23,6 +23,8 @@ namespace Phi
         // Add the test voxel object and load the model
         VoxelObject* voxelObject = &scene.CreateNode3D()->AddComponent<VoxelObject>();
         voxelObject->Load("data://models/teapot.pvox");
+
+        // TODO: Test chunk system
     }
 
     VoxelWorld::~VoxelWorld()

@@ -2,5 +2,11 @@
 
 namespace Phi
 {
-    
+    VoxelChunk::VoxelChunk()
+    {
+    }
+
+    VoxelChunk::~VoxelChunk()
+    {
+    }
 }

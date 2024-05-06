@@ -1,5 +1,10 @@
 #pragma once
 
+#include <unordered_map>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/hash.hpp>
+
 #include <phi/simulation/voxel_chunk.hpp>
 #include <phi/scene/scene.hpp>
 
@@ -60,5 +65,8 @@ namespace Phi
             // Internal scene instance
             Scene scene;
 
+            // Map of loaded chunks
+            // TODO: Switch to Phi::HashMap when impl finished (Profile!)
+            std::unordered_map<glm::ivec3, VoxelChunk> chunkMap;
     };
 }
