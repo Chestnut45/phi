@@ -18,6 +18,9 @@
 #include "core/structures/experimental/hash_grid_3d.hpp"
 #include "core/structures/experimental/hash_map.hpp"
 
+// Procedural generation components
+#include "generation/landmass.hpp"
+
 // OpenGL resources
 #include "graphics/cubemap.hpp"
 #include "graphics/framebuffer.hpp"
