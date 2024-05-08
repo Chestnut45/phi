@@ -6,6 +6,7 @@
 #include <glm/gtx/hash.hpp>
 
 #include <phi/simulation/voxel_chunk.hpp>
+#include <phi/simulation/voxel_volume.hpp>
 #include <phi/scene/scene.hpp>
 
 namespace Phi
@@ -35,8 +36,8 @@ namespace Phi
             // TODO: Should only accept voxel materials!
             void LoadMaterials(const std::string& path);
 
-            // Adds a landmass to the voxel world
-            void AddLandmass(...);
+            // Adds a volume to the world
+            void AddVolume(const VoxelVolume& volume);
 
             // Loads a voxel map (.vmap) file (materials, landmasses, etc.)
             bool LoadMap(const std::string& path);
