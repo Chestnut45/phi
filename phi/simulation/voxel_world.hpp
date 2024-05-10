@@ -39,8 +39,8 @@ namespace Phi
             // Adds a volume to the world
             void AddVolume(const VoxelVolume& volume);
 
-            // Loads a voxel map (.vmap) file (materials, landmasses, etc.)
-            bool LoadMap(const std::string& path);
+            // Gets the list of terrain volumes
+            std::vector<VoxelVolume>& GetVolumes() { return terrainVolumes; }
 
             // DEBUG: Regenerates the terrain
             void Regenerate();

@@ -1,17 +1,21 @@
 #pragma once
 
+#include <any>
 #include <string>
 
 #include <phi/core/math/noise.hpp>
 #include <phi/core/math/rng.hpp>
 #include <phi/core/math/shapes.hpp>
 
+// Forward declaration
+class VoxelEditor;
+
 namespace Phi
 {
     // Represents a procedural volume of voxels of arbitrary shape and material
-    // Used for voxel world / object generation
+    // Used for voxel world generation
     // All coordinates and shapes are in volume-local coordinates
-    // NOTE: Should not contain worldgen-specific data like mapLayer, may also be used for object creation?
+    // TODO: Generalize for use with voxel objects?
     class VoxelVolume
     {
         // Interface
@@ -29,10 +33,14 @@ namespace Phi
             VoxelVolume();
             ~VoxelVolume();
 
-            // Shape lists
+            // IDs
+            const std::string& GetName() const { return name; }
+            void SetName(const std::string& name) { this->name = name; }
 
-            // Access to list of spheres
-            std::vector<Sphere>& GetSpheres() { return spheres; }
+            // Shapes
+
+            // Adds a sphere shape to the list of shapes that bound the volume
+            void AddSphere(const Sphere& sphere) { shapes.push_back(std::any(sphere)); }
 
             // Materials
 
@@ -41,17 +49,23 @@ namespace Phi
             void SetMaterialType(const MaterialType& type) { materialType = type; }
             
             // Set / get the single material value
-            const uint& GetSingleMaterial() const { return materialID; }
-            void SetSingleMaterial(uint material) { materialID = material; }
+            const unsigned int& GetSingleMaterial() const { return materialID; }
+            void SetSingleMaterial(unsigned int material) { materialID = material; }
 
         // Data / implementation
         private:
 
+            // IDs
+            std::string name{"New Volume"};
+
             // Lists of shapes that define the volume
-            std::vector<Sphere> spheres;
+            std::vector<std::any> shapes;
 
             // Material mapping
             MaterialType materialType{MaterialType::SingleMaterial};
-            uint materialID = 0;
+            unsigned int materialID = 0;
+
+            // Friend so the editor can access
+            friend class ::VoxelEditor;
     };
 }

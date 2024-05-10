@@ -102,8 +102,44 @@ void VoxelEditor::ShowInterface()
     //     ImGui::EndMenuBar();
     // }
 
-    // TODO: Display all voxel volumes
+    // Display all voxel volumes
     ImGui::SeparatorText("Volumes");
+    if (ImGui::Button("Add")) world.AddVolume(VoxelVolume());
+
+    bool keepVolume = true;
+    auto& volumes = world.GetVolumes();
+    for (int i = 0; i < volumes.size(); ++i)
+    {
+        // Grab a reference to the volume
+        VoxelVolume& volume = volumes[i];
+
+        // Push unique ID to allow for duplicate names
+        ImGui::PushID(&volume);
+
+        if (ImGui::CollapsingHeader((volume.name + "###").c_str(), &keepVolume, ImGuiTreeNodeFlags_None))
+        {
+            // TODO: Display all shapes
+            for (auto& shape : volume.shapes)
+            {
+                // TODO: This is most likely slow. Profile if necessary.
+                if (shape.type() == typeid(Sphere))
+                {
+                    
+                }
+            }
+        }
+
+        // Delete volume if requested
+        if (!keepVolume)
+        {
+            volumes.erase(volumes.begin() + i);
+            i--;
+            keepVolume = true;
+        }
+        
+        // Pop the volume ID
+        ImGui::PopID();
+    }
 
     // TODO: Biomes
 
