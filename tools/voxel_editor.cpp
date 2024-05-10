@@ -59,7 +59,7 @@ void VoxelEditor::Render()
 void VoxelEditor::ShowInterface()
 {
     ImGui::SetNextWindowPos(ImVec2(4, 4));
-    ImGui::SetNextWindowSize(ImVec2(256, wHeight - 8));
+    ImGui::SetNextWindowSize(ImVec2(320, wHeight - 8));
     ImGui::Begin("Voxel World Editor");
 
     // Main menu bar
@@ -101,6 +101,16 @@ void VoxelEditor::ShowInterface()
     //     }
     //     ImGui::EndMenuBar();
     // }
+
+    // TODO: Display all voxel volumes
+    ImGui::SeparatorText("Volumes");
+
+    // TODO: Biomes
+
+    // TODO: Features
+
+    // Regenerate the world's terrain
+    ImGui::Button("Regenerate");
 
     ImGui::End();
 }
