@@ -42,23 +42,22 @@ namespace Phi
             // Loads a voxel map (.vmap) file (materials, landmasses, etc.)
             bool LoadMap(const std::string& path);
 
-            // Generates the world to disk with its current map / settings
-            // NOTE: Replaces any existing world data in the world folder!
-            void Generate();
+            // DEBUG: Regenerates the terrain
+            void Regenerate();
 
             // Simulation
 
             // Updates the voxel world with the given elapsed time in seconds
             void Update(float delta);
 
-            // Full access to the voxel world's internal scene instance
-            // TODO: Restrict more? How much access is actually required by the user at this level?
-            Scene& GetScene() { return scene; };
-
             // Rendering
 
             // Renders the voxel world to the current framebuffer
             void Render();
+
+            // Full access to the voxel world's internal scene instance
+            // TODO: Restrict more? How much access is actually required by the user at this level?
+            Scene& GetScene() { return scene; };
 
         // Data / implementation
         private:
@@ -68,6 +67,13 @@ namespace Phi
 
             // Map of loaded chunks
             // TODO: Switch to Phi::HashMap when impl finished (Profile!)
-            std::unordered_map<glm::ivec3, VoxelChunk> chunkMap;
+            std::unordered_map<glm::ivec3, VoxelChunk> loadedChunks;
+
+            // Generation
+
+            // List of all volumes that make up the terrain
+            std::vector<VoxelVolume> terrainVolumes;
+
+            // TODO: Biomes, features...
     };
 }

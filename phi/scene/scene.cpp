@@ -540,13 +540,9 @@ namespace Phi
 
     void Scene::ShowDebug()
     {
-        ImGui::SetNextWindowPos(ImVec2(4, 4));
-        ImGui::SetNextWindowSize(ImVec2(320, renderHeight - 8));
+        ImGui::SetNextWindowPos(ImVec2(renderWidth - 324, renderHeight - 454));
+        ImGui::SetNextWindowSize(ImVec2(320, 450));
         ImGui::Begin("Scene Debug", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
-
-        ImGui::SeparatorText("Statistics");
-        ImGui::Text("Nodes: %lu", nodeCount);
-        ImGui::Text("Voxel objects rendered: %lu", voxelObjectRenderQueue.size());
 
         ImGui::SeparatorText("Active Camera");
         if (activeCamera)
@@ -565,21 +561,27 @@ namespace Phi
         if (activeSky)
         {
             ImGui::SeparatorText("Active Sky");
+
+            ImGui::Text("Timing");
+            ImGui::Separator();
             if (ImGui::Button("Sunrise")) activeSky->SetTime(Sky::SUNRISE); ImGui::SameLine();
             if (ImGui::Button("Noon")) activeSky->SetTime(Sky::NOON); ImGui::SameLine();
             if (ImGui::Button("Sunset")) activeSky->SetTime(Sky::SUNSET); ImGui::SameLine();
             if (ImGui::Button("Midnight")) activeSky->SetTime(Sky::MIDNIGHT);
-            ImGui::DragFloat("Day Length", &activeSky->dayLength, 1.0f, 0.0f, INT32_MAX);
-            ImGui::DragFloat("Night Length", &activeSky->nightLength, 1.0f, 0.0f, INT32_MAX);
-            ImGui::DragFloat("Time", &activeSky->timeOfDay, 0.001f, 0.0f, 1.0f);
             ImGui::Checkbox("Advance Time", &activeSky->advanceTime);
+            ImGui::DragFloat("Time", &activeSky->timeOfDay, 0.001f, 0.0f, 1.0f);
+            ImGui::DragFloat("Day Time", &activeSky->dayLength, 1.0f, 0.0f, INT32_MAX);
+            ImGui::DragFloat("Night Time", &activeSky->nightLength, 1.0f, 0.0f, INT32_MAX);
+
+            ImGui::Text("Sun:");
+            ImGui::Separator();
             ImGui::Checkbox("Render Sun", &activeSky->renderSun);
             if (activeSky->renderSun)
             {
-                ImGui::DragFloat("Sun Size", &activeSky->sunSize, 0.1f, 0.0f, 16'384.0f);
-                ImGui::DragFloat("Sun Distance", &activeSky->sunDistance, 0.1f, 0.0f, 16'384.0f);
-                ImGui::DragFloat("Sun Ambience", &activeSky->sunAmbient, 0.001f, 0.0f, 1.0f);
-                ImGui::ColorEdit3("Sun Color", &activeSky->sunColor.r);
+                ImGui::DragFloat("Size", &activeSky->sunSize, 0.1f, 0.0f, 16'384.0f);
+                ImGui::DragFloat("Distance", &activeSky->sunDistance, 0.1f, 0.0f, 16'384.0f);
+                ImGui::DragFloat("Ambience", &activeSky->sunAmbient, 0.001f, 0.0f, 1.0f);
+                ImGui::ColorEdit3("Color", &activeSky->sunColor.r);
                 ImGui::Checkbox("God Rays", &activeSky->godRays);
                 if (activeSky->godRays)
                 {

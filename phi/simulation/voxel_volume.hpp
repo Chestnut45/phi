@@ -4,6 +4,7 @@
 
 #include <phi/core/math/noise.hpp>
 #include <phi/core/math/rng.hpp>
+#include <phi/core/math/shapes.hpp>
 
 namespace Phi
 {
@@ -16,15 +17,41 @@ namespace Phi
         // Interface
         public:
 
+            // Material map type
+            enum class MaterialType
+            {
+                SingleMaterial,
+                // DensityMap,
+                // LayeredMap
+            };
+
             // Creates an empty voxel volume
             VoxelVolume();
             ~VoxelVolume();
 
+            // Shape lists
+
+            // Access to list of spheres
+            std::vector<Sphere>& GetSpheres() { return spheres; }
+
+            // Materials
+
+            // Set / get the material mapping type
+            const MaterialType& GetMaterialType() const { return materialType; }
+            void SetMaterialType(const MaterialType& type) { materialType = type; }
+            
+            // Set / get the single material value
+            const uint& GetSingleMaterial() const { return materialID; }
+            void SetSingleMaterial(uint material) { materialID = material; }
+
         // Data / implementation
         private:
 
-            // TODO: List of shapes that describe the volume (noise?)
+            // Lists of shapes that define the volume
+            std::vector<Sphere> spheres;
 
-            // TODO: Material mapping
+            // Material mapping
+            MaterialType materialType{MaterialType::SingleMaterial};
+            uint materialID = 0;
     };
 }

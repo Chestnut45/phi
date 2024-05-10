@@ -58,49 +58,49 @@ void VoxelEditor::Render()
 
 void VoxelEditor::ShowInterface()
 {
-    ImGui::SetNextWindowPos(ImVec2(wWidth - 260, wHeight - 260));
-    ImGui::SetNextWindowSize(ImVec2(256, 256));
-    ImGui::Begin("Voxel Editor", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove);
+    ImGui::SetNextWindowPos(ImVec2(4, 4));
+    ImGui::SetNextWindowSize(ImVec2(256, wHeight - 8));
+    ImGui::Begin("Voxel World Editor");
 
     // Main menu bar
-    bool loadModelFlag = false;
-    if (ImGui::BeginMenuBar())
-    {
-        if (ImGui::BeginMenu("File"))
-        {
-            if (ImGui::MenuItem("Load Model (.pvox)"))
-            {
-                // Load a new model from disk
-                auto modelFile = pfd::open_file("Load Voxel Model File", Phi::File::GetDataPath() + "models", {"Voxel Model Files (.pvox)", "*.pvox"}, pfd::opt::none);
-                if (modelFile.result().size() > 0)
-                {
-                    // Grab the model path, and convert it to the proper format
-                    auto modelPath = std::filesystem::path(modelFile.result()[0]).generic_string();
+    // bool loadModelFlag = false;
+    // if (ImGui::BeginMenuBar())
+    // {
+    //     if (ImGui::BeginMenu("File"))
+    //     {
+    //         if (ImGui::MenuItem("Load Model (.pvox)"))
+    //         {
+    //             // Load a new model from disk
+    //             auto modelFile = pfd::open_file("Load Voxel Model File", Phi::File::GetDataPath() + "models", {"Voxel Model Files (.pvox)", "*.pvox"}, pfd::opt::none);
+    //             if (modelFile.result().size() > 0)
+    //             {
+    //                 // Grab the model path, and convert it to the proper format
+    //                 auto modelPath = std::filesystem::path(modelFile.result()[0]).generic_string();
 
-                    // Load the data into the current voxel object
-                    // voxelObject->Load(modelPath);
+    //                 // Load the data into the current voxel object
+    //                 // voxelObject->Load(modelPath);
 
-                    // Reset rotation
-                    // voxelObject->GetNode()->Get<Transform>()->SetRotationXYZ(0, 0, 0);
-                }
-                lastTime = glfwGetTime();   
-            }
-            if (ImGui::MenuItem("Save"))
-            {
-                // TODO
-            }
-            if (ImGui::MenuItem("Reset"))
-            {
-                // Reset voxel object
-                // voxelObject->Reset();
+    //                 // Reset rotation
+    //                 // voxelObject->GetNode()->Get<Transform>()->SetRotationXYZ(0, 0, 0);
+    //             }
+    //             lastTime = glfwGetTime();   
+    //         }
+    //         if (ImGui::MenuItem("Save"))
+    //         {
+    //             // TODO
+    //         }
+    //         if (ImGui::MenuItem("Reset"))
+    //         {
+    //             // Reset voxel object
+    //             // voxelObject->Reset();
 
-                // Reset rotation
-                // voxelObject->GetNode()->Get<Transform>()->SetRotationXYZ(0, 0, 0);
-            }
-            ImGui::EndMenu();
-        }
-        ImGui::EndMenuBar();
-    }
+    //             // Reset rotation
+    //             // voxelObject->GetNode()->Get<Transform>()->SetRotationXYZ(0, 0, 0);
+    //         }
+    //         ImGui::EndMenu();
+    //     }
+    //     ImGui::EndMenuBar();
+    // }
 
     ImGui::End();
 }

@@ -106,8 +106,8 @@ void ParticleEffectEditor::Render()
 
 void ParticleEffectEditor::ShowEditorWindow()
 {
-    ImGui::SetNextWindowPos(ImVec2(wWidth - 364, wHeight - 516));
-    ImGui::SetNextWindowSize(ImVec2(360, 512));
+    ImGui::SetNextWindowPos(ImVec2(4, 4));
+    ImGui::SetNextWindowSize(ImVec2(360, wHeight - 8));
     ImGui::Begin("Effect Editor", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
     // Main menu bar

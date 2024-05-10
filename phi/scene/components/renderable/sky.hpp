@@ -64,7 +64,7 @@ namespace Phi
             float dayLength = 60.0f;
             float nightLength = 60.0f;
             float timeOfDay = 0.0f;
-            bool advanceTime = true;
+            bool advanceTime = false;
 
             // Visual settings
 
