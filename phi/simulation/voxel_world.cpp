@@ -41,6 +41,11 @@ namespace Phi
         terrainVolumes.push_back(volume);
     }
 
+    void VoxelWorld::Regenerate()
+    {
+        // TODO: Clear current loaded chunks and regenerate based on all properties
+    }
+
     void VoxelWorld::Update(float delta)
     {
         scene.Update(delta);

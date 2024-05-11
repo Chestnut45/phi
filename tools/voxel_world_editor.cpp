@@ -102,6 +102,12 @@ void VoxelWorldEditor::ShowInterface()
     //     ImGui::EndMenuBar();
     // }
 
+    // Main controls
+    ImGui::SeparatorText("Controls");
+
+    // Regenerates the world's terrain using the current data
+    if (ImGui::Button("Regenerate")) world.Regenerate();
+
     // Display all voxel volumes
     ImGui::SeparatorText("Volumes");
     if (ImGui::Button("Add")) world.AddVolume(VoxelVolume());
@@ -113,20 +119,68 @@ void VoxelWorldEditor::ShowInterface()
         // Grab a reference to the volume
         VoxelVolume& volume = volumes[i];
 
-        // Push unique ID to allow for duplicate names
+        // Push unique ID to allow duplicate names
         ImGui::PushID(&volume);
 
         if (ImGui::CollapsingHeader((volume.name + "###").c_str(), &keepVolume, ImGuiTreeNodeFlags_None))
         {
-            // TODO: Display all shapes
-            for (auto& shape : volume.shapes)
+            // Name editor
+            ImGui::InputText("Name", &volume.name);
+
+            ImGui::Text("Shapes:");
+            ImGui::Separator();
+
+            // Add shape buttons
+            if (ImGui::Button("Add Sphere")) volume.AddSphere(Sphere()); ImGui::SameLine();
+            if (ImGui::Button("Add AABB")) { /* todo */ };
+
+            // Display all shapes
+            ImGui::Indent();
+            bool keepShape = true;
+            for (int j = 0; j < volume.shapes.size(); ++j)
             {
-                // TODO: This is most likely slow. Profile if necessary.
-                if (shape.type() == typeid(Sphere))
+                // Grab a reference to the shape
+                auto& shape = volume.shapes[j];
+
+                // Push unique ID to allow duplicate names
+                ImGui::PushID(&shape);
+
+                // Determine name
+                int type = 0;
+                if (shape.type() == typeid(Sphere)) type = 0;
+                if (shape.type() == typeid(AABB)) type = 1;
+                static const char* names[] = {"Sphere ", "AABB "};
+                // TODO: Other shapes...
+
+                // Display shape data
+                if (ImGui::CollapsingHeader((std::string(names[type]) + std::to_string(j) + "###").c_str(), &keepShape, ImGuiTreeNodeFlags_None))
                 {
-                    
+                    // TODO: This is probably slow, profile if necessary
+                    if (type == 0)
+                    {
+                        // Grab sphere (may throw, is the typeid matching enough?)
+                        Sphere& sphere = std::any_cast<Sphere&>(shape);
+                        ImGui::DragFloat3("Position", &sphere.position.x);
+                        ImGui::DragFloat("Radius", &sphere.radius, 1.0f, 0.0f, INT32_MAX);
+                    }
                 }
+
+                // Remove shape if requested
+                if (!keepShape)
+                {
+                    volume.shapes.erase(volume.shapes.begin() + j);
+                    j--;
+                    keepShape = true;
+                }
+
+                // Pop the ID
+                ImGui::PopID();
             }
+            ImGui::Unindent();
+
+            // TODO: Different material map types
+            ImGui::Text("Material Map:");
+            ImGui::Separator();
         }
 
         // Delete volume if requested
@@ -144,9 +198,6 @@ void VoxelWorldEditor::ShowInterface()
     // TODO: Biomes
 
     // TODO: Features
-
-    // Regenerate the world's terrain
-    ImGui::Button("Regenerate");
 
     ImGui::End();
 }

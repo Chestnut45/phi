@@ -139,6 +139,7 @@ namespace Phi
     // Represents a sphere, supports point, plane, and frustum intersection tests
     struct Sphere
     {
+        Sphere();
         Sphere(float x, float y, float z, float radius);
         Sphere(const glm::vec3& position, float radius);
         ~Sphere();

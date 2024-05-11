@@ -154,6 +154,10 @@ namespace Phi
 
     // Sphere implementation
 
+    Sphere::Sphere()
+    {
+    }
+
     Sphere::Sphere(float x, float y, float z, float radius)
         : position(x, y, z), radius(radius)
     {
