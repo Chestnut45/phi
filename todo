@@ -2,8 +2,9 @@ design / features
 --------------------------------
 
 high priority:
-- voxel world terrain generation
 - chunk loading based on active camera
+- chunk generation (no serialization yet)
+- shadow mapping
 - input buffering
 
 mid priority:

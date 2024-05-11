@@ -106,7 +106,7 @@ void VoxelWorldEditor::ShowInterface()
     ImGui::SeparatorText("Controls");
 
     // Regenerates the world's terrain using the current data
-    if (ImGui::Button("Regenerate")) world.Regenerate();
+    if (ImGui::Button("Regenerate")) world.ReloadChunks();
 
     // Display all voxel volumes
     ImGui::SeparatorText("Voxel Volumes");

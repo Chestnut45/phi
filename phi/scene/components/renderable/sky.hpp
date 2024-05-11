@@ -20,10 +20,10 @@ namespace Phi
         public:
 
             // Convenient normalized time of day constants
-            static inline float SUNRISE = 0.0f;
-            static inline float NOON = 0.25f;
-            static inline float SUNSET = 0.5f;
-            static inline float MIDNIGHT = 0.75f;
+            static const inline float SUNRISE = 0.0f;
+            static const inline float NOON = 0.25f;
+            static const inline float SUNSET = 0.5f;
+            static const inline float MIDNIGHT = 0.75f;
 
             // Loads skybox textures from 2 folders containing all the images for day / night cubemaps
             // Accepts local paths like data:// and user://
@@ -63,8 +63,8 @@ namespace Phi
             // Day / night lengths in seconds
             float dayLength = 600.0f;
             float nightLength = 600.0f;
-            float timeOfDay = 0.0f;
-            bool advanceTime = false;
+            float timeOfDay = SUNRISE;
+            bool advanceTime = true;
 
             // Visual settings
 

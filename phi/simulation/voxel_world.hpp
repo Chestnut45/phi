@@ -42,13 +42,13 @@ namespace Phi
             // Gets the list of terrain volumes
             std::vector<VoxelVolume>& GetVolumes() { return terrainVolumes; }
 
-            // DEBUG: Regenerates the terrain chunks
-            void Regenerate();
-
             // Simulation
 
             // Updates the voxel world with the given elapsed time in seconds
             void Update(float delta);
+
+            // Reloads all currently loaded chunks
+            void ReloadChunks();
 
             // Rendering
 
@@ -65,9 +65,15 @@ namespace Phi
             // Internal scene instance
             Scene scene;
 
+            // DEBUG: Spinning object
+            VoxelObject* testObj = nullptr;
+
             // Map of loaded chunks
             // TODO: Switch to Phi::HashGrid3D when impl finished (Profile!)
             std::unordered_map<glm::ivec3, VoxelChunk> loadedChunks;
+
+            // Queues
+            std::vector<glm::ivec3> chunksToLoad;
 
             // Generation
 
@@ -75,5 +81,15 @@ namespace Phi
             std::vector<VoxelVolume> terrainVolumes;
 
             // TODO: Biomes, features...
+
+            // Settings
+
+            // The approximate radius (in VoxelChunks) to load around the active camera
+            unsigned int renderDistance = 5;
+
+            // Helper functions
+
+            // Generates the given chunk and loads it into the world
+            void GenerateChunk(const glm::ivec3& chunkID);
     };
 }
