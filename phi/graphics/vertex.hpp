@@ -16,7 +16,7 @@ namespace Phi
         POS_COLOR,
         POS_COLOR_NORM,
         POS_COLOR_NORM_UV,
-        POS_COLOR_NORM_UV1_UV2, // Internal format for Assimp-imported meshes
+        POS_COLOR_NORM_UV1_UV2,
         POS_COLOR_UV,
         POS_NORM,
         POS_NORM_UV,

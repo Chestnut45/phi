@@ -1,5 +1,6 @@
 # 3.5 is actually available almost everywhere, but this a good minimum
-cmake_minimum_required(VERSION 3.4)
+# NOTE: Phi: changed minimum version from 3.4 to 3.5 to avoid cmake dep warning
+cmake_minimum_required(VERSION 3.5)
 
 # enable MSVC_RUNTIME_LIBRARY target property
 # see https://cmake.org/cmake/help/latest/policy/CMP0091.html

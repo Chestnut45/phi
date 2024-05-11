@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <chrono>
+
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>
 
 #include <phi/core/file.hpp>

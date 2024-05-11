@@ -2,6 +2,8 @@
 
 #include <cstdint>
 #include <unordered_map>
+
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/vector_angle.hpp>
 
 #include <phi/core/logging.hpp>
