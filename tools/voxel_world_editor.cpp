@@ -127,6 +127,37 @@ void VoxelWorldEditor::ShowInterface()
             // Name editor
             ImGui::InputText("Name", &volume.name);
 
+            // TODO: Different material map types
+            ImGui::Text("Materials:");
+            ImGui::Separator();
+
+            // Material type selections
+            static const char* materialTypeNames[] = {"Single Material"};
+            const char* materialTypeSelection = materialTypeNames[(int)volume.materialType];
+            if (ImGui::BeginCombo("Material Type", materialTypeSelection))
+            {
+                for (int n = 0; n < IM_ARRAYSIZE(materialTypeNames); n++)
+                {
+                    bool is_selected = (materialTypeSelection == materialTypeNames[n]);
+                    if (ImGui::Selectable(materialTypeNames[n], is_selected))
+                    {
+                        volume.materialType = (VoxelVolume::MaterialType)n;
+                    }
+                    if (is_selected) ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+
+            switch ((int)volume.materialType)
+            {
+                case (int)VoxelVolume::MaterialType::SingleMaterial:
+                    
+                    // Single material name editor
+                    ImGui::InputText("Material", &volume.materialName);
+                    
+                    break;
+            }
+
             ImGui::Text("Shapes:");
             ImGui::Separator();
 
@@ -153,15 +184,16 @@ void VoxelWorldEditor::ShowInterface()
                 // TODO: Other shapes...
 
                 // Display shape data
-                if (ImGui::CollapsingHeader((std::string(names[type]) + std::to_string(j) + "###").c_str(), &keepShape, ImGuiTreeNodeFlags_None))
+                if (ImGui::CollapsingHeader((std::string(names[type]) + "###").c_str(), &keepShape, ImGuiTreeNodeFlags_None))
                 {
-                    // TODO: This is probably slow, profile if necessary
-                    if (type == 0)
+                    switch (type)
                     {
-                        // Grab sphere (may throw, is the typeid matching enough?)
-                        Sphere& sphere = std::any_cast<Sphere&>(shape);
-                        ImGui::DragFloat3("Position", &sphere.position.x);
-                        ImGui::DragFloat("Radius", &sphere.radius, 1.0f, 0.0f, INT32_MAX);
+                        case 0:
+                            // Grab sphere (may throw, is the typeid matching enough?)
+                            Sphere& sphere = std::any_cast<Sphere&>(shape);
+                            ImGui::DragFloat3("Position", &sphere.position.x);
+                            ImGui::DragFloat("Radius", &sphere.radius, 1.0f, 0.0f, INT32_MAX);
+                            break;
                     }
                 }
 
@@ -177,10 +209,6 @@ void VoxelWorldEditor::ShowInterface()
                 ImGui::PopID();
             }
             ImGui::Unindent();
-
-            // TODO: Different material map types
-            ImGui::Text("Material Map:");
-            ImGui::Separator();
         }
 
         // Delete volume if requested

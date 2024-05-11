@@ -49,8 +49,8 @@ namespace Phi
             void SetMaterialType(const MaterialType& type) { materialType = type; }
             
             // Set / get the single material value
-            const unsigned int& GetSingleMaterial() const { return materialID; }
-            void SetSingleMaterial(unsigned int material) { materialID = material; }
+            const std::string& GetMaterial() const { return materialName; }
+            void SetMaterial(const std::string&  material) { materialName = material; }
 
         // Data / implementation
         private:
@@ -63,7 +63,7 @@ namespace Phi
 
             // Material mapping
             MaterialType materialType{MaterialType::SingleMaterial};
-            unsigned int materialID = 0;
+            std::string materialName{"default"};
 
             // Friend so the editor can access
             friend class ::VoxelWorldEditor;

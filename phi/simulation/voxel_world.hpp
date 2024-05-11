@@ -42,7 +42,7 @@ namespace Phi
             // Gets the list of terrain volumes
             std::vector<VoxelVolume>& GetVolumes() { return terrainVolumes; }
 
-            // DEBUG: Regenerates the terrain
+            // DEBUG: Regenerates the terrain chunks
             void Regenerate();
 
             // Simulation
@@ -66,7 +66,7 @@ namespace Phi
             Scene scene;
 
             // Map of loaded chunks
-            // TODO: Switch to Phi::HashMap when impl finished (Profile!)
+            // TODO: Switch to Phi::HashGrid3D when impl finished (Profile!)
             std::unordered_map<glm::ivec3, VoxelChunk> loadedChunks;
 
             // Generation
