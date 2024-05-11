@@ -37,10 +37,10 @@ add_executable(particle_effect_editor ${PHI_SOURCE} ${PHI_HEADERS} ${IMGUI_SOURC
 target_link_libraries(particle_effect_editor yaml-cpp::yaml-cpp glfw glew ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
 
 # Voxel editor
-set(VOXEL_TEST_SOURCE ${CMAKE_SOURCE_DIR}/tools/voxel_editor.cpp)
-set(VOXEL_TEST_HEADER ${CMAKE_SOURCE_DIR}/tools/voxel_editor.hpp)
-add_executable(voxel_editor ${PHI_SOURCE} ${PHI_HEADERS} ${IMGUI_SOURCES} ${VOXEL_TEST_SOURCE} ${VOXEL_TEST_HEADER})
-target_link_libraries(voxel_editor yaml-cpp::yaml-cpp glfw glew ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
+set(VOXEL_TEST_SOURCE ${CMAKE_SOURCE_DIR}/tools/voxel_world_editor.cpp)
+set(VOXEL_TEST_HEADER ${CMAKE_SOURCE_DIR}/tools/voxel_world_editor.hpp)
+add_executable(voxel_world_editor ${PHI_SOURCE} ${PHI_HEADERS} ${IMGUI_SOURCES} ${VOXEL_TEST_SOURCE} ${VOXEL_TEST_HEADER})
+target_link_libraries(voxel_world_editor yaml-cpp::yaml-cpp glfw glew ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
 
 # Template app
 set(TEMPLATE_APP_SOURCE ${CMAKE_SOURCE_DIR}/templates/new_app.cpp)

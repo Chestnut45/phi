@@ -60,7 +60,7 @@ void VoxelWorldEditor::ShowInterface()
 {
     ImGui::SetNextWindowPos(ImVec2(4, 4));
     ImGui::SetNextWindowSize(ImVec2(320, wHeight - 8));
-    ImGui::Begin("Voxel World Editor");
+    ImGui::Begin("Voxel World Editor", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
     // Main menu bar
     // bool loadModelFlag = false;

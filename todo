@@ -2,12 +2,8 @@ design / features
 --------------------------------
 
 high priority:
-- design voxel map pipeline (design, import, usage, simulation, serialization)
-    - is it a component? does it own nodes? a scene?
-- .vmap file format design
+- voxel volume / shape editing
 - input buffering
-- design voxel editor gui
-- raycasting mouse to select voxel on grid for edit / painting
 
 mid priority:
 - decide material tags from sketchbook list (ferromagnetic (magnetizable, attracted to / repelled by magnets), immovable?)
@@ -43,7 +39,8 @@ low priority:
 - physics bodies (rigidbody.cpp, etc.)
 - tunable SSAO (radius, blur, samples, etc.)
 - blur for sun light scattering dither?
-- allow for multiple solar / lunar bodies in the sky component (sun fades out at night, orbit paths? other light scatterers?)
+- HDR rendering with exposure based tone mapping (configurable via scene)
+- bloom (downsampling method)
 
 bugs / fixes
 --------------------------------

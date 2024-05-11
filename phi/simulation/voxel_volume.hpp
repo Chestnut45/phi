@@ -8,7 +8,7 @@
 #include <phi/core/math/shapes.hpp>
 
 // Forward declaration
-class VoxelEditor;
+class VoxelWorldEditor;
 
 namespace Phi
 {
@@ -66,6 +66,6 @@ namespace Phi
             unsigned int materialID = 0;
 
             // Friend so the editor can access
-            friend class ::VoxelEditor;
+            friend class ::VoxelWorldEditor;
     };
 }
