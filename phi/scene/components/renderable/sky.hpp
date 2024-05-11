@@ -61,8 +61,8 @@ namespace Phi
             // Timing variables
 
             // Day / night lengths in seconds
-            float dayLength = 60.0f;
-            float nightLength = 60.0f;
+            float dayLength = 600.0f;
+            float nightLength = 600.0f;
             float timeOfDay = 0.0f;
             bool advanceTime = false;
 
@@ -70,7 +70,7 @@ namespace Phi
 
             // Sun data
             glm::vec3 sunColor{1.0f, 0.85f, 0.64f};
-            glm::vec3 sunPos{0.0f};
+            glm::vec3 sunPos;
             bool renderSun = true;
             bool lensFlare = false;
             bool godRays = true;
