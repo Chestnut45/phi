@@ -7,7 +7,7 @@
 namespace Phi
 {
     // Wrapper class to access files in the filesystem
-    // Uses _ONLY_ UNIX-style file separators ('/')
+    // Uses _ONLY_ UNIX-style path separators ('/')
     // There are special tokens that refer to implicit paths:
     // 1. "data://" - The project's data folder (e.g. resources, should be copied to program install location)
     // 2. "user://" - The user's persistent folder for the project (e.g. save file location)
