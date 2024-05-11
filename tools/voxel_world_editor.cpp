@@ -109,7 +109,7 @@ void VoxelWorldEditor::ShowInterface()
     if (ImGui::Button("Regenerate")) world.Regenerate();
 
     // Display all voxel volumes
-    ImGui::SeparatorText("Volumes");
+    ImGui::SeparatorText("Voxel Volumes");
     if (ImGui::Button("Add")) world.AddVolume(VoxelVolume());
 
     bool keepVolume = true;
@@ -198,6 +198,8 @@ void VoxelWorldEditor::ShowInterface()
     // TODO: Biomes
 
     // TODO: Features
+
+    // TODO: Serialization (saving / loading all volume, biome, and feature data to / from .vmap files)
 
     ImGui::End();
 }

@@ -2,7 +2,8 @@ design / features
 --------------------------------
 
 high priority:
-- voxel volume / shape editing
+- voxel world terrain generation
+- chunk loading based on active camera
 - input buffering
 
 mid priority:
