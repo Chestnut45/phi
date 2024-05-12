@@ -1,6 +1,7 @@
 #include "voxel_world.hpp"
 
 #include <phi/scene/node.hpp>
+#include <phi/scene/components/lighting/point_light.hpp>
 
 namespace Phi
 {
@@ -11,6 +12,7 @@ namespace Phi
         // Add a camera
         Camera& camera = scene.CreateNode3D()->AddComponent<Camera>();
         camera.SetPosition({0, 16, 128});
+        // camera.GetNode()->AddComponent<PointLight>();
         scene.SetActiveCamera(camera);
 
         // Add a sky
@@ -42,7 +44,7 @@ namespace Phi
     void VoxelWorld::Update(float delta)
     {
         // DEBUG: Spin ya boi
-        testObj->GetNode()->Get<Transform>()->RotateXYZDeg(0, delta * 45, 0);
+        // testObj->GetNode()->Get<Transform>()->RotateXYZDeg(0, delta * 45, 0);
 
         // Calculate the current chunk
         Camera* camera = scene.GetActiveCamera();

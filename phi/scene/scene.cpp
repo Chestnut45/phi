@@ -641,7 +641,8 @@ namespace Phi
 
             // Write the new material to the buffer
             voxelMaterialBuffer.Sync();
-            voxelMaterialBuffer.Write(glm::vec4{glm::vec3(material.color), material.shininess});
+            voxelMaterialBuffer.Write(glm::vec4{material.color, 1.0f});
+            voxelMaterialBuffer.Write(glm::vec4{material.metallic, material.roughness, 1.0f, 1.0f});
         }
 
         return voxelMaterialIDs[name];
@@ -725,7 +726,8 @@ namespace Phi
                     m.color.r = mat["color"]["r"] ? mat["color"]["r"].as<float>() : m.color.r;
                     m.color.g = mat["color"]["g"] ? mat["color"]["g"].as<float>() : m.color.g;
                     m.color.b = mat["color"]["b"] ? mat["color"]["b"].as<float>() : m.color.b;
-                    m.shininess = mat["shininess"] ? mat["shininess"].as<float>() : m.shininess;
+                    m.metallic = mat["metallic"] ? mat["metallic"].as<float>() : m.metallic;
+                    m.roughness = mat["roughness"] ? mat["roughness"].as<float>() : m.roughness;
 
                     // Add the material to the scene
                     AddMaterial(name, m);

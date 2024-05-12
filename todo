@@ -2,6 +2,8 @@ design / features
 --------------------------------
 
 high priority:
+- switch basicmaterial to pbr as well? (profile)
+- live material editor to ensure pbr is good across all values
 - chunk loading based on active camera
 - chunk generation (no serialization yet)
 - shadow mapping
@@ -34,7 +36,6 @@ low priority:
 - Sprite2D
 - text rendering
 - audio library choice (likely OpenAL)
-- pbr materials
 - extend quadtree to octree (may be useful for speeding up raycast queries in voxel editor?)
 - implement rehash / resize + write unit tests for HashMap
 - design world building workflow (gui app? text format? biomes, landmasses, structures, models, entities, stamps...)
