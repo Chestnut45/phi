@@ -12,7 +12,7 @@ namespace Phi
         // Add a camera
         Camera& camera = scene.CreateNode3D()->AddComponent<Camera>();
         camera.SetPosition({0, 16, 128});
-        // camera.GetNode()->AddComponent<PointLight>();
+        camera.GetNode()->AddComponent<PointLight>();
         scene.SetActiveCamera(camera);
 
         // Add a sky

@@ -135,6 +135,10 @@ void main()
     vec3 radiance = lightColor * attenuation;
     vec3 result = (kD * materialColor / PI + specular) * radiance * max(alignment, 0.0);
 
+    // DEBUG: Tone mapping
+    // NOTE: Should be done at the end of all lighting passes, not at each pass
+    result = result / (result + vec3(1.0));
+
     // Final color composition
     finalColor = vec4(pow(result, vec3(1.0 / GAMMA)), 1.0);
 }

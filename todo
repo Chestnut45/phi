@@ -3,7 +3,7 @@ design / features
 
 high priority:
 - switch basicmaterial to pbr as well? (profile)
-- live material editor to ensure pbr is good across all values
+- live material editor to ensure pbr materials are good across all values
 - chunk loading based on active camera
 - chunk generation (no serialization yet)
 - shadow mapping

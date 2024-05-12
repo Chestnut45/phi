@@ -248,7 +248,7 @@ namespace Phi
 
             // Material buffers
             GPUBuffer basicMaterialBuffer{BufferType::Dynamic, MAX_BASIC_MATERIALS * sizeof(glm::vec4)};
-            GPUBuffer voxelMaterialBuffer{BufferType::Dynamic, MAX_VOXEL_MATERIALS * sizeof(glm::vec4)};
+            GPUBuffer voxelMaterialBuffer{BufferType::Dynamic, MAX_VOXEL_MATERIALS * sizeof(glm::vec4) * 2};
 
             // Render queues and lists
             std::vector<BasicMesh*> basicMeshRenderQueue;

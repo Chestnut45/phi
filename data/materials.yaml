@@ -140,7 +140,8 @@ voxel_materials: [
     {
         name: diamond,
         color: {r: 0.6, g: 0.6, b: 1.0},
-        shininess: 1.0
+        roughness: 0.2,
+        metallic: 0.5
     },
     {
         name: asteroid,
