@@ -3,6 +3,7 @@
 const int MAX_DIRECTIONAL_LIGHTS = 5; // 4 for user, 1 for active sky
 const int MAX_MATERIALS = 1024;
 const float GAMMA = 2.2;
+const float PI = 3.141592653589793238;
 
 // Light structure
 struct DirectionalLight
@@ -14,7 +15,8 @@ struct DirectionalLight
 // Basic material definition
 struct BasicMaterial
 {
-    vec4 colorShininess;
+    vec4 color;
+    vec4 metallicRoughness;
 };
 
 // Camera uniform block
@@ -68,6 +70,36 @@ vec3 getWorldPos(vec2 texCoords, float depth)
     return worldSpacePos.xyz;
 }
 
+vec3 fresnelSchlick(float cosTheta, vec3 f0)
+{
+    return f0 + (1.0 - f0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}
+
+float distributionGGX(vec3 n, vec3 h, float roughness)
+{
+    float a = roughness * roughness;
+    float a2 = a * a;
+    float nDotH = max(dot(n, h), 0.0);
+    float nDotH2 = nDotH * nDotH;
+    return a2 / (PI * pow((nDotH2 * (a2 - 1.0) + 1.0), 2));
+}
+
+float geometrySchlickGGX(float nDotV, float roughness)
+{
+    float r = roughness + 1.0;
+    float k = r * r / 8.0;
+    return nDotV / (nDotV * (1.0 - k) + k);
+}
+
+float geometrySmith(vec3 n, vec3 v, vec3 l, float roughness)
+{
+    float nDotV = max(dot(n, v), 0.0);
+    float nDotL = max(dot(n, l), 0.0);
+    float ggx2  = geometrySchlickGGX(nDotV, roughness);
+    float ggx1  = geometrySchlickGGX(nDotL, roughness);
+    return ggx1 * ggx2;
+}
+
 void main()
 {
     // Grab data from geometry buffer
@@ -78,12 +110,11 @@ void main()
     // Calculate fragment position in world space
     vec3 fragPos = getWorldPos(texCoords, depth);
 
-    // Grab material
+    // Grab material data
     BasicMaterial material = basicMaterials[materialID];
-
-    // Gamma correct and clamp the material's color and shininess values
-    vec3 materialColor = pow(material.colorShininess.rgb, vec3(GAMMA));
-    float materialShininess = pow(material.colorShininess.w, GAMMA);
+    vec3 materialColor = pow(material.color.rgb, vec3(GAMMA));
+    float materialMetallic = material.metallicRoughness.x;
+    float materialRoughness = material.metallicRoughness.y;
 
     // Calculate view direction
     vec3 viewDir = normalize(cameraPos.xyz - fragPos);
@@ -95,26 +126,33 @@ void main()
     {
         // Grab light information
         vec3 lightDir = normalize(-globalLights[i].directionAmbient.xyz);
+        vec3 lightHalfDir = normalize(lightDir + viewDir);
         vec3 lightColor = pow(globalLights[i].color.rgb, vec3(GAMMA));
         float lightAmbience = globalLights[i].directionAmbient.w;
 
         // Calculate alignment to light
         float alignment = dot(fragNorm, lightDir);
+        
+        // Calculate surface reflection at zero
+        vec3 srz = mix(vec3(0.04), materialColor, materialMetallic);
+        
+        // Cook-Torrance BRDF
+        vec3 f = fresnelSchlick(max(dot(lightHalfDir, viewDir), 0.0), srz);
+        float ndf = distributionGGX(fragNorm, lightHalfDir, materialRoughness);
+        float g = geometrySmith(fragNorm, viewDir, lightDir, materialRoughness);
+        vec3 specular = ndf * g * f / (4.0 * max(dot(fragNorm, viewDir), 0.0) * max(alignment, 0.0001));
 
         // Ambient lighting
-        vec3 ambient = vec3(lightAmbience) * lightColor * materialColor;
-
-        // Diffuse lighting
-        vec3 diffuse = max(alignment, 0.0) * lightColor * materialColor;
-
-        // Specular reflections
-        vec3 lightHalfDir = normalize(lightDir + viewDir);
-        float specLight = alignment >= -0.001 ? max(pow(max(dot(fragNorm, lightHalfDir), 0.0), materialShininess * 256.0), 0.0) : 0.0;
-        vec3 specular = specLight * lightColor * vec3(materialShininess);
+        vec3 ambient = vec3(lightAmbience) * materialColor;
 
         // Final color composition
-        result += ambient + diffuse + specular;
+        vec3 kD = (vec3(1.0) - f) * (1.0 - materialMetallic);
+        result += ambient + (kD * materialColor / PI + specular) * lightColor * max(alignment, 0.0);
     }
+
+    // DEBUG: Tone mapping
+    // NOTE: Should be done at the end of all lighting passes, not at each pass
+    result = result / (result + vec3(1.0));
     
     // Output final accumulation with gamma correction
     finalColor = vec4(pow(result, vec3(1.0 / GAMMA)), 1.0);
