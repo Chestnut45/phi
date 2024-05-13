@@ -52,7 +52,7 @@ namespace Phi
         refCount--;
 
         // Safely remove ourselves from any active scene
-        if (activeScene) activeScene->RemoveSkybox();
+        if (activeScene) activeScene->RemoveSky();
 
         // If last instance, cleanup static resources
         if (refCount == 0)
@@ -81,6 +81,9 @@ namespace Phi
         sunPos.x = 0.0f;
         sunPos.y = glm::sin(TAU * timeOfDay) * sunDistance;
         sunPos.z = -glm::cos(TAU * timeOfDay) * sunDistance;
+
+        // Rotate
+        sunPos = glm::quat(glm::vec3(0.0f, sunRotation, 0.0f)) * sunPos;
     }
 
     void Sky::RenderSkybox()

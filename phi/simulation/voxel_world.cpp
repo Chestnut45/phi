@@ -12,12 +12,14 @@ namespace Phi
         // Add a camera
         Camera& camera = scene.CreateNode3D()->AddComponent<Camera>();
         camera.SetPosition({0, 16, 128});
-        camera.GetNode()->AddComponent<PointLight>();
         scene.SetActiveCamera(camera);
+
+        // DEBUG: Add a point light to the camera
+        // camera.GetNode()->AddComponent<PointLight>();
 
         // Add a sky
         Sky& sky = camera.GetNode()->AddComponent<Sky>("data://textures/skybox_day", "data://textures/skybox_night_old");
-        scene.SetActiveSkybox(sky);
+        scene.SetActiveSky(sky);
 
         // Load test materials
         scene.LoadMaterials("data://materials.yaml");

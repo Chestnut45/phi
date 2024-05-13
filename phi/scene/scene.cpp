@@ -4,6 +4,7 @@
 #include <sstream>
 #include <imgui/imgui.h>
 
+#include <phi/core/math/constants.hpp>
 #include <phi/core/file.hpp>
 #include <phi/scene/node.hpp>
 #include <phi/scene/components/collision/bounding_sphere.hpp>
@@ -560,6 +561,7 @@ namespace Phi
             {
                 ImGui::DragFloat("Size", &activeSky->sunSize, 0.1f, 0.0f, 16'384.0f);
                 ImGui::DragFloat("Distance", &activeSky->sunDistance, 0.1f, 0.0f, 16'384.0f);
+                ImGui::DragFloat("Rotation", &activeSky->sunRotation, 0.001f, 0.0f, TAU);
                 ImGui::DragFloat("Ambience", &activeSky->sunAmbient, 0.001f, 0.0f, 1.0f);
                 ImGui::ColorEdit3("Color", &activeSky->sunColor.r);
                 ImGui::Checkbox("God Rays", &activeSky->godRays);
@@ -588,6 +590,12 @@ namespace Phi
         {
             // Material with provided name exists, replace it
             pbrMaterials[it->second] = material;
+
+            // Write the new material data to the gpu buffer
+            pbrMaterialBuffer.Sync();
+            pbrMaterialBuffer.SetOffset(sizeof(glm::vec4) * 2 * it->second);
+            pbrMaterialBuffer.Write(glm::vec4{material.color, 1.0f});
+            pbrMaterialBuffer.Write(glm::vec4{material.metallic, material.roughness, 1.0f, 1.0f});
         }
         else
         {
@@ -595,8 +603,9 @@ namespace Phi
             pbrMaterialIDs[name] = pbrMaterials.size();
             pbrMaterials.push_back(material);
 
-            // Write the new material to the buffer
+            // Write the new material data to the gpu buffer
             pbrMaterialBuffer.Sync();
+            pbrMaterialBuffer.SetOffset(sizeof(glm::vec4) * 2 * (pbrMaterials.size() - 1));
             pbrMaterialBuffer.Write(glm::vec4{material.color, 1.0f});
             pbrMaterialBuffer.Write(glm::vec4{material.metallic, material.roughness, 1.0f, 1.0f});
         }
@@ -617,6 +626,12 @@ namespace Phi
 
         // Does not exist, return default value
         return 0;
+    }
+
+    const PBRMaterial& Scene::GetMaterial(int id)
+    {
+        if (id < 0 || id >= pbrMaterials.size()) return pbrMaterials[0];
+        return pbrMaterials[id];
     }
 
     void Scene::LoadMaterials(const std::string& path)
@@ -686,27 +701,27 @@ namespace Phi
         }
     }
 
-    void Scene::SetActiveSkybox(Sky& skybox)
+    void Scene::SetActiveSky(Sky& sky)
     {
-        // Check if the skybox is already attached to a scene
-        if (skybox.activeScene)
+        // Check if the sky is already attached to a scene
+        if (sky.activeScene)
         {
-            // If the skybox's active scene is this, early out
-            if (skybox.activeScene == this) return;
+            // If the sky's active scene is this, early out
+            if (sky.activeScene == this) return;
 
-            // Remove the skybox from the other scene first
-            skybox.activeScene->RemoveSkybox();
+            // Remove the sky from the other scene first
+            sky.activeScene->RemoveSky();
         }
 
-        // Detatch current skybox if any is attached
-        RemoveSkybox();
+        // Detatch current sky if any is attached
+        RemoveSky();
 
-        // Make the skybox this scene's active skybox
-        activeSky = &skybox;
-        skybox.activeScene = this;
+        // Make the sky this scene's active sky
+        activeSky = &sky;
+        sky.activeScene = this;
     }
 
-    void Scene::RemoveSkybox()
+    void Scene::RemoveSky()
     {
         if (activeSky)
         {
@@ -770,7 +785,7 @@ namespace Phi
 
         // Create geometry buffer textures
         gTexNormal = new Texture2D(renderWidth, renderHeight, GL_RGB16F, GL_RGB, GL_FLOAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
-        gTexMaterial = new Texture2D(renderWidth, renderHeight, GL_R8UI, GL_RED_INTEGER, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+        gTexMaterial = new Texture2D(renderWidth, renderHeight, GL_R16UI, GL_RED_INTEGER, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
         gTexDepthStencil = new Texture2D(renderWidth, renderHeight, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
 
         // Create geometry buffer and attach textures

@@ -2,10 +2,9 @@ design / features
 --------------------------------
 
 high priority:
-- GPUBuffer::BindSectionRange(...) (alleviate bloat)
-- live material editor to ensure pbr materials are good across all values
 - chunk loading based on active camera
 - chunk generation (no serialization yet)
+- pbr material editor load / save .yaml files
 - shadow mapping
 - input buffering
 
@@ -44,6 +43,7 @@ low priority:
 - blur for sun light scattering dither?
 - HDR rendering with exposure based tone mapping (configurable via scene)
 - bloom (downsampling method)
+- GPUBuffer::BindSectionRange(...) (alleviate bloat)
 
 bugs / fixes
 --------------------------------

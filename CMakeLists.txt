@@ -36,11 +36,17 @@ set(PARTICLE_EFFECT_EDITOR_HEADER ${CMAKE_SOURCE_DIR}/tools/particle_effect_edit
 add_executable(particle_effect_editor ${PHI_SOURCE} ${PHI_HEADERS} ${IMGUI_SOURCES} ${PARTICLE_EFFECT_EDITOR_SOURCE} ${PARTICLE_EFFECT_EDITOR_HEADER})
 target_link_libraries(particle_effect_editor yaml-cpp::yaml-cpp glfw glew ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
 
-# Voxel editor
+# Voxel world editor
 set(VOXEL_TEST_SOURCE ${CMAKE_SOURCE_DIR}/tools/voxel_world_editor.cpp)
 set(VOXEL_TEST_HEADER ${CMAKE_SOURCE_DIR}/tools/voxel_world_editor.hpp)
 add_executable(voxel_world_editor ${PHI_SOURCE} ${PHI_HEADERS} ${IMGUI_SOURCES} ${VOXEL_TEST_SOURCE} ${VOXEL_TEST_HEADER})
 target_link_libraries(voxel_world_editor yaml-cpp::yaml-cpp glfw glew ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
+
+# PBR material editor
+set(PBR_MATERIAL_EDITOR_SOURCE ${CMAKE_SOURCE_DIR}/tools/pbr_material_editor.cpp)
+set(PBR_MATERIAL_EDITOR_HEADER ${CMAKE_SOURCE_DIR}/tools/pbr_material_editor.hpp)
+add_executable(pbr_material_editor ${PHI_SOURCE} ${PHI_HEADERS} ${IMGUI_SOURCES} ${PBR_MATERIAL_EDITOR_SOURCE} ${PBR_MATERIAL_EDITOR_HEADER})
+target_link_libraries(pbr_material_editor yaml-cpp::yaml-cpp glfw glew ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
 
 # Template app
 set(TEMPLATE_APP_SOURCE ${CMAKE_SOURCE_DIR}/templates/new_app.cpp)

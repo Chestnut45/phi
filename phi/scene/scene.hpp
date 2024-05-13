@@ -137,7 +137,7 @@ namespace Phi
 
             // Returns a constant reference to the internal material data
             // for the given ID. If ID is invalid, the default material will be returned instead
-            const PBRMaterial& GetMaterial();
+            const PBRMaterial& GetMaterial(int id);
 
             // Camera management
 
@@ -155,11 +155,11 @@ namespace Phi
 
             // Environment management
 
-            // Sets the active skybox to the given skybox
-            void SetActiveSkybox(Sky& skybox);
+            // Sets the active sky to the given sky instance
+            void SetActiveSky(Sky& sky);
 
-            // Removes the currently active skybox
-            void RemoveSkybox();
+            // Removes the currently active sky
+            void RemoveSky();
 
             // Sets the base ambient light amount in the scene, clamped to [0, 1]
             void SetAmbientLight(float ambient) { ambientLight = std::clamp(ambient, 0.0f, 1.0f); }

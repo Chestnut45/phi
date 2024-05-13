@@ -50,6 +50,11 @@ namespace Phi
             // Accessors / Mutators
             void SetTime(float time) { timeOfDay = std::clamp(time, 0.0f, 1.0f); };
             float GetTime() const { return timeOfDay; };
+            void StopTime() { advanceTime = false; }
+            void PlayTime() { advanceTime = true; }
+            
+            // Sets the sun's rotation in radians about the y axis
+            void SetSunRotation(float rotation) { sunRotation = rotation; }
 
         // Data / implementation
         private:
@@ -74,6 +79,7 @@ namespace Phi
             bool renderSun = true;
             bool lensFlare = false;
             bool godRays = true;
+            float sunRotation = 0.0f;
             float sunAmbient = 0.032f;
             float sunSize = 64.0f;
             float sunDistance = 256.0f;

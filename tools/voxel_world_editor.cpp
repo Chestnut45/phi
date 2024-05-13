@@ -14,14 +14,14 @@ int main(int, char**)
     return 0;
 }
 
-VoxelWorldEditor::VoxelWorldEditor() : App("Voxel Editor", 4, 6)
-{   
-    Log("Voxel Editor initialized");
+VoxelWorldEditor::VoxelWorldEditor() : App("Voxel World Editor", 4, 6)
+{
+    Log("Voxel World Editor initialized");
 }
 
 VoxelWorldEditor::~VoxelWorldEditor()
 {
-    Log("Voxel Editor shutdown");
+    Log("Voxel World Editor shutdown");
 }
 
 void VoxelWorldEditor::Update(float delta)
