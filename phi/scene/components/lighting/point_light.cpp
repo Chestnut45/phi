@@ -23,15 +23,10 @@ namespace Phi
             }
 
             // Init shaders
-            basicShader = new Shader();
-            basicShader->LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/point_light.vs");
-            basicShader->LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/point_light_basic.fs");
-            basicShader->Link();
-
-            voxelShader = new Shader();
-            voxelShader->LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/point_light.vs");
-            voxelShader->LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/point_light_voxel.fs");
-            voxelShader->Link();
+            pbrShader = new Shader();
+            pbrShader->LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/point_light.vs");
+            pbrShader->LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/point_light_pbr.fs");
+            pbrShader->Link();
 
             // Initialize buffers
             vertexBuffer = new GPUBuffer(BufferType::Static, sizeof(VertexPos) * sphereVerts.size(), sphereVerts.data());
@@ -57,8 +52,7 @@ namespace Phi
 
         if (refCount == 0)
         {
-            delete basicShader;
-            delete voxelShader;
+            delete pbrShader;
             delete vertexBuffer;
             delete indexBuffer;
             delete instanceBuffer;
@@ -85,7 +79,7 @@ namespace Phi
         queuedLights++;
     }
 
-    void PointLight::FlushRenderQueue(bool doBasicPass, bool doVoxelPass)
+    void PointLight::FlushRenderQueue(bool pbrPass)
     {
         if (queuedLights == 0) return;
 
@@ -95,18 +89,10 @@ namespace Phi
         glFrontFace(GL_CW);
 
         // Shade basic materials
-        if (doBasicPass)
+        if (pbrPass)
         {
-            basicShader->Use();
-            glStencilFunc(GL_EQUAL, (GLint)Scene::StencilValue::BasicMaterial, 0xff);
-            glDrawElementsInstancedBaseInstance(GL_TRIANGLES, sphereInds.size(), GL_UNSIGNED_INT, 0, queuedLights, MAX_POINT_LIGHTS * instanceBuffer->GetCurrentSection());
-        }
-
-        // Shade voxel materials
-        if (doVoxelPass)
-        {
-            voxelShader->Use();
-            glStencilFunc(GL_EQUAL, (GLint)Scene::StencilValue::VoxelMaterial, 0xff);
+            pbrShader->Use();
+            glStencilFunc(GL_EQUAL, (GLint)Scene::StencilValue::PBRMaterial, 0xff);
             glDrawElementsInstancedBaseInstance(GL_TRIANGLES, sphereInds.size(), GL_UNSIGNED_INT, 0, queuedLights, MAX_POINT_LIGHTS * instanceBuffer->GetCurrentSection());
         }
         

@@ -55,7 +55,7 @@ namespace Phi
 
                     // Extract the name and load the proper ID for it
                     std::string name = line.substr(line.find_first_of(':') + 2);
-                    loadedMaterialIDs.push_back(GetNode()->GetScene()->GetVoxelMaterialID(name));
+                    loadedMaterialIDs.push_back(GetNode()->GetScene()->GetMaterialID(name));
                 }
                 
                 // Actual voxel data parsing

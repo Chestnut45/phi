@@ -32,7 +32,7 @@ namespace Phi
             void Render();
 
             // Renders all queued point lights
-            static void FlushRenderQueue(bool doBasicPass = true, bool doVoxelPass = true);
+            static void FlushRenderQueue(bool pbrPass = true);
 
             // Mutators
             void SetPosition(const glm::vec3& position) { this->position = position; }
@@ -53,8 +53,7 @@ namespace Phi
             float radius = 32.0f;
 
             // Static resources
-            static inline Shader* basicShader = nullptr;
-            static inline Shader* voxelShader = nullptr;
+            static inline Shader* pbrShader = nullptr;
             static inline GPUBuffer* vertexBuffer = nullptr;
             static inline GPUBuffer* indexBuffer = nullptr;
             static inline GPUBuffer* instanceBuffer = nullptr;

@@ -56,16 +56,14 @@ namespace Phi
             enum class ShaderStorageBindingIndex
             {
                 InstanceData = 0,
-                BasicMaterial = 1,
-                VoxelMaterial = 2,
+                PBRMaterial = 1,
             };
 
             // Special stencil values (mostly for readability)
             enum class StencilValue
             {
                 None = 0,
-                BasicMaterial = 1,
-                VoxelMaterial = 2,
+                PBRMaterial = 1,
             };
 
             // Creates an empty scene with the default resolution
@@ -125,19 +123,21 @@ namespace Phi
 
             // Adds a single material to the internal registry
             // If a material already exists with the given name,
-            // the new material data replaces the old, but keeps the same ID
+            // the new material data replaces the old, and keeps the same ID
             // Returns the ID of the material
-            int AddMaterial(const std::string& name, const BasicMaterial& material);
-            int AddMaterial(const std::string& name, const VoxelMaterial& material);
+            int RegisterMaterial(const std::string& name, const PBRMaterial& material);
+
+            // Loads materials from a YAML file and adds them to the scene
+            // NOTE: Currently works with PBRMaterial
+            void LoadMaterials(const std::string& path);
             
             // Returns the ID for the given named material, if it exists
             // Returns 0 (the default material) otherwise
-            int GetBasicMaterialID(const std::string& name);
-            int GetVoxelMaterialID(const std::string& name);
+            int GetMaterialID(const std::string& name);
 
-            // Loads materials from a YAML file and adds them to the scene
-            // NOTE: Works with both BasicMaterial and VoxelMaterial
-            void LoadMaterials(const std::string& path);
+            // Returns a constant reference to the internal material data
+            // for the given ID. If ID is invalid, the default material will be returned instead
+            const PBRMaterial& GetMaterial();
 
             // Camera management
 
@@ -238,17 +238,10 @@ namespace Phi
 
             // Material data
 
-            // Basic materials
-            std::vector<BasicMaterial> basicMaterials;
-            std::unordered_map<std::string, int> basicMaterialIDs;
-
-            // Voxel materials
-            std::vector<VoxelMaterial> voxelMaterials;
-            std::unordered_map<std::string, int> voxelMaterialIDs;
-
-            // Material buffers
-            GPUBuffer basicMaterialBuffer{BufferType::Dynamic, MAX_BASIC_MATERIALS * sizeof(glm::vec4) * 2};
-            GPUBuffer voxelMaterialBuffer{BufferType::Dynamic, MAX_VOXEL_MATERIALS * sizeof(glm::vec4) * 2};
+            // PBR Materials
+            std::vector<PBRMaterial> pbrMaterials;
+            std::unordered_map<std::string, int> pbrMaterialIDs;
+            GPUBuffer pbrMaterialBuffer{BufferType::Dynamic, MAX_BASIC_MATERIALS * sizeof(glm::vec4) * 2};
 
             // Render queues and lists
             std::vector<BasicMesh*> basicMeshRenderQueue;
@@ -262,16 +255,16 @@ namespace Phi
 
             // Lighting data
 
+            // The ambient light level in the scene
+            float ambientLight = 0.008f;
+
             // Slots for global directional lights in the scene
             DirectionalLight* globalLights[(int)DirectionalLight::Slot::NUM_SLOTS];
 
             // Global lighting resources
             GPUBuffer globalLightBuffer{BufferType::DynamicDoubleBuffer, (MAX_USER_DIRECTIONAL_LIGHTS + 1) * (sizeof(glm::vec4) * 2) + (sizeof(GLint) * 2)};
-            Shader globalLightBasicShader;
-            Shader globalLightBasicSSAOShader;
-            Shader globalLightVoxelShader;
-            Shader globalLightVoxelSSAOShader;
-            float ambientLight = 0.008f;
+            Shader globalLightPBRShader;
+            Shader globalLightPBRSSAOShader;
 
             // A dummy VAO used for attributeless rendering
             GLuint dummyVAO = 0;

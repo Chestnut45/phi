@@ -14,10 +14,9 @@ namespace Phi
 {
     Scene::Scene()
     {
-        // Add the default materials
+        // Add the default material
         // Guaranteed to have the ID 0
-        AddMaterial("default", BasicMaterial());
-        AddMaterial("default", VoxelMaterial());
+        RegisterMaterial("default", PBRMaterial());
 
         // Set all global light pointers to nullptr
         for (int i = 0; i < (int)DirectionalLight::Slot::NUM_SLOTS; ++i)
@@ -43,21 +42,15 @@ namespace Phi
 
         // Global lighting shaders
 
-        // Basic material
-        globalLightBasicShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light_pass.vs");
-        globalLightBasicShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pass_basic.fs");
-        globalLightBasicShader.Link();
-        globalLightBasicSSAOShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light_pass.vs");
-        globalLightBasicSSAOShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pass_basic_ssao.fs");
-        globalLightBasicSSAOShader.Link();
+        // PBR
+        globalLightPBRShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light.vs");
+        globalLightPBRShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pbr.fs");
+        globalLightPBRShader.Link();
 
-        // Voxel material
-        globalLightVoxelShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light_pass.vs");
-        globalLightVoxelShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pass_voxel.fs");
-        globalLightVoxelShader.Link();
-        globalLightVoxelSSAOShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light_pass.vs");
-        globalLightVoxelSSAOShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pass_voxel_ssao.fs");
-        globalLightVoxelSSAOShader.Link();
+        // PBR with SSAO
+        globalLightPBRSSAOShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light.vs");
+        globalLightPBRSSAOShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pbr_ssao.fs");
+        globalLightPBRSSAOShader.Link();
 
         // Wireframes
         wireframeShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/wireframe.vs");
@@ -301,55 +294,50 @@ namespace Phi
         UpdateCameraBuffer();
         cameraBuffer.BindRange(GL_UNIFORM_BUFFER, (int)UniformBindingIndex::Camera, cameraBuffer.GetCurrentSection() * cameraBuffer.GetSize(), cameraBuffer.GetSize());
 
-        // Flags
-        bool basicPass = basicMeshRenderQueue.size() > 0;
-        bool voxelPass = voxelObjectRenderQueue.size() > 0;
+        // Pass flags
+        bool pbrPass = basicMeshRenderQueue.size() > 0 || voxelObjectRenderQueue.size() > 0;
 
         // Geometry passes
 
-        // Bind the material buffers
-        basicMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::BasicMaterial);
-        voxelMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::VoxelMaterial);
-
-        // Bind the geometry buffer and clear it
-        gBuffer->Bind();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-        // Setup stencil state
-        glEnable(GL_STENCIL_TEST);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-        // Basic material pass
-
-        // Render all basic meshes
-        glStencilFunc(GL_ALWAYS, (int)StencilValue::BasicMaterial, 0xff);
-        for (BasicMesh* mesh : basicMeshRenderQueue)
+        if (pbrPass)
         {
-            mesh->Render();
+            // Bind the material buffer
+            pbrMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::PBRMaterial);
+
+            // Bind the geometry buffer and clear it
+            gBuffer->Bind();
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+            // Setup stencil state
+            glEnable(GL_STENCIL_TEST);
+            glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+            // PBR material pass
+            glStencilFunc(GL_ALWAYS, (int)StencilValue::PBRMaterial, 0xff);
+
+            // Render all basic meshes
+            for (BasicMesh* mesh : basicMeshRenderQueue)
+            {
+                mesh->Render();
+            }
+            BasicMesh::FlushRenderQueue();
+
+            // Render all voxel objects
+            for (VoxelObject* voxelObject : voxelObjectRenderQueue)
+            {
+                voxelObject->Render();
+            }
+            VoxelObject::FlushRenderQueue();
+
+            // Bind the main render target to draw to
+            gBuffer->Unbind(GL_DRAW_FRAMEBUFFER);
         }
-        BasicMesh::FlushRenderQueue();
-
-        // Voxel material pass
-
-        // Render all voxel objects
-        glStencilFunc(GL_ALWAYS, (int)StencilValue::VoxelMaterial, 0xff);
-        for (VoxelObject* voxelObject : voxelObjectRenderQueue)
-        {
-            voxelObject->Render();
-        }
-        VoxelObject::FlushRenderQueue();
-
-        // TODO: PBR material pass
-
-        // Bind the main render target to draw to
-        gBuffer->Unbind(GL_DRAW_FRAMEBUFFER);
 
         // Lighting passes
         
         // Update global light buffer
         globalLightBuffer.Sync();
-        globalLightBuffer.BindRange(GL_UNIFORM_BUFFER, (GLuint)UniformBindingIndex::GlobalLights,
-            globalLightBuffer.GetCurrentSection() * globalLightBuffer.GetSize(), globalLightBuffer.GetSize());
+        globalLightBuffer.BindRange(GL_UNIFORM_BUFFER, (GLuint)UniformBindingIndex::GlobalLights, globalLightBuffer.GetCurrentSection() * globalLightBuffer.GetSize(), globalLightBuffer.GetSize());
 
         // Write all active global lights to the buffer
         int activeLights = 0;
@@ -378,6 +366,7 @@ namespace Phi
         globalLightBuffer.Write(ambientLight);
 
         // Blit the geometry buffer's depth and stencil textures to the main render target
+        // TODO: Is a blit fastest here? Profile...
         switch (renderMode)
         {
             case RenderMode::MatchInternalResolution:
@@ -410,7 +399,7 @@ namespace Phi
             ssaoRotationTexture->Bind(3);
             ssaoShader.Use();
 
-            // Issue draw call
+            // Draw fullscreen triangle
             glDrawArrays(GL_TRIANGLES, 0, 3);
 
             // Unbind (back to default FBO for lighting)
@@ -421,20 +410,11 @@ namespace Phi
         }
 
         // Basic materials
-        if (basicPass)
+        if (pbrPass)
         {
             // Use correct shader based on SSAO state
-            ssao ? globalLightBasicSSAOShader.Use() : globalLightBasicShader.Use();
-            glStencilFunc(GL_EQUAL, (GLint)StencilValue::BasicMaterial, 0xff);
-            glDrawArrays(GL_TRIANGLES, 0, 3);
-        }
-
-        // Voxel materials
-        if (voxelPass)
-        {
-            // Use correct shader based on SSAO state
-            ssao ? globalLightVoxelSSAOShader.Use() : globalLightVoxelShader.Use();
-            glStencilFunc(GL_EQUAL, (GLint)StencilValue::VoxelMaterial, 0xff);
+            ssao ? globalLightPBRSSAOShader.Use() : globalLightPBRShader.Use();
+            glStencilFunc(GL_EQUAL, (GLint)StencilValue::PBRMaterial, 0xff);
             glDrawArrays(GL_TRIANGLES, 0, 3);
         }
 
@@ -447,7 +427,7 @@ namespace Phi
         {
             light.Render();
         }
-        PointLight::FlushRenderQueue(basicPass, voxelPass);
+        PointLight::FlushRenderQueue(pbrPass);
 
         // Disable stencil testing
         glDisable(GL_STENCIL_TEST);
@@ -599,77 +579,37 @@ namespace Phi
         ImGui::End();
     }
 
-    int Scene::AddMaterial(const std::string& name, const BasicMaterial& material)
+    int Scene::RegisterMaterial(const std::string& name, const PBRMaterial& material)
     {
         // Find if the material exists
-        const auto& it = basicMaterialIDs.find(name);
+        const auto& it = pbrMaterialIDs.find(name);
 
-        if (it != basicMaterialIDs.end())
+        if (it != pbrMaterialIDs.end())
         {
             // Material with provided name exists, replace it
-            basicMaterials[it->second] = material;
+            pbrMaterials[it->second] = material;
         }
         else
         {
             // Material does not exist, add it and add the ID to the map
-            basicMaterialIDs[name] = basicMaterials.size();
-            basicMaterials.push_back(material);
+            pbrMaterialIDs[name] = pbrMaterials.size();
+            pbrMaterials.push_back(material);
 
             // Write the new material to the buffer
-            basicMaterialBuffer.Sync();
-            basicMaterialBuffer.Write(glm::vec4{material.color, 1.0f});
-            basicMaterialBuffer.Write(glm::vec4{material.metallic, material.roughness, 1.0f, 1.0f});
+            pbrMaterialBuffer.Sync();
+            pbrMaterialBuffer.Write(glm::vec4{material.color, 1.0f});
+            pbrMaterialBuffer.Write(glm::vec4{material.metallic, material.roughness, 1.0f, 1.0f});
         }
 
-        return basicMaterialIDs[name];
+        return pbrMaterialIDs[name];
     }
 
-    int Scene::AddMaterial(const std::string& name, const VoxelMaterial& material)
+    int Scene::GetMaterialID(const std::string& name)
     {
         // Find if the material exists
-        const auto& it = voxelMaterialIDs.find(name);
+        const auto& it = pbrMaterialIDs.find(name);
 
-        if (it != voxelMaterialIDs.end())
-        {
-            // Material with provided name exists, replace it
-            voxelMaterials[it->second] = material;
-        }
-        else
-        {
-            // Material does not exist, add it and add the ID to the map
-            voxelMaterialIDs[name] = voxelMaterials.size();
-            voxelMaterials.push_back(material);
-
-            // Write the new material to the buffer
-            voxelMaterialBuffer.Sync();
-            voxelMaterialBuffer.Write(glm::vec4{material.color, 1.0f});
-            voxelMaterialBuffer.Write(glm::vec4{material.metallic, material.roughness, 1.0f, 1.0f});
-        }
-
-        return voxelMaterialIDs[name];
-    }
-
-    int Scene::GetBasicMaterialID(const std::string& name)
-    {
-        // Find if the material exists
-        const auto& it = basicMaterialIDs.find(name);
-
-        if (it != basicMaterialIDs.end())
-        {
-            // Material with provided name exists
-            return it->second;
-        }
-
-        // Does not exist, return default value
-        return 0;
-    }
-
-    int Scene::GetVoxelMaterialID(const std::string& name)
-    {
-        // Find if the material exists
-        const auto& it = voxelMaterialIDs.find(name);
-
-        if (it != voxelMaterialIDs.end())
+        if (it != pbrMaterialIDs.end())
         {
             // Material with provided name exists
             return it->second;
@@ -686,20 +626,20 @@ namespace Phi
             // Load YAML file
             YAML::Node node = YAML::LoadFile(File::GlobalizePath(path));
 
-            // Process basic materials
-            if (node["basic_materials"])
+            // Process pbr materials
+            if (node["pbr_materials"])
             {
-                const auto& mats = node["basic_materials"];
+                const auto& mats = node["pbr_materials"];
                 for (int i = 0; i < mats.size(); ++i)
                 {
-                    // Grab the specific material
+                    // Grab the specific material node
                     const auto& mat = mats[i];
 
-                    // Create the basic material
-                    BasicMaterial m{};
+                    // Create the material
+                    PBRMaterial m{};
 
                     // Load properties from node
-                    std::string name = mat["name"] ? mat["name"].as<std::string>() : "Unnamed Basic Material";
+                    std::string name = mat["name"] ? mat["name"].as<std::string>() : "Unnamed PBR Material";
                     m.color.r = mat["color"]["r"] ? mat["color"]["r"].as<float>() : m.color.r;
                     m.color.g = mat["color"]["g"] ? mat["color"]["g"].as<float>() : m.color.g;
                     m.color.b = mat["color"]["b"] ? mat["color"]["b"].as<float>() : m.color.b;
@@ -707,32 +647,7 @@ namespace Phi
                     m.roughness = mat["roughness"] ? mat["roughness"].as<float>() : m.roughness;
 
                     // Add the material to the scene
-                    AddMaterial(name, m);
-                }
-            }
-
-            // Process voxel materials
-            if (node["voxel_materials"])
-            {
-                const auto& mats = node["voxel_materials"];
-                for (int i = 0; i < mats.size(); ++i)
-                {
-                    // Grab the specific material
-                    const auto& mat = mats[i];
-
-                    // Create the basic material
-                    VoxelMaterial m{};
-
-                    // Load properties from node
-                    std::string name = mat["name"] ? mat["name"].as<std::string>() : "Unnamed Voxel Material";
-                    m.color.r = mat["color"]["r"] ? mat["color"]["r"].as<float>() : m.color.r;
-                    m.color.g = mat["color"]["g"] ? mat["color"]["g"].as<float>() : m.color.g;
-                    m.color.b = mat["color"]["b"] ? mat["color"]["b"].as<float>() : m.color.b;
-                    m.metallic = mat["metallic"] ? mat["metallic"].as<float>() : m.metallic;
-                    m.roughness = mat["roughness"] ? mat["roughness"].as<float>() : m.roughness;
-
-                    // Add the material to the scene
-                    AddMaterial(name, m);
+                    RegisterMaterial(name, m);
                 }
             }
         }

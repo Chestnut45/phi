@@ -2,7 +2,7 @@ design / features
 --------------------------------
 
 high priority:
-- switch basicmaterial to pbr as well? (profile)
+- GPUBuffer::BindSectionRange(...) (alleviate bloat)
 - live material editor to ensure pbr materials are good across all values
 - chunk loading based on active camera
 - chunk generation (no serialization yet)
