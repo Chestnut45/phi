@@ -6,9 +6,10 @@ high priority:
 - move voxel object to simulation, voxel mesh to renderable
 - pbr material editor list / serialization
 - chunk loading based on active camera
-- chunk generation (no serialization yet)
+- chunk generation (voxel mass, material map, biomes, etc.)
 - fluid simulation start
 - shadow mapping
+- HDR rendering with exposure based tone mapping (configurable via scene)
 - input buffering
 
 mid priority:
@@ -44,7 +45,6 @@ low priority:
 - physics bodies (rigidbody.cpp, etc.)
 - tunable SSAO (radius, blur, samples, etc.)
 - blur for sun light scattering dither?
-- HDR rendering with exposure based tone mapping (configurable via scene)
 - bloom (downsampling method)
 - GPUBuffer::BindSectionRange(...) (alleviate bloat)
 

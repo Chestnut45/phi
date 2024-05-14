@@ -15,7 +15,7 @@ namespace Phi
         scene.SetActiveCamera(camera);
 
         // DEBUG: Add a point light to the camera
-        // camera.GetNode()->AddComponent<PointLight>();
+        camera.GetNode()->AddComponent<PointLight>();
 
         // Add a sky
         Sky& sky = camera.GetNode()->AddComponent<Sky>("data://textures/skybox_day", "data://textures/skybox_night_old");

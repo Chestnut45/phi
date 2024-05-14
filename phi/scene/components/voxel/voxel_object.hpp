@@ -3,12 +3,9 @@
 #include <phi/scene/components/base_component.hpp>
 #include <phi/scene/components/voxel/voxel_mesh_implicit.hpp>
 
-// Forward declaration
-class VoxelEditor;
-
 namespace Phi
 {
-    // A component representing an instance of a voxel object
+    // A custom component representing an instance of a voxel object
     class VoxelObject : public BaseComponent
     {
         // Interface
@@ -52,10 +49,5 @@ namespace Phi
 
             // Internal mesh
             VoxelMeshImplicit* mesh = nullptr;
-
-            // Friends
-
-            // Needed for Voxel Editor to work
-            friend class ::VoxelEditor;
     };
 }
