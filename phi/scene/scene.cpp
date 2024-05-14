@@ -577,6 +577,7 @@ namespace Phi
 
         ImGui::SeparatorText("Graphics Settings");
         ImGui::Checkbox("SSAO", &ssao);
+        ImGui::DragFloat("Ambient", &ambientLight, 0.001f, 0.0f, 1.0f);
 
         ImGui::End();
     }

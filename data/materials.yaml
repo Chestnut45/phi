@@ -32,8 +32,8 @@ pbr_materials: [
     {
         name: ruby,
         color: {r: 0.8, g: 0.01, b: 0.25},
-        roughness: 0.18,
-        metallic: 0.8
+        roughness: 0.24,
+        metallic: 0.24
     },
     {
         name: gold,

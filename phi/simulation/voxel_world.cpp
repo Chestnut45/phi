@@ -26,7 +26,7 @@ namespace Phi
 
         // Add the test voxel object and load the model
         testObj = &scene.CreateNode3D()->AddComponent<VoxelObject>();
-        testObj->Load("data://models/teapot.pvox");
+        testObj->Load("data://models/dragon.pvox");
     }
 
     VoxelWorld::~VoxelWorld()

@@ -1,8 +1,10 @@
 # Phi
 
-Phi is a cross-platform 3D desktop application engine using C++ and OpenGL. It is still quite early in its development, and much of the API may be subject to frequent changes (see `Roadmap` for details).
+![voxel_screenshot.png](https://github.com/Chestnut45/phi/blob/main/screenshots/voxel_screenshot.png)
 
-I am developing Phi as a personal project alongside Harmonic - an upcoming falling-sand inspired frequency based roguelike - in the hopes that much of the game's systems can be made generic and reusable for other 3D application projects. It is currently not recommended to use this engine for anything other than research or quick prototyping. I do my best to add relevant comments to every feature I add, so exploring the source is the current recommended way to learn about the engine (until I have the time to put together a wiki).
+Phi is a cross-platform 3D desktop application engine built with C++ and OpenGL. It is still quite early in its development, and much of the API may be subject to frequent changes (see `Roadmap` for details).
+
+I am developing Phi as a personal project alongside Harmonic - an upcoming falling-sand inspired frequency based roguelike - in the hopes that much of the game's systems can be made generic and reusable for other projects. It is currently not recommended to use this engine for anything other than research or quick prototyping. I do my best to add relevant comments to every feature, so exploring the source is the current recommended way to learn about the engine (until I have the time to put together a wiki).
 
 ## Engine Architecture
 
@@ -34,7 +36,7 @@ TODO: Explain RAII wrappers (`Phi::Texture2D`, `Phi::GPUBuffer`, etc.) and plans
 
 ### Tools
 
-Many tools are planned / in development, currently the most mature tool is `particle_effect_editor`.
+Many tools are planned / in development, and they can be found in `/tools/` currently the most mature tool is `particle_effect_editor`.
 
 ![effect_editor_screenshot.png](https://github.com/Chestnut45/phi/blob/main/screenshots/effect_editor_screenshot.png)
 
@@ -51,6 +53,8 @@ Current version: 0.3.2
 - [ ] Noise
     - [x] FastNoiseLite wrapper
     - [x] 2D + 3D sampling
+    - [ ] Fractal noise
+    - [ ] Domain warping
 - [ ] Shapes (Intersection testable)
     - [ ] 2D
         - [x] Rectangle / IRectangle
@@ -60,12 +64,16 @@ Current version: 0.3.2
         - [x] Frustum
         - [x] AABB
         - [x] Sphere
+        - [ ] Cylinder
+        - [ ] OBB
+        - [ ] Cone
+        - [ ] Hemisphere
 ### Data Structures
 - [x] Free List
 - [x] Quadtree
+- [x] Grid3D
 - [ ] Experimental (waiting on better compiler support for c++23 for multiple arguments in overloaded subscript operator)
     - [ ] Hash Map
-    - [ ] Array Grid 3D
     - [ ] Hash Grid 3D
 ### Core Modules
 - [x] App
@@ -87,9 +95,7 @@ Current version: 0.3.2
 - [x] Indirect draw command structures
 - [x] Internal vertex formats
 - [ ] Materials
-    - [x] Basic Material (Blinn-Phong)
-    - [x] Voxel Material (Blinn-Phong for now...)
-    - [ ] PBR Material
+    - [x] PBR Material (cook-torrance brdf)
 - [ ] RAII OpenGL Wrappers
     - [x] Cubemap
     - [x] Framebuffer
@@ -112,7 +118,7 @@ Current version: 0.3.2
         - [x] Auto transform / scale flags
         - [ ] Encompass child nodes
     - [ ] Renderable
-        - [x] Skybox
+        - [x] Sky
         - [ ] CPU Particle Effect
             - [x] Batched indirect rendering pipeline
             - [x] Additive / Standard blend modes
@@ -129,10 +135,7 @@ Current version: 0.3.2
             - [ ] .obj loading
         - [ ] Voxel Object
             - [x] Loading from voxel model
-            - [x] Voxel Mesh (Ray Traced)
-            - [x] Voxel Mesh (Instanced)
-            - [ ] Voxel Mesh (VS generated)
-        - [ ] PBR Mesh
+            - [x] Voxel Mesh (VS generated)
 
 ## Prerequisites
 
