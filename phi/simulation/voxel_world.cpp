@@ -106,15 +106,15 @@ namespace Phi
         // TODO: Build map of voxel mass shapes for testing
 
         // Iterate all voxels in the chunk
-        // for (int z = 0; z < VoxelChunk::CHUNK_DIM; ++z)
-        // {
-        //     for (int y = 0; y < VoxelChunk::CHUNK_DIM; ++y)
-        //     {
-        //         for (int x = 0; x < VoxelChunk::CHUNK_DIM; ++x)
-        //         {
-
-        //         }
-        //     }
-        // }
+        for (int z = 0; z < VoxelChunk::CHUNK_DIM; ++z)
+        {
+            for (int y = 0; y < VoxelChunk::CHUNK_DIM; ++y)
+            {
+                for (int x = 0; x < VoxelChunk::CHUNK_DIM; ++x)
+                {
+                    // TODO: Pre-generation steps?
+                }
+            }
+        }
     }
 }
