@@ -161,11 +161,11 @@ namespace Phi
             // Removes the currently active sky
             void RemoveSky();
 
-            // Sets the base ambient light amount in the scene, clamped to [0, 1]
-            void SetAmbientLight(float ambient) { ambientLight = std::clamp(ambient, 0.0f, 1.0f); }
+            // Sets the base ambient light in the scene
+            void SetAmbientLight(const glm::vec3& ambient) { ambientLight = ambient; }
 
-            // Gets the base ambient light amount in the scene
-            float GetAmbientLight() const { return ambientLight; }
+            // Gets the base ambient light in the scene
+            const glm::vec3& GetAmbientLight() const { return ambientLight; }
 
             // Resolution management
 
@@ -255,14 +255,11 @@ namespace Phi
 
             // Lighting data
 
-            // The ambient light level in the scene
-            float ambientLight = 0.008f;
-
             // Slots for global directional lights in the scene
             DirectionalLight* globalLights[(int)DirectionalLight::Slot::NUM_SLOTS];
 
             // Global lighting resources
-            GPUBuffer globalLightBuffer{BufferType::DynamicDoubleBuffer, (MAX_USER_DIRECTIONAL_LIGHTS + 1) * (sizeof(glm::vec4) * 2) + (sizeof(GLint) * 2)};
+            GPUBuffer globalLightBuffer{BufferType::DynamicDoubleBuffer, (MAX_USER_DIRECTIONAL_LIGHTS + 1) * (sizeof(glm::vec4) * 2) + (sizeof(glm::vec4) * 2)};
             Shader globalLightPBRShader;
             Shader globalLightPBRSSAOShader;
 
@@ -275,6 +272,9 @@ namespace Phi
 
             // Settings
             bool ssao = true;
+
+            // The ambient light level in the scene
+            glm::vec3 ambientLight = glm::vec3(0.0f);
 
             // Helper functions
             void UpdateCameraBuffer();

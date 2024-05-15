@@ -38,7 +38,8 @@ layout(std140, binding = 1) uniform GlobalLightBlock
 {
     DirectionalLight globalLights[MAX_DIRECTIONAL_LIGHTS];
     int globalLightCount;
-    float baseAmbientLight;
+    // 3 bytes padding
+    vec3 ambientLight;
 };
 
 // PBR Material buffer
@@ -121,7 +122,7 @@ void main()
 
     // Calculate influence from all active global lights
     // Start with the base ambient light of the scene
-    vec3 result = materialColor * baseAmbientLight;
+    vec3 result = materialColor * ambientLight;
     for (int i = 0; i < globalLightCount; i++)
     {
         // Grab light information

@@ -2,12 +2,11 @@ design / features
 --------------------------------
 
 high priority:
-- ambient scene light vec3 instead of single float
-- move voxel object to simulation, voxel mesh to renderable
 - pbr material editor list / serialization
 - chunk loading based on active camera
 - chunk generation (voxel mass, material map, biomes, etc.)
 - fluid simulation start
+- move voxel object to simulation, voxel mesh to renderable
 - shadow mapping
 - HDR rendering with exposure based tone mapping (configurable via scene)
 - input buffering

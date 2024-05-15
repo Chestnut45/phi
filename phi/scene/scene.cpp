@@ -363,7 +363,7 @@ namespace Phi
 
         // Write number of lights and base ambient light value
         globalLightBuffer.SetOffset((sizeof(glm::vec4) * 2) * (MAX_USER_DIRECTIONAL_LIGHTS + 1));
-        globalLightBuffer.Write(activeLights);
+        globalLightBuffer.Write(glm::ivec4(activeLights));
         globalLightBuffer.Write(ambientLight);
 
         // Blit the geometry buffer's depth and stencil textures to the main render target
@@ -521,28 +521,19 @@ namespace Phi
 
     void Scene::ShowDebug()
     {
-        ImGui::SetNextWindowPos(ImVec2(renderWidth - 324, renderHeight - 454));
-        ImGui::SetNextWindowSize(ImVec2(320, 450));
+        ImGui::SetNextWindowPos(ImVec2(renderWidth - 364, renderHeight - 454));
+        ImGui::SetNextWindowSize(ImVec2(360, 450));
         ImGui::Begin("Scene Debug", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
-        ImGui::SeparatorText("Active Camera");
-        if (activeCamera)
-        {
-            const glm::vec3& pos = activeCamera->GetPosition();
-            const glm::vec3& dir = activeCamera->GetDirection();
-            ImGui::Text("Position: (%.1f %.1f, %.1f)", pos.x, pos.y, pos.z);
-            ImGui::Text("Direction: (%.1f %.1f, %.1f)", dir.x, dir.y, dir.z);
-            ImGui::Text("FOV: %.0f", activeCamera->GetFov());
-        }
-        else
-        {
-            ImGui::Text("Null");
-        }
+        ImGui::SeparatorText("Graphics Settings");
+        ImGui::Checkbox("SSAO", &ssao);
+
+        ImGui::SeparatorText("Environment");
+        ImGui::ColorEdit3("Ambient Light", &ambientLight.x);
 
         if (activeSky)
         {
-            ImGui::SeparatorText("Active Sky");
-
+            ImGui::SeparatorText("Sky");
             ImGui::Text("Timing");
             ImGui::Separator();
             if (ImGui::Button("Sunrise")) activeSky->SetTime(Sky::SUNRISE); ImGui::SameLine();
@@ -575,9 +566,19 @@ namespace Phi
             }
         }
 
-        ImGui::SeparatorText("Graphics Settings");
-        ImGui::Checkbox("SSAO", &ssao);
-        ImGui::DragFloat("Ambient", &ambientLight, 0.001f, 0.0f, 1.0f);
+        ImGui::SeparatorText("Camera");
+        if (activeCamera)
+        {
+            const glm::vec3& pos = activeCamera->GetPosition();
+            const glm::vec3& dir = activeCamera->GetDirection();
+            ImGui::Text("Position: (%.1f %.1f, %.1f)", pos.x, pos.y, pos.z);
+            ImGui::Text("Direction: (%.1f %.1f, %.1f)", dir.x, dir.y, dir.z);
+            ImGui::Text("FOV: %.0f", activeCamera->GetFov());
+        }
+        else
+        {
+            ImGui::Text("Null");
+        }
 
         ImGui::End();
     }
