@@ -2,10 +2,10 @@ design / features
 --------------------------------
 
 high priority:
-- colorable fog in environment
-- move voxel object to simulation, voxel mesh to renderable...
 - aggregate volumes
 - chunk generation (voxel mass, material map, biomes, etc.)
+- move voxel object to simulation, voxel mesh to renderable...
+- shadow mapping
 - fluid simulation start
 - 3rd person controller
 - animated voxel models
@@ -50,11 +50,12 @@ low priority:
 - tunable SSAO (radius, blur, samples, etc.)
 - blur for sun light scattering dither?
 - GPUBuffer::BindSectionRange(...) (alleviate bloat)
-- shadow mapping
 - input buffering
 - debug visualizations
 - BasicMesh .obj loading
 - TexturedMesh?
+- volumetric fog (move away from screenspace scattering method...?)
+    - inject point lights to volumetric texture?
 
 bugs / fixes
 --------------------------------
