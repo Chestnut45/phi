@@ -2,11 +2,16 @@ design / features
 --------------------------------
 
 high priority:
-- pbr material editor list / serialization
-- chunk loading based on active camera
+- colorable fog in environment
+- move voxel object to simulation, voxel mesh to renderable...
+- aggregate volumes
 - chunk generation (voxel mass, material map, biomes, etc.)
 - fluid simulation start
-- move voxel object to simulation, voxel mesh to renderable...
+- 3rd person controller
+- animated voxel models
+- terrain interaction with voxel objects (reactphysics3d?)
+- pbr material editor list / serialization
+- voxel material editor?
 - HDR rendering with exposure based tone mapping (configurable via scene)
 - pbr bloom (downsampling method)
 - voxel particle effects?
@@ -47,6 +52,9 @@ low priority:
 - GPUBuffer::BindSectionRange(...) (alleviate bloat)
 - shadow mapping
 - input buffering
+- debug visualizations
+- BasicMesh .obj loading
+- TexturedMesh?
 
 bugs / fixes
 --------------------------------
