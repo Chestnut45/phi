@@ -3,16 +3,18 @@ design / features
 
 high priority:
 - aggregate volumes
-- move voxel object to simulation, voxel mesh to renderable...
+- move voxel object to simulation, voxel mesh to renderable
     - separate scene/rendering data from voxel/simulation data (sync VoxelMaterial / PBRMaterial with world)
 - chunk generation (voxel mass, material map, biomes, etc.)
+    - custom voxel mass vs presets?
+        - feature types? (rivers, waterfalls, flora, mountains, etc.)
+    - structure generation / model stamping
+    - voxel model editor
 - shadow mapping
 - fluid simulation start
 - 3rd person controller
 - animated voxel models
 - terrain interaction with voxel objects (reactphysics3d?)
-- pbr material editor list / serialization
-- voxel material editor?
 - HDR rendering with exposure based tone mapping (configurable via scene)
 - pbr bloom (downsampling method)
 - voxel particle effects?
