@@ -6,7 +6,7 @@
 #include <glm/gtx/hash.hpp>
 
 #include <phi/simulation/voxel_chunk.hpp>
-#include <phi/simulation/voxel_volume.hpp>
+#include <phi/simulation/voxel_mass.hpp>
 #include <phi/scene/scene.hpp>
 
 namespace Phi
@@ -36,11 +36,11 @@ namespace Phi
             // TODO: Should only accept voxel materials!
             void LoadMaterials(const std::string& path);
 
-            // Adds a volume to the world
-            void AddVolume(const VoxelVolume& volume);
+            // Adds a voxel mass to the world
+            void AddVoxelMass(const VoxelMass& voxelMass);
 
-            // Gets the list of terrain volumes
-            std::vector<VoxelVolume>& GetVolumes() { return terrainVolumes; }
+            // Gets the list of voxel masses
+            std::vector<VoxelMass>& GetVoxelMasses() { return voxelMasses; }
 
             // Simulation
 
@@ -77,8 +77,8 @@ namespace Phi
 
             // Generation
 
-            // List of all volumes that make up the terrain
-            std::vector<VoxelVolume> terrainVolumes;
+            // List of all voxel masses in the world
+            std::vector<VoxelMass> voxelMasses;
 
             // TODO: Biomes, features...
 

@@ -49,5 +49,5 @@
 
 // Simulation systems
 #include "simulation/voxel_chunk.hpp"
-#include "simulation/voxel_volume.hpp"
+#include "simulation/voxel_mass.hpp"
 #include "simulation/voxel_world.hpp"

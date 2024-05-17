@@ -38,9 +38,9 @@ namespace Phi
         scene.LoadMaterials(path);
     }
 
-    void VoxelWorld::AddVolume(const VoxelVolume& volume)
+    void VoxelWorld::AddVoxelMass(const VoxelMass& volume)
     {
-        terrainVolumes.push_back(volume);
+        voxelMasses.push_back(volume);
     }
 
     void VoxelWorld::Update(float delta)

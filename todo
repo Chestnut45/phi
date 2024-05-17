@@ -3,8 +3,9 @@ design / features
 
 high priority:
 - aggregate volumes
-- chunk generation (voxel mass, material map, biomes, etc.)
 - move voxel object to simulation, voxel mesh to renderable...
+    - separate scene/rendering data from voxel/simulation data (sync VoxelMaterial / PBRMaterial with world)
+- chunk generation (voxel mass, material map, biomes, etc.)
 - shadow mapping
 - fluid simulation start
 - 3rd person controller

@@ -108,24 +108,24 @@ void VoxelWorldEditor::ShowInterface()
     // Regenerates the world's terrain using the current data
     if (ImGui::Button("Regenerate")) world.ReloadChunks();
 
-    // Display all voxel volumes
-    ImGui::SeparatorText("Voxel Volumes");
-    if (ImGui::Button("Add")) world.AddVolume(VoxelVolume());
+    // Display all voxel masses
+    ImGui::SeparatorText("Voxel Masses");
+    if (ImGui::Button("Add")) world.AddVoxelMass(VoxelMass());
 
-    bool keepVolume = true;
-    auto& volumes = world.GetVolumes();
-    for (int i = 0; i < volumes.size(); ++i)
+    bool keepMass = true;
+    auto& voxelMasses = world.GetVoxelMasses();
+    for (int i = 0; i < voxelMasses.size(); ++i)
     {
-        // Grab a reference to the volume
-        VoxelVolume& volume = volumes[i];
+        // Grab a reference to the voxel mass
+        VoxelMass& mass = voxelMasses[i];
 
         // Push unique ID to allow duplicate names
-        ImGui::PushID(&volume);
+        ImGui::PushID(&mass);
 
-        if (ImGui::CollapsingHeader((volume.name + "###").c_str(), &keepVolume, ImGuiTreeNodeFlags_None))
+        if (ImGui::CollapsingHeader((mass.name + "###").c_str(), &keepMass, ImGuiTreeNodeFlags_None))
         {
             // Name editor
-            ImGui::InputText("Name", &volume.name);
+            ImGui::InputText("Name", &mass.name);
 
             // TODO: Different material map types
             ImGui::Text("Materials:");
@@ -133,7 +133,7 @@ void VoxelWorldEditor::ShowInterface()
 
             // Material type selections
             static const char* materialTypeNames[] = {"Single Material"};
-            const char* materialTypeSelection = materialTypeNames[(int)volume.materialType];
+            const char* materialTypeSelection = materialTypeNames[(int)mass.materialType];
             if (ImGui::BeginCombo("Material Type", materialTypeSelection))
             {
                 for (int n = 0; n < IM_ARRAYSIZE(materialTypeNames); n++)
@@ -141,19 +141,19 @@ void VoxelWorldEditor::ShowInterface()
                     bool is_selected = (materialTypeSelection == materialTypeNames[n]);
                     if (ImGui::Selectable(materialTypeNames[n], is_selected))
                     {
-                        volume.materialType = (VoxelVolume::MaterialType)n;
+                        mass.materialType = (VoxelMass::MaterialType)n;
                     }
                     if (is_selected) ImGui::SetItemDefaultFocus();
                 }
                 ImGui::EndCombo();
             }
 
-            switch ((int)volume.materialType)
+            switch ((int)mass.materialType)
             {
-                case (int)VoxelVolume::MaterialType::SingleMaterial:
+                case (int)VoxelMass::MaterialType::SingleMaterial:
                     
                     // Single material name editor
-                    ImGui::InputText("Material", &volume.materialName);
+                    ImGui::InputText("Material", &mass.materialName);
                     
                     break;
             }
@@ -162,16 +162,16 @@ void VoxelWorldEditor::ShowInterface()
             ImGui::Separator();
 
             // Add shape buttons
-            if (ImGui::Button("Add Sphere")) volume.AddSphere(Sphere()); ImGui::SameLine();
+            if (ImGui::Button("Add Sphere")) mass.AddSphere(Sphere()); ImGui::SameLine();
             if (ImGui::Button("Add AABB")) { /* todo */ };
 
             // Display all shapes
             ImGui::Indent();
             bool keepShape = true;
-            for (int j = 0; j < volume.shapes.size(); ++j)
+            for (int j = 0; j < mass.shapes.size(); ++j)
             {
                 // Grab a reference to the shape
-                auto& shape = volume.shapes[j];
+                auto& shape = mass.shapes[j];
 
                 // Push unique ID to allow duplicate names
                 ImGui::PushID(&shape);
@@ -200,7 +200,7 @@ void VoxelWorldEditor::ShowInterface()
                 // Remove shape if requested
                 if (!keepShape)
                 {
-                    volume.shapes.erase(volume.shapes.begin() + j);
+                    mass.shapes.erase(mass.shapes.begin() + j);
                     j--;
                     keepShape = true;
                 }
@@ -211,15 +211,15 @@ void VoxelWorldEditor::ShowInterface()
             ImGui::Unindent();
         }
 
-        // Delete volume if requested
-        if (!keepVolume)
+        // Delete mass if requested
+        if (!keepMass)
         {
-            volumes.erase(volumes.begin() + i);
+            voxelMasses.erase(voxelMasses.begin() + i);
             i--;
-            keepVolume = true;
+            keepMass = true;
         }
         
-        // Pop the volume ID
+        // Pop the mass ID
         ImGui::PopID();
     }
 
