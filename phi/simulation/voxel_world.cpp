@@ -130,7 +130,7 @@ namespace Phi
                     // TODO: Pre-generation steps?
 
                     // Get world-space position of this voxel
-                    glm::vec3 position = glm::vec3(x, y, z) * (float)VoxelChunk::CHUNK_DIM;
+                    glm::vec3 position = glm::vec3(x, y, z) + glm::vec3(chunkID * VoxelChunk::CHUNK_DIM);
 
                     // Check for intersection of each mass
                     for (auto& mass : voxelMasses)
@@ -142,9 +142,9 @@ namespace Phi
                             int mat = scene.GetMaterialID(mass.GetMaterial());
                             chunk.voxelGrid(x, y, z) = mat;
                             VoxelMesh::Vertex v;
-                            v.x = chunkID.x + x;
-                            v.y = chunkID.y + y;
-                            v.z = chunkID.z + z;
+                            v.x = position.x;
+                            v.y = position.y;
+                            v.z = position.z;
                             v.material = mat;
                             voxelData.push_back(v);
                         }
@@ -153,8 +153,12 @@ namespace Phi
             }
         }
 
-        // DEBUG: Regenerate mesh immediately
-        // VoxelMesh* mesh = &scene.CreateNode()->AddComponent<VoxelMesh>();
-        // mesh->Vertices() = voxelData;
+        if (voxelData.size() > 0)
+        {
+            // DEBUG: Regenerate mesh immediately
+            // TODO: Prune invisible voxels
+            // VoxelMesh* mesh = &scene.CreateNode()->AddComponent<VoxelMesh>();
+            // mesh->Vertices() = voxelData;
+        }
     }
 }
