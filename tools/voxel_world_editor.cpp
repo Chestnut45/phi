@@ -127,10 +127,6 @@ void VoxelWorldEditor::ShowInterface()
             // Name editor
             ImGui::InputText("Name", &mass.name);
 
-            // TODO: Different material map types
-            ImGui::Text("Materials:");
-            ImGui::Separator();
-
             // Material type selections
             static const char* materialTypeNames[] = {"Single Material"};
             const char* materialTypeSelection = materialTypeNames[(int)mass.materialType];
@@ -162,7 +158,7 @@ void VoxelWorldEditor::ShowInterface()
             ImGui::Separator();
 
             // Access to the volume
-            AggregateVolume& volume = mass.GetVolume();
+            auto& volume = mass.GetVolume();
             auto& spheres = volume.GetSpheres();
             auto& aabbs = volume.GetAABBs();
 
