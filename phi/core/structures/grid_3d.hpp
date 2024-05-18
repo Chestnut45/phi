@@ -32,7 +32,7 @@ namespace Phi
             // Data access / modification
 
             // Fast read-write access, no bounds checking
-            inline T& Get(int32_t x, int32_t y, int32_t z)
+            inline T& operator()(int32_t x, int32_t y, int32_t z)
             {
                 return data[Index(x, y, z)];
             }

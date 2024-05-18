@@ -23,7 +23,7 @@ namespace Phi
             AggregateVolume& operator=(AggregateVolume&& other) = default;
 
             // Intersection tests
-            bool Intersects(const glm::vec3& point);
+            bool Intersects(const glm::vec3& point) const;
             
             // TODO: shape intersections as well
 

@@ -102,6 +102,10 @@ void VoxelWorldEditor::ShowInterface()
     //     ImGui::EndMenuBar();
     // }
 
+    // Statistics
+    ImGui::SeparatorText("Statistics");
+    ImGui::Text("Chunks Loaded: %d", world.loadedChunks.size());
+
     // Main controls
     ImGui::SeparatorText("Controls");
 

@@ -12,7 +12,7 @@ namespace Phi
     {
     }
 
-    bool AggregateVolume::Intersects(const glm::vec3& point)
+    bool AggregateVolume::Intersects(const glm::vec3& point) const
     {
         for (const Sphere& sphere : spheres)
         {

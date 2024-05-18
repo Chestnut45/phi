@@ -10,6 +10,9 @@
 #include <phi/simulation/voxel_object.hpp>
 #include <phi/scene/scene.hpp>
 
+// Forward declaration
+class VoxelWorldEditor;
+
 namespace Phi
 {
     // Represents a voxel world and all of its nodes / components
@@ -75,6 +78,7 @@ namespace Phi
 
             // Queues
             std::vector<glm::ivec3> chunksToLoad;
+            std::vector<glm::ivec3> chunksToUnload;
 
             // Generation
 
@@ -86,11 +90,14 @@ namespace Phi
             // Settings
 
             // The approximate radius (in VoxelChunks) to load around the active camera
-            unsigned int renderDistance = 5;
+            int renderDistance = 5;
 
             // Helper functions
 
             // Generates the given chunk and loads it into the world
             void GenerateChunk(const glm::ivec3& chunkID);
+
+            // Needed for editor to work
+            friend class ::VoxelWorldEditor;
     };
 }

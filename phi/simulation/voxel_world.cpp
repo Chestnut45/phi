@@ -67,10 +67,24 @@ namespace Phi
                     // Generate chunk ID
                     glm::ivec3 chunkID = glm::ivec3(x, y, z) + currentChunk;
 
-                    // Add to queue if within render distance (and not already loaded)
-                    if (loadedChunks.count(chunkID) == 0 && loadSphere.Intersects(chunkID)) chunksToLoad.push_back(chunkID);
+                    // Add to queue if within render distance
+                    if (loadSphere.Intersects(chunkID))
+                    {
+                        chunksToLoad.push_back(chunkID);
+                    }
                 }
             }
+        }
+
+        // Unload all chunks that are outside of the new load sphere
+        chunksToUnload.clear();
+        for (const auto&[key, _] : loadedChunks)
+        {
+            if (!loadSphere.Intersects(key)) chunksToUnload.push_back(key);
+        }
+        for (const glm::ivec3& chunk : chunksToUnload)
+        {
+            loadedChunks.erase(chunk);
         }
 
         // DEBUG: Generate all chunks at once for now
@@ -78,7 +92,7 @@ namespace Phi
         // TODO: Stream from disk if already generated
         for (auto& chunkID : chunksToLoad)
         {
-            GenerateChunk(chunkID);
+            if (loadedChunks.count(chunkID) == 0) GenerateChunk(chunkID);
         }
 
         // Update the internal scene
@@ -103,8 +117,6 @@ namespace Phi
         // Create the chunk
         VoxelChunk& chunk = loadedChunks[chunkID];
 
-        // TODO: Build map of voxel mass shapes for testing
-
         // Iterate all voxels in the chunk
         for (int z = 0; z < VoxelChunk::CHUNK_DIM; ++z)
         {
@@ -113,6 +125,20 @@ namespace Phi
                 for (int x = 0; x < VoxelChunk::CHUNK_DIM; ++x)
                 {
                     // TODO: Pre-generation steps?
+
+                    // Get world-space position of this voxel
+                    glm::vec3 position = glm::vec3(x, y, z) * (float)VoxelChunk::CHUNK_DIM;
+
+                    // Check for intersection of each mass
+                    for (auto& mass : voxelMasses)
+                    {
+                        if (mass.GetVolume().Intersects(position))
+                        {
+                            // This is so insanely slow, obviously
+                            // TODO: Preprocess masses, gather material IDs before iteration
+                            chunk.voxelGrid(x, y, z) = scene.GetMaterialID(mass.GetMaterial());
+                        }
+                    }
                 }
             }
         }
