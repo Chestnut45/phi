@@ -23,9 +23,9 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     Camera& camera = scene.CreateNode3D()->AddComponent<Camera>();
     scene.SetActiveCamera(camera);
 
-    // Add a skybox
-    Environment& skybox = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_old");
-    scene.SetActiveEnvironment(skybox);
+    // Add environment
+    Environment& environment = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_old");
+    scene.SetActiveEnvironment(environment);
 
     // Load default fire effect
     currentEffect = &node->AddComponent<CPUParticleEffect>("data://effects/fire.effect");
@@ -56,9 +56,6 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     pupilsMesh.AddIcosphere(0.25f, 2, glm::vec3(-0.5f, 0.25f, 0.9f));
     pupilsMesh.SetMaterial("obsidian");
     mesh.GetNode()->AddChild(pupilsMesh.GetNode());
-
-    // DEBUG: Add a voxel mesh to make sure scenes with custom viewports doesn't mess up stencil buffer transfers
-    node->AddComponent<VoxelObject>().Load("data://models/mushroom.pvox");
 
     // Log
     Log(name, " initialized");

@@ -16,12 +16,12 @@ int main(int, char**)
 
 VoxelWorldEditor::VoxelWorldEditor() : App("Voxel World Editor", 4, 6)
 {
-    Log("Voxel World Editor initialized");
+    Log(name, " initialized");
 }
 
 VoxelWorldEditor::~VoxelWorldEditor()
 {
-    Log("Voxel World Editor shutdown");
+    Log(name, " shutdown");
 }
 
 void VoxelWorldEditor::Update(float delta)

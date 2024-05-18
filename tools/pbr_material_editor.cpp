@@ -23,23 +23,23 @@ PBRMaterialEditor::PBRMaterialEditor() : App("PBR Material Editor", 4, 6)
     camera.SetPosition(glm::vec3(0, 0, 16));
     scene.SetActiveCamera(camera);
 
-    // Add sky
-    Environment& sky = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_turquoise");
-    sky.StopTime();
-    sky.SetTime(0.365f);
-    sky.SetSunRotation(1.150f);
-    scene.SetActiveEnvironment(sky);
+    // Setup environment
+    Environment& environment = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_turquoise");
+    environment.StopTime();
+    environment.SetTime(0.365f);
+    environment.SetSunRotation(1.150f);
+    scene.SetActiveEnvironment(environment);
 
     // Add a mesh
     BasicMesh& mesh = scene.CreateNode3D()->AddComponent<BasicMesh>();
     mesh.AddIcosphere(5.0f, 3);
 
-    Log("PBR Material Editor initialized");
+    Log(name, " initialized");
 }
 
 PBRMaterialEditor::~PBRMaterialEditor()
 {
-    Log("PBR Material Editor shutdown");
+    Log(name, " shutdown");
 }
 
 void PBRMaterialEditor::Update(float delta)
