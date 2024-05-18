@@ -116,6 +116,49 @@ namespace Phi
         indexDrawCount += indices.size();
     }
 
+    void BasicMesh::Render(const glm::mat4& transform)
+    {
+        // Check to ensure the buffers can contain this mesh currently
+        if (meshDrawCount >= MAX_DRAW_CALLS ||
+            vertexDrawCount + vertices.size() >= MAX_VERTICES ||
+            indexDrawCount + indices.size() >= MAX_INDICES)
+        {
+            // Some buffer is full, flush the queue and then add
+            FlushRenderQueue();
+
+            // NOTE: Degenerate case should not occur since all vertex
+            // generation functions enforce the MAX_[VERT/IND]EX limit
+        }
+
+        // Sync the buffers if this is the first draw call since last render
+        // If this has been signaled, the other buffers must also not be being read from
+        if (meshDrawCount == 0) indirectBuffer->Sync();
+
+        // Create the indirect draw command
+        DrawElementsCommand cmd;
+        cmd.count = indices.size();
+        cmd.instanceCount = 1;
+        cmd.firstIndex = indexDrawCount + (MAX_INDICES * indexBuffer->GetCurrentSection());
+        cmd.baseVertex = vertexDrawCount + (MAX_VERTICES * vertexBuffer->GetCurrentSection());
+        cmd.baseInstance = meshDrawCount + (MAX_DRAW_CALLS * meshDataBuffer->GetCurrentSection());
+
+        // Write the draw command to the buffer
+        indirectBuffer->Write(cmd);
+
+        // Write the vertices / indices to the buffer
+        vertexBuffer->Write(vertices.data(), vertices.size() * sizeof(Vertex));
+        indexBuffer->Write(indices.data(), indices.size() * sizeof(GLuint));
+
+        // Write the per-mesh transform and material
+        meshDataBuffer->Write(transform);
+        meshDataBuffer->Write(material);
+
+        // Increase internal counters
+        meshDrawCount++;
+        vertexDrawCount += vertices.size();
+        indexDrawCount += indices.size();
+    }
+
     void BasicMesh::FlushRenderQueue()
     {
         // Ensure we only flush if necessary

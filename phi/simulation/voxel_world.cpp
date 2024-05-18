@@ -17,9 +17,9 @@ namespace Phi
         // DEBUG: Add a point light to the camera
         camera.GetNode()->AddComponent<PointLight>();
 
-        // Add a sky
-        Environment& sky = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_old");
-        scene.SetActiveEnvironment(sky);
+        // Add environment
+        Environment& environment = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_old");
+        scene.SetActiveEnvironment(environment);
 
         // Load test materials
         scene.LoadMaterials("data://materials.yaml");

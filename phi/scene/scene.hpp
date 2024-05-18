@@ -12,11 +12,11 @@
 #include <phi/graphics/texture_2d.hpp>
 #include <phi/scene/components/camera.hpp>
 #include <phi/scene/components/transform.hpp>
-#include <phi/scene/components/renderable/basic_mesh.hpp>
 #include <phi/scene/components/collision/bounding_sphere.hpp>
+#include <phi/scene/components/renderable/basic_mesh.hpp>
 #include <phi/scene/components/renderable/environment.hpp>
+#include <phi/scene/components/renderable/voxel_mesh.hpp>
 #include <phi/scene/components/lighting/directional_light.hpp>
-#include <phi/scene/components/voxel/voxel_object.hpp>
 
 namespace Phi
 {
@@ -246,7 +246,7 @@ namespace Phi
 
             // Render queues and lists
             std::vector<BasicMesh*> basicMeshRenderQueue;
-            std::vector<VoxelObject*> voxelObjectRenderQueue;
+            std::vector<VoxelMesh*> voxelMeshRenderQueue;
 
             // Wireframe resources
             std::vector<VertexPos> wireframeVerts;

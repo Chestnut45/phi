@@ -42,6 +42,11 @@ namespace Phi
             // the next call to BasicMesh::FlushRenderQueue()
             void Render();
 
+            // Draws the mesh using the given transformation matrix
+            // Drawn meshes won't be displayed to the screen until 
+            // the next call to BasicMesh::FlushRenderQueue()
+            void Render(const glm::mat4& transform);
+
             // Flushes internal render queue and displays all meshes
             static void FlushRenderQueue();
 

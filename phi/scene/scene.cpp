@@ -272,9 +272,9 @@ namespace Phi
                 basicMeshRenderQueue.push_back(&mesh);
             }
 
-            for (auto&&[id, voxelObject] : registry.view<VoxelObject>().each())
+            for (auto&&[id, mesh] : registry.view<VoxelMesh>().each())
             {
-                voxelObjectRenderQueue.push_back(&voxelObject);
+                voxelMeshRenderQueue.push_back(&mesh);
             }
         }
 
@@ -296,7 +296,7 @@ namespace Phi
         cameraBuffer.BindRange(GL_UNIFORM_BUFFER, (int)UniformBindingIndex::Camera, cameraBuffer.GetCurrentSection() * cameraBuffer.GetSize(), cameraBuffer.GetSize());
 
         // Pass flags
-        bool pbrPass = basicMeshRenderQueue.size() > 0 || voxelObjectRenderQueue.size() > 0;
+        bool pbrPass = basicMeshRenderQueue.size() > 0 || voxelMeshRenderQueue.size() > 0;
 
         // Geometry passes
 
@@ -323,12 +323,12 @@ namespace Phi
             }
             BasicMesh::FlushRenderQueue();
 
-            // Render all voxel objects
-            for (VoxelObject* voxelObject : voxelObjectRenderQueue)
+            // Render all voxel meshes
+            for (VoxelMesh* mesh : voxelMeshRenderQueue)
             {
-                voxelObject->Render();
+                mesh->Render();
             }
-            VoxelObject::FlushRenderQueue();
+            VoxelMesh::FlushRenderQueue();
 
             // Bind the main render target to draw to
             gBuffer->Unbind(GL_DRAW_FRAMEBUFFER);
@@ -515,7 +515,7 @@ namespace Phi
 
         // Clear render queues
         basicMeshRenderQueue.clear();
-        voxelObjectRenderQueue.clear();
+        voxelMeshRenderQueue.clear();
     }
 
     void Scene::ShowDebug()
@@ -701,24 +701,24 @@ namespace Phi
         }
     }
 
-    void Scene::SetActiveEnvironment(Environment& sky)
+    void Scene::SetActiveEnvironment(Environment& environment)
     {
-        // Check if the sky is already attached to a scene
-        if (sky.activeScene)
+        // Check if the environment is already attached to a scene
+        if (environment.activeScene)
         {
-            // If the sky's active scene is this, early out
-            if (sky.activeScene == this) return;
+            // If the environment's active scene is this, early out
+            if (environment.activeScene == this) return;
 
-            // Remove the sky from the other scene first
-            sky.activeScene->RemoveEnvironment();
+            // Remove the environment from the other scene first
+            environment.activeScene->RemoveEnvironment();
         }
 
-        // Detatch current sky if any is attached
+        // Detatch current environment if any is attached
         RemoveEnvironment();
 
-        // Make the sky this scene's active sky
-        activeEnvironment = &sky;
-        sky.activeScene = this;
+        // Make the environment this scene's active environment
+        activeEnvironment = &environment;
+        environment.activeScene = this;
     }
 
     void Scene::RemoveEnvironment()

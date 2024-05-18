@@ -7,6 +7,7 @@
 
 #include <phi/simulation/voxel_chunk.hpp>
 #include <phi/simulation/voxel_mass.hpp>
+#include <phi/simulation/voxel_object.hpp>
 #include <phi/scene/scene.hpp>
 
 namespace Phi
