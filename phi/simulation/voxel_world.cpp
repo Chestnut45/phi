@@ -117,6 +117,9 @@ namespace Phi
         // Create the chunk
         VoxelChunk& chunk = loadedChunks[chunkID];
 
+        // Mesh data container
+        std::vector<VoxelMesh::Vertex> voxelData;
+
         // Iterate all voxels in the chunk
         for (int z = 0; z < VoxelChunk::CHUNK_DIM; ++z)
         {
@@ -136,11 +139,22 @@ namespace Phi
                         {
                             // This is so insanely slow, obviously
                             // TODO: Preprocess masses, gather material IDs before iteration
-                            chunk.voxelGrid(x, y, z) = scene.GetMaterialID(mass.GetMaterial());
+                            int mat = scene.GetMaterialID(mass.GetMaterial());
+                            chunk.voxelGrid(x, y, z) = mat;
+                            VoxelMesh::Vertex v;
+                            v.x = chunkID.x + x;
+                            v.y = chunkID.y + y;
+                            v.z = chunkID.z + z;
+                            v.material = mat;
+                            voxelData.push_back(v);
                         }
                     }
                 }
             }
         }
+
+        // DEBUG: Regenerate mesh immediately
+        // VoxelMesh* mesh = &scene.CreateNode()->AddComponent<VoxelMesh>();
+        // mesh->Vertices() = voxelData;
     }
 }

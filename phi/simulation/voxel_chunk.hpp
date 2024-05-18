@@ -1,6 +1,7 @@
 #pragma once
 
 #include <phi/core/structures/grid_3d.hpp>
+#include <phi/scene/components/renderable/voxel_mesh.hpp>
 
 namespace Phi
 {
@@ -24,6 +25,11 @@ namespace Phi
             // Delete move constructor/assignment
             VoxelChunk(VoxelChunk&& other) = delete;
             VoxelChunk& operator=(VoxelChunk&& other) = delete;
+
+            // Simulation
+
+            // Steps the chunk simulation forward by delta seconds
+            void Update(float delta);
 
         // Data / implementation
         private:

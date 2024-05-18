@@ -2,7 +2,7 @@ design / features
 --------------------------------
 
 high priority:
-- aggregate volumes
+- grid3d empty value?
 - chunk generation (voxel mass, material map, biomes, etc.)
     - custom voxel mass vs presets?
     - feature types? (rivers, waterfalls, flora, mountains, etc.)
