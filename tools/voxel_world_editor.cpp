@@ -158,57 +158,59 @@ void VoxelWorldEditor::ShowInterface()
                     break;
             }
 
-            ImGui::Text("Shapes:");
+            ImGui::Text("Volume:");
             ImGui::Separator();
 
+            // Access to the volume
+            AggregateVolume& volume = mass.GetVolume();
+            auto& spheres = volume.GetSpheres();
+            auto& aabbs = volume.GetAABBs();
+
             // Add shape buttons
-            if (ImGui::Button("Add Sphere")) mass.AddSphere(Sphere()); ImGui::SameLine();
-            if (ImGui::Button("Add AABB")) { /* todo */ };
+            if (ImGui::Button("Add Sphere")) volume.AddSphere(Sphere()); ImGui::SameLine();
+            if (ImGui::Button("Add AABB")) volume.AddAABB(AABB());
 
             // Display all shapes
-            ImGui::Indent();
             bool keepShape = true;
-            for (int j = 0; j < mass.shapes.size(); ++j)
+            for (int j = 0; j < spheres.size(); ++j)
             {
-                // Grab a reference to the shape
-                auto& shape = mass.shapes[j];
+                Sphere& sphere = spheres[j];
 
-                // Push unique ID to allow duplicate names
-                ImGui::PushID(&shape);
-
-                // Determine name
-                int type = 0;
-                if (shape.type() == typeid(Sphere)) type = 0;
-                if (shape.type() == typeid(AABB)) type = 1;
-                static const char* names[] = {"Sphere ", "AABB "};
-                // TODO: Other shapes..
-
-                // Display shape data
-                if (ImGui::CollapsingHeader((std::string(names[type]) + "###").c_str(), &keepShape, ImGuiTreeNodeFlags_None))
+                ImGui::PushID(&sphere);
+                if (ImGui::CollapsingHeader(("Sphere " + std::to_string(j) + "###").c_str(), &keepShape, ImGuiTreeNodeFlags_None))
                 {
-                    switch (type)
-                    {
-                        case 0:
-                            // Grab sphere (may throw, is the typeid matching enough?)
-                            Sphere& sphere = std::any_cast<Sphere&>(shape);
-                            ImGui::DragFloat3("Position", &sphere.position.x);
-                            ImGui::DragFloat("Radius", &sphere.radius, 1.0f, 0.0f, INT32_MAX);
-                            break;
-                    }
+                    ImGui::DragFloat3("Position", &sphere.position.x);
+                    ImGui::DragFloat("Radius", &sphere.radius, 1.0f, 0.0f, INT32_MAX);
                 }
+                ImGui::PopID();
 
-                // Remove shape if requested
                 if (!keepShape)
                 {
-                    mass.shapes.erase(mass.shapes.begin() + j);
+                    spheres.erase(spheres.begin() + j);
                     j--;
                     keepShape = true;
                 }
-
-                // Pop the ID
-                ImGui::PopID();
             }
-            ImGui::Unindent();
+
+            for (int j = 0; j < aabbs.size(); ++j)
+            {
+                AABB& aabb = aabbs[j];
+
+                ImGui::PushID(&aabb);
+                if (ImGui::CollapsingHeader(("AABB " + std::to_string(j) + "###").c_str(), &keepShape, ImGuiTreeNodeFlags_None))
+                {
+                    ImGui::DragFloat3("Min", &aabb.min.x, 0.1f);
+                    ImGui::DragFloat3("Max", &aabb.max.x, 0.1f);
+                }
+                ImGui::PopID();
+
+                if (!keepShape)
+                {
+                    aabbs.erase(aabbs.begin() + j);
+                    j--;
+                    keepShape = true;
+                }
+            }
         }
 
         // Delete mass if requested

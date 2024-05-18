@@ -111,7 +111,7 @@ namespace Phi
     struct AABB
     {
         // Creates an AABB with the given max and min coordinates
-        AABB(const glm::vec3& min, const glm::vec3& max);
+        AABB(const glm::vec3& min = glm::vec3(-1.0f), const glm::vec3& max = glm::vec3(1.0f));
 
         // Creates an AABB from a rectangle by interpreting the
         // y axis of the rectangle as the z axis, and then

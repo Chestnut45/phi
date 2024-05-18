@@ -59,12 +59,11 @@ namespace Phi
             size_t count = 0;
 
             // The lowest free index or -1 if all are occupied
-            int firstFree;
+            int firstFree = -1;
     };
 
     template <typename T>
     FreeList<T>::FreeList()
-        : firstFree(-1)
     {
     }
 

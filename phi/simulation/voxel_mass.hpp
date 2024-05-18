@@ -5,7 +5,7 @@
 
 #include <phi/core/math/noise.hpp>
 #include <phi/core/math/rng.hpp>
-#include <phi/core/math/shapes.hpp>
+#include <phi/core/math/aggregate_volume.hpp>
 
 // Forward declaration
 class VoxelWorldEditor;
@@ -30,9 +30,18 @@ namespace Phi
             VoxelMass();
             ~VoxelMass();
 
+            // Default copy constructor/assignment
+            VoxelMass(const VoxelMass&) = default;
+            VoxelMass& operator=(const VoxelMass&) = default;
+
+            // Default move constructor/assignment
+            VoxelMass(VoxelMass&& other) = default;
+            VoxelMass& operator=(VoxelMass&& other) = default;
+
             // Accessors
             unsigned char GetLayer() const { return layer; }
             const std::string& GetName() const { return name; }
+            AggregateVolume& GetVolume() { return volume; }
             const MaterialType& GetMaterialType() const { return materialType; }
             const std::string& GetMaterial() const { return materialName; }
 
@@ -41,11 +50,6 @@ namespace Phi
             void SetName(const std::string& name) { this->name = name; }
             void SetMaterialType(const MaterialType& type) { materialType = type; }
             void SetMaterial(const std::string&  material) { materialName = material; }
-
-            // Shapes
-
-            // Adds a sphere shape to the list of shapes that bound the volume
-            void AddSphere(const Sphere& sphere) { shapes.push_back(std::any(sphere)); }
 
         // Data / implementation
         private:
@@ -62,9 +66,8 @@ namespace Phi
             // Name of single material
             std::string materialName{"default"};
 
-            // Lists of shapes that define the volume
-            // TODO: AggregateVolume class
-            std::vector<std::any> shapes;
+            // The bounding volume of the mass
+            AggregateVolume volume;
 
             // Friend so the editor can access
             friend class ::VoxelWorldEditor;
