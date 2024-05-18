@@ -181,7 +181,7 @@ void VoxelWorldEditor::ShowInterface()
                 if (shape.type() == typeid(Sphere)) type = 0;
                 if (shape.type() == typeid(AABB)) type = 1;
                 static const char* names[] = {"Sphere ", "AABB "};
-                // TODO: Other shapes...
+                // TODO: Other shapes..
 
                 // Display shape data
                 if (ImGui::CollapsingHeader((std::string(names[type]) + "###").c_str(), &keepShape, ImGuiTreeNodeFlags_None))

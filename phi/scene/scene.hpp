@@ -14,7 +14,7 @@
 #include <phi/scene/components/transform.hpp>
 #include <phi/scene/components/renderable/basic_mesh.hpp>
 #include <phi/scene/components/collision/bounding_sphere.hpp>
-#include <phi/scene/components/renderable/sky.hpp>
+#include <phi/scene/components/renderable/environment.hpp>
 #include <phi/scene/components/lighting/directional_light.hpp>
 #include <phi/scene/components/voxel/voxel_object.hpp>
 
@@ -155,11 +155,12 @@ namespace Phi
 
             // Environment management
 
-            // Sets the active sky to the given sky instance
-            void SetActiveSky(Sky& sky);
+            // Sets the active environment instance to use
+            void SetActiveEnvironment(Environment& environment);
 
-            // Removes the currently active sky
-            void RemoveSky();
+            // Removes the currently active environment
+            // NOTE: Does not delete the component!
+            void RemoveEnvironment();
 
             // Sets the base ambient light in the scene
             void SetAmbientLight(const glm::vec3& ambient) { ambientLight = ambient; }
@@ -197,8 +198,8 @@ namespace Phi
             // Currently active camera
             Camera* activeCamera = nullptr;
 
-            // Currently active sky
-            Sky* activeSky = nullptr;
+            // Currently active environment
+            Environment* activeEnvironment = nullptr;
 
             // Render data
 
@@ -259,7 +260,7 @@ namespace Phi
             DirectionalLight* globalLights[(int)DirectionalLight::Slot::NUM_SLOTS];
 
             // Global lighting resources
-            GPUBuffer globalLightBuffer{BufferType::DynamicDoubleBuffer, (MAX_USER_DIRECTIONAL_LIGHTS + 1) * (sizeof(glm::vec4) * 2) + (sizeof(glm::vec4) * 2)};
+            GPUBuffer globalLightBuffer{BufferType::DynamicDoubleBuffer, (MAX_USER_DIRECTIONAL_LIGHTS + 2) * (sizeof(glm::vec4) * 2)};
             Shader globalLightPBRShader;
             Shader globalLightPBRSSAOShader;
 

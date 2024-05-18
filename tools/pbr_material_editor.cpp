@@ -24,11 +24,11 @@ PBRMaterialEditor::PBRMaterialEditor() : App("PBR Material Editor", 4, 6)
     scene.SetActiveCamera(camera);
 
     // Add sky
-    Sky& sky = camera.GetNode()->AddComponent<Sky>("data://textures/skybox_day", "data://textures/skybox_night_turquoise");
+    Environment& sky = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_turquoise");
     sky.StopTime();
     sky.SetTime(0.365f);
     sky.SetSunRotation(1.150f);
-    scene.SetActiveSky(sky);
+    scene.SetActiveEnvironment(sky);
 
     // Add a mesh
     BasicMesh& mesh = scene.CreateNode3D()->AddComponent<BasicMesh>();

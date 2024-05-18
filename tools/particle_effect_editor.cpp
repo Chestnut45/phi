@@ -24,8 +24,8 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     scene.SetActiveCamera(camera);
 
     // Add a skybox
-    Sky& skybox = camera.GetNode()->AddComponent<Sky>("data://textures/skybox_day", "data://textures/skybox_night_old");
-    scene.SetActiveSky(skybox);
+    Environment& skybox = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_old");
+    scene.SetActiveEnvironment(skybox);
 
     // Load default fire effect
     currentEffect = &node->AddComponent<CPUParticleEffect>("data://effects/fire.effect");

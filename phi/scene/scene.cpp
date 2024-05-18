@@ -214,7 +214,7 @@ namespace Phi
         activeCamera->Update(delta);
 
         // Update the sky
-        if (activeSky) activeSky->Update(delta);
+        if (activeEnvironment) activeEnvironment->Update(delta);
 
         // Update all particle effects
         for (auto&&[id, effect] : registry.view<CPUParticleEffect>().each())
@@ -354,10 +354,10 @@ namespace Phi
         }
 
         // Write the sun if it's active
-        if (activeSky && activeSky->renderSun)
+        if (activeEnvironment && activeEnvironment->renderSun)
         {
-            globalLightBuffer.Write(glm::vec4(activeSky->sunColor, 1.0f));
-            globalLightBuffer.Write(glm::vec4(glm::normalize(-activeSky->sunPos), activeSky->sunAmbient));
+            globalLightBuffer.Write(glm::vec4(activeEnvironment->sunColor, 1.0f));
+            globalLightBuffer.Write(glm::vec4(glm::normalize(-activeEnvironment->sunPos), activeEnvironment->sunAmbient));
             activeLights++;
         }
 
@@ -410,7 +410,7 @@ namespace Phi
             ssaoScreenTexture->Bind(3);
         }
 
-        // Basic materials
+        // PBR Materials global lighting pass
         if (pbrPass)
         {
             // Use correct shader based on SSAO state
@@ -435,18 +435,17 @@ namespace Phi
 
         // Environment pass
 
-        // Draw the skybox
-        if (activeSky) 
+        if (activeEnvironment) 
         {
             // Render the skybox texture
-            activeSky->RenderSkybox();
+            activeEnvironment->RenderSkybox();
 
-            if (activeSky->renderSun)
+            if (activeEnvironment->renderSun)
             {
                 // Bind the proper FBO and render the sun
                 sunlightFBO->Bind(GL_DRAW_FRAMEBUFFER);
                 glClear(GL_COLOR_BUFFER_BIT);
-                activeSky->RenderSun();
+                activeEnvironment->RenderSun();
 
                 // Apply light scattering post-process effect
                 sunlightFBO->Unbind(GL_DRAW_FRAMEBUFFER);
@@ -454,14 +453,14 @@ namespace Phi
                 glBlendFunc(GL_ONE, GL_ONE);
                 sunlightTexture->Bind(4);
                 
-                if (activeSky->godRays)
+                if (activeEnvironment->godRays)
                 {
                     // Upload uniforms
                     lightScatteringShader.Use();
-                    glm::vec4 sunPosScreen = activeCamera->proj * activeCamera->view * glm::vec4(activeSky->sunPos + activeCamera->position, 1.0f);
+                    glm::vec4 sunPosScreen = activeCamera->proj * activeCamera->view * glm::vec4(activeEnvironment->sunPos + activeCamera->position, 1.0f);
                     glm::vec2 lightPos = glm::vec2(sunPosScreen) / sunPosScreen.w * 0.5f + 0.5f;
                     lightScatteringShader.SetUniform("lightPos", lightPos);
-                    lightScatteringShader.SetUniform("exposureDecayDensityWeight", glm::vec4(activeSky->exposure, activeSky->decay, activeSky->density, activeSky->weight));
+                    lightScatteringShader.SetUniform("exposureDecayDensityWeight", glm::vec4(activeEnvironment->exposure, activeEnvironment->decay, activeEnvironment->density, activeEnvironment->weight));
                 }
                 else
                 {
@@ -531,37 +530,36 @@ namespace Phi
         ImGui::SeparatorText("Environment");
         ImGui::ColorEdit3("Ambient Light", &ambientLight.x);
 
-        if (activeSky)
+        if (activeEnvironment)
         {
-            ImGui::SeparatorText("Sky");
             ImGui::Text("Timing");
             ImGui::Separator();
-            if (ImGui::Button("Sunrise")) activeSky->SetTime(Sky::SUNRISE); ImGui::SameLine();
-            if (ImGui::Button("Noon")) activeSky->SetTime(Sky::NOON); ImGui::SameLine();
-            if (ImGui::Button("Sunset")) activeSky->SetTime(Sky::SUNSET); ImGui::SameLine();
-            if (ImGui::Button("Midnight")) activeSky->SetTime(Sky::MIDNIGHT);
-            ImGui::Checkbox("Advance Time", &activeSky->advanceTime);
-            ImGui::DragFloat("Time", &activeSky->timeOfDay, 0.001f, 0.0f, 1.0f);
-            ImGui::DragFloat("Day Time", &activeSky->dayLength, 1.0f, 0.0f, INT32_MAX);
-            ImGui::DragFloat("Night Time", &activeSky->nightLength, 1.0f, 0.0f, INT32_MAX);
+            if (ImGui::Button("Sunrise")) activeEnvironment->SetTime(Environment::SUNRISE); ImGui::SameLine();
+            if (ImGui::Button("Noon")) activeEnvironment->SetTime(Environment::NOON); ImGui::SameLine();
+            if (ImGui::Button("Sunset")) activeEnvironment->SetTime(Environment::SUNSET); ImGui::SameLine();
+            if (ImGui::Button("Midnight")) activeEnvironment->SetTime(Environment::MIDNIGHT);
+            ImGui::Checkbox("Advance Time", &activeEnvironment->advanceTime);
+            ImGui::DragFloat("Time", &activeEnvironment->timeOfDay, 0.001f, 0.0f, 1.0f);
+            ImGui::DragFloat("Day Time", &activeEnvironment->dayLength, 1.0f, 0.0f, INT32_MAX);
+            ImGui::DragFloat("Night Time", &activeEnvironment->nightLength, 1.0f, 0.0f, INT32_MAX);
 
             ImGui::Text("Sun:");
             ImGui::Separator();
-            ImGui::Checkbox("Render Sun", &activeSky->renderSun);
-            if (activeSky->renderSun)
+            ImGui::Checkbox("Render Sun", &activeEnvironment->renderSun);
+            if (activeEnvironment->renderSun)
             {
-                ImGui::DragFloat("Size", &activeSky->sunSize, 0.1f, 0.0f, 16'384.0f);
-                ImGui::DragFloat("Distance", &activeSky->sunDistance, 0.1f, 0.0f, 16'384.0f);
-                ImGui::DragFloat("Rotation", &activeSky->sunRotation, 0.001f, 0.0f, TAU);
-                ImGui::DragFloat("Ambience", &activeSky->sunAmbient, 0.001f, 0.0f, 1.0f);
-                ImGui::ColorEdit3("Color", &activeSky->sunColor.r);
-                ImGui::Checkbox("God Rays", &activeSky->godRays);
-                if (activeSky->godRays)
+                ImGui::DragFloat("Size", &activeEnvironment->sunSize, 0.1f, 0.0f, 16'384.0f);
+                ImGui::DragFloat("Distance", &activeEnvironment->sunDistance, 0.1f, 0.0f, 16'384.0f);
+                ImGui::DragFloat("Rotation", &activeEnvironment->sunRotation, 0.001f, 0.0f, TAU);
+                ImGui::DragFloat("Ambience", &activeEnvironment->sunAmbient, 0.001f, 0.0f, 1.0f);
+                ImGui::ColorEdit3("Color", &activeEnvironment->sunColor.r);
+                ImGui::Checkbox("God Rays", &activeEnvironment->godRays);
+                if (activeEnvironment->godRays)
                 {
-                    ImGui::DragFloat("Exposure", &activeSky->exposure, 0.001f, 0.0f, 1.0f);
-                    ImGui::DragFloat("Decay", &activeSky->decay, 0.001f, 0.0f, 1.0f);
-                    ImGui::DragFloat("Density", &activeSky->density, 0.001f, 0.0f, 1.0f);
-                    ImGui::DragFloat("Weight", &activeSky->weight, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat("Exposure", &activeEnvironment->exposure, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat("Decay", &activeEnvironment->decay, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat("Density", &activeEnvironment->density, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat("Weight", &activeEnvironment->weight, 0.001f, 0.0f, 1.0f);
                 }
             }
         }
@@ -703,7 +701,7 @@ namespace Phi
         }
     }
 
-    void Scene::SetActiveSky(Sky& sky)
+    void Scene::SetActiveEnvironment(Environment& sky)
     {
         // Check if the sky is already attached to a scene
         if (sky.activeScene)
@@ -712,23 +710,23 @@ namespace Phi
             if (sky.activeScene == this) return;
 
             // Remove the sky from the other scene first
-            sky.activeScene->RemoveSky();
+            sky.activeScene->RemoveEnvironment();
         }
 
         // Detatch current sky if any is attached
-        RemoveSky();
+        RemoveEnvironment();
 
         // Make the sky this scene's active sky
-        activeSky = &sky;
+        activeEnvironment = &sky;
         sky.activeScene = this;
     }
 
-    void Scene::RemoveSky()
+    void Scene::RemoveEnvironment()
     {
-        if (activeSky)
+        if (activeEnvironment)
         {
-            activeSky->activeScene = nullptr;
-            activeSky = nullptr;
+            activeEnvironment->activeScene = nullptr;
+            activeEnvironment = nullptr;
         }
     }
 
