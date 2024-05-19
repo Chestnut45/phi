@@ -2,7 +2,8 @@ design / features
 --------------------------------
 
 high priority:
-- grid3d empty value?
+- voxel chunk debug rendering
+- grid3d empty value / iteration acceleration?
 - chunk generation (voxel mass, material map, biomes, etc.)
     - custom voxel mass vs presets?
     - feature types? (rivers, waterfalls, flora, mountains, etc.)
