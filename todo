@@ -4,15 +4,12 @@ design / features
 high priority:
 - voxel chunk debug rendering
 - grid3d empty value / iteration acceleration?
-- chunk generation (voxel mass, material map, biomes, etc.)
-    - custom voxel mass vs presets?
+- chunk generation
     - noise parameters
     - feature types? (rivers, waterfalls, flora, mountains, etc.)
     - structure generation / model stamping
-    - voxel model editor
 - sync VoxelMaterial / PBRMaterial with VoxelWorld
-- speedup cpu particle effect by removing instancing (generate quad in vs, use static index buffer)
-- aggregate volume broadphase (AABB encompassing all internal volumes useful for complex aggregates, early out)
+- bandwidth optimizations for voxel mesh?
 - shadow mapping
 - fluid simulation start
 - 3rd person controller
@@ -62,6 +59,8 @@ low priority:
 - TexturedMesh?
 - volumetric fog (move away from screenspace scattering method...?)
     - inject point lights to volumetric texture?
+- speedup cpu particle effect by removing instancing (generate quad in vs, use static index buffer)
+- aggregate volume broadphase (AABB encompassing all internal volumes useful for complex aggregates, early out)
 
 bugs / fixes
 --------------------------------
