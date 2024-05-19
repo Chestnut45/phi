@@ -300,14 +300,14 @@ namespace Phi
 
         // Geometry passes
 
+        // Bind the geometry buffer and clear it
+        gBuffer->Bind();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
         if (pbrPass)
         {
             // Bind the material buffer
             pbrMaterialBuffer.BindBase(GL_SHADER_STORAGE_BUFFER, (int)ShaderStorageBindingIndex::PBRMaterial);
-
-            // Bind the geometry buffer and clear it
-            gBuffer->Bind();
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
             // Setup stencil state
             glEnable(GL_STENCIL_TEST);
@@ -329,10 +329,10 @@ namespace Phi
                 mesh->Render();
             }
             VoxelMesh::FlushRenderQueue();
-
-            // Bind the main render target to draw to
-            gBuffer->Unbind(GL_DRAW_FRAMEBUFFER);
         }
+
+        // Bind the main render target to draw to
+        gBuffer->Unbind(GL_DRAW_FRAMEBUFFER);
 
         // Lighting passes
         
