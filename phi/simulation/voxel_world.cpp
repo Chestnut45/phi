@@ -20,6 +20,9 @@ namespace Phi
 
         // Load test materials
         scene.LoadMaterials("data://materials.yaml");
+
+        // DEBUG: Test model for benchmarking purposes
+        scene.CreateNode()->AddComponent<VoxelObject>().Load("data://models/dragon.pvox");
     }
 
     VoxelWorld::~VoxelWorld()

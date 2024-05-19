@@ -42,6 +42,7 @@ namespace Phi
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glMinVer);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
         pWindow = glfwCreateWindow(defaultWidth, defaultHeight, name.c_str(), NULL, NULL);
         if (!pWindow)
         {
