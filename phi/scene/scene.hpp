@@ -211,7 +211,7 @@ namespace Phi
             int renderHeight = 720;
 
             // Camera UBO
-            GPUBuffer cameraBuffer{BufferType::DynamicDoubleBuffer, sizeof(glm::mat4) * 6 + sizeof(glm::vec4) * 3};
+            GPUBuffer cameraBuffer{BufferType::Dynamic, sizeof(glm::mat4) * 6 + sizeof(glm::vec4) * 3};
 
             // Main render target
             Framebuffer* renderTarget = nullptr;
