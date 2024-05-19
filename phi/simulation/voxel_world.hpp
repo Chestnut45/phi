@@ -84,6 +84,9 @@ namespace Phi
 
             // TODO: Biomes, features...
 
+            // DEBUG: Counters
+            size_t voxelsRendered = 0;
+
             // Settings
 
             // The approximate radius (in VoxelChunks) to load around the active camera

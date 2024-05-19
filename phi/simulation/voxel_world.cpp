@@ -81,6 +81,11 @@ namespace Phi
         for (const glm::ivec3& chunkID : chunksToUnload)
         {
             VoxelChunk* chunk = loadedChunks[chunkID];
+            const auto mesh = chunk->GetNode()->Get<VoxelMesh>();
+            if (mesh)
+            {
+                voxelsRendered -= mesh->Vertices().size();
+            }
             chunk->GetNode()->Delete();
             loadedChunks.erase(chunkID);
         }
@@ -101,6 +106,11 @@ namespace Phi
         for (const auto&[key, _] : loadedChunks)
         {
             VoxelChunk* chunk = loadedChunks[key];
+            const auto mesh = chunk->GetNode()->Get<VoxelMesh>();
+            if (mesh)
+            {
+                voxelsRendered -= mesh->Vertices().size();
+            }
             chunk->GetNode()->Delete();
         }
         loadedChunks.clear();
@@ -117,9 +127,11 @@ namespace Phi
     {
         // TODO: Much optimization needed, naive implementation for testing
 
+        // TODO: Unload chunk if it currently exists
+
         // Create the chunk
         VoxelChunk*& chunk = loadedChunks[chunkID];
-        if (!chunk) chunk = &scene.CreateNode()->AddComponent<VoxelChunk>();
+        chunk = &scene.CreateNode()->AddComponent<VoxelChunk>();
 
         // Mesh data container
         std::vector<VoxelMesh::Vertex> voxelData;
@@ -199,6 +211,7 @@ namespace Phi
             VoxelMesh* mesh = chunk->GetNode()->Get<VoxelMesh>();
             if (!mesh) mesh = &chunk->GetNode()->AddComponent<VoxelMesh>();
             mesh->Vertices() = voxelData;
+            voxelsRendered += voxelData.size();
         }
     }
 }
