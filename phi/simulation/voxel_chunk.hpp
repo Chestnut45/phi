@@ -1,13 +1,14 @@
 #pragma once
 
 #include <phi/core/structures/grid_3d.hpp>
+#include <phi/scene/components/base_component.hpp>
 #include <phi/scene/components/renderable/voxel_mesh.hpp>
 
 namespace Phi
 {
     // Represents a single chunk in a voxel world
     // Holds terrain voxels and a list of active entities (nodes)
-    class VoxelChunk
+    class VoxelChunk : public BaseComponent
     {
         // Interface
         public:

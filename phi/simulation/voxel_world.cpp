@@ -14,19 +14,12 @@ namespace Phi
         camera.SetPosition({0, 16, 128});
         scene.SetActiveCamera(camera);
 
-        // DEBUG: Add a point light to the camera
-        camera.GetNode()->AddComponent<PointLight>();
-
         // Add environment
         Environment& environment = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_old");
         scene.SetActiveEnvironment(environment);
 
         // Load test materials
         scene.LoadMaterials("data://materials.yaml");
-
-        // Add the test voxel object and load the model
-        testObj = &scene.CreateNode3D()->AddComponent<VoxelObject>();
-        testObj->Load("data://models/dragon.pvox");
     }
 
     VoxelWorld::~VoxelWorld()
@@ -68,7 +61,7 @@ namespace Phi
                     glm::ivec3 chunkID = glm::ivec3(x, y, z) + currentChunk;
 
                     // Add to queue if within render distance
-                    if (loadSphere.Intersects(chunkID))
+                    if (loadSphere.Intersects(chunkID) && loadedChunks.count(chunkID) == 0)
                     {
                         chunksToLoad.push_back(chunkID);
                     }
@@ -82,18 +75,17 @@ namespace Phi
         {
             if (!loadSphere.Intersects(key)) chunksToUnload.push_back(key);
         }
-        for (const glm::ivec3& chunk : chunksToUnload)
+        for (const glm::ivec3& chunkID : chunksToUnload)
         {
-            loadedChunks.erase(chunk);
+            VoxelChunk* chunk = loadedChunks[chunkID];
+            chunk->GetNode()->Delete();
+            loadedChunks.erase(chunkID);
         }
 
-        // DEBUG: Generate all chunks at once for now
+        // DEBUG: Generate one chunk per frame for now
         // TODO: Use queue system to generate over multiple frames
         // TODO: Stream from disk if already generated
-        for (auto& chunkID : chunksToLoad)
-        {
-            if (loadedChunks.count(chunkID) == 0) GenerateChunk(chunkID);
-        }
+        if (chunksToLoad.size() > 0) GenerateChunk(chunksToLoad[0]);
 
         // Update the internal scene
         scene.Update(delta);
@@ -101,7 +93,15 @@ namespace Phi
 
     void VoxelWorld::ReloadChunks()
     {
+        // Unload all chunks
+        chunksToUnload.clear();
+        for (const auto&[key, _] : loadedChunks)
+        {
+            VoxelChunk* chunk = loadedChunks[key];
+            chunk->GetNode()->Delete();
+        }
         loadedChunks.clear();
+        chunksToUnload.clear();
     }
 
     void VoxelWorld::Render()
@@ -115,7 +115,8 @@ namespace Phi
         // TODO: Much optimization needed, naive implementation for testing
 
         // Create the chunk
-        VoxelChunk& chunk = loadedChunks[chunkID];
+        VoxelChunk*& chunk = loadedChunks[chunkID];
+        if (!chunk) chunk = &scene.CreateNode()->AddComponent<VoxelChunk>();
 
         // Mesh data container
         std::vector<VoxelMesh::Vertex> voxelData;
@@ -139,15 +140,51 @@ namespace Phi
                         {
                             // This is so insanely slow, obviously
                             // TODO: Preprocess masses, gather material IDs before iteration
-                            int mat = scene.GetMaterialID(mass.GetMaterial());
-                            chunk.voxelGrid(x, y, z) = mat;
-                            VoxelMesh::Vertex v;
-                            v.x = position.x;
-                            v.y = position.y;
-                            v.z = position.z;
-                            v.material = mat;
-                            voxelData.push_back(v);
+                            chunk->voxelGrid(x, y, z) = scene.GetMaterialID(mass.GetMaterial());
                         }
+                    }
+                }
+            }
+        }
+
+        // Add only visible voxels to mesh
+        for (int z = 0; z < VoxelChunk::CHUNK_DIM; ++z)
+        {
+            for (int y = 0; y < VoxelChunk::CHUNK_DIM; ++y)
+            {
+                for (int x = 0; x < VoxelChunk::CHUNK_DIM; ++x)
+                {
+                    const auto& v = chunk->voxelGrid(x, y, z);
+                    if (v == 0) continue;
+
+                    // Get world-space position of this voxel
+                    glm::vec3 position = glm::vec3(x, y, z) + glm::vec3(chunkID * VoxelChunk::CHUNK_DIM);
+
+                    if (x == 0 || y == 0 || z == 0 || x == VoxelChunk::CHUNK_DIM - 1 || y == VoxelChunk::CHUNK_DIM - 1 || z == VoxelChunk::CHUNK_DIM - 1)
+                    {
+                        VertexVoxelHalfPrecision vert;
+                        vert.x = position.x;
+                        vert.y = position.y;
+                        vert.z = position.z;
+                        vert.material = v;
+                        voxelData.push_back(vert);
+
+                        continue;
+                    }
+                    
+                    if (chunk->voxelGrid(x - 1, y, z) == 0 ||
+                        chunk->voxelGrid(x + 1, y, z) == 0 ||
+                        chunk->voxelGrid(x, y - 1, z) == 0 ||
+                        chunk->voxelGrid(x, y + 1, z) == 0 ||
+                        chunk->voxelGrid(x, y, z - 1) == 0 ||
+                        chunk->voxelGrid(x, y, z + 1) == 0)
+                    {
+                        VertexVoxelHalfPrecision vert;
+                        vert.x = position.x;
+                        vert.y = position.y;
+                        vert.z = position.z;
+                        vert.material = v;
+                        voxelData.push_back(vert);
                     }
                 }
             }
@@ -156,9 +193,9 @@ namespace Phi
         if (voxelData.size() > 0)
         {
             // DEBUG: Regenerate mesh immediately
-            // TODO: Prune invisible voxels
-            // VoxelMesh* mesh = &scene.CreateNode()->AddComponent<VoxelMesh>();
-            // mesh->Vertices() = voxelData;
+            VoxelMesh* mesh = chunk->GetNode()->Get<VoxelMesh>();
+            if (!mesh) mesh = &chunk->GetNode()->AddComponent<VoxelMesh>();
+            mesh->Vertices() = voxelData;
         }
     }
 }

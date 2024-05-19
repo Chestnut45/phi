@@ -69,12 +69,9 @@ namespace Phi
             // Internal scene instance
             Scene scene;
 
-            // DEBUG: Spinning object
-            VoxelObject* testObj = nullptr;
-
             // Map of loaded chunks
             // TODO: Switch to Phi::HashGrid3D when impl finished (Profile!)
-            std::unordered_map<glm::ivec3, VoxelChunk> loadedChunks;
+            std::unordered_map<glm::ivec3, VoxelChunk*> loadedChunks;
 
             // Queues
             std::vector<glm::ivec3> chunksToLoad;
@@ -90,7 +87,7 @@ namespace Phi
             // Settings
 
             // The approximate radius (in VoxelChunks) to load around the active camera
-            int renderDistance = 5;
+            int renderDistance = 8;
 
             // Helper functions
 
