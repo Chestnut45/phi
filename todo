@@ -11,6 +11,8 @@ high priority:
     - structure generation / model stamping
     - voxel model editor
 - sync VoxelMaterial / PBRMaterial with VoxelWorld
+- speedup cpu particle effect by removing instancing (generate quad in vs, use static index buffer)
+- aggregate volume broadphase (AABB encompassing all internal volumes useful for complex aggregates, early out)
 - shadow mapping
 - fluid simulation start
 - 3rd person controller
@@ -71,4 +73,4 @@ mid priority:
 - move glew dll in windows from system32 to executable folder?
 
 low priority:
-- speedup cpu particle effect by removing instancing (generate quad in vs, use static index buffer)
+-
