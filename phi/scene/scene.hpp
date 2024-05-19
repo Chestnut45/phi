@@ -189,6 +189,9 @@ namespace Phi
             static const int MAX_USER_DIRECTIONAL_LIGHTS = 4;
             static const int SSAO_SAMPLE_SIZE = 32;
 
+            // Minimum UBO alignment, calculated at scene construction
+            GLint UBO_ALIGNMENT = 1;
+
         // Data / implementation
         private:
 
@@ -211,7 +214,7 @@ namespace Phi
             int renderHeight = 720;
 
             // Camera UBO
-            GPUBuffer cameraBuffer{BufferType::Dynamic, sizeof(glm::mat4) * 6 + sizeof(glm::vec4) * 3};
+            GPUBuffer* cameraBuffer = nullptr;
 
             // Main render target
             Framebuffer* renderTarget = nullptr;
