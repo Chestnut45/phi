@@ -14,7 +14,7 @@ namespace Phi
         public:
 
             // Constants
-            static const int CHUNK_DIM = 16;
+            static const int CHUNK_DIM = 32;
 
             VoxelChunk();
             ~VoxelChunk();

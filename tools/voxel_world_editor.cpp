@@ -38,9 +38,6 @@ void VoxelWorldEditor::Update(float delta)
 
     // Toggle debug GUI with tilde key
     if (input.IsKeyJustDown(GLFW_KEY_GRAVE_ACCENT)) showGUI = !showGUI;
-
-    // Update the voxel world
-    world.Update(delta);
     
     // Display GUI windows
     if (showGUI)
@@ -49,6 +46,11 @@ void VoxelWorldEditor::Update(float delta)
         world.GetScene().ShowDebug();
         ShowInterface();
     }
+
+    // Update the voxel world
+    // NOTE: Must be done after GUI since regen button can
+    // delete chunks that are already queued for rendering
+    world.Update(delta);
 }
 
 void VoxelWorldEditor::Render()
