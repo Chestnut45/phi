@@ -134,6 +134,11 @@ void VoxelWorldEditor::ShowInterface()
             // Name editor
             ImGui::InputText("Name", &mass.name);
 
+            // Noise editor
+            float frequency = mass.GetNoise().GetFrequency();
+            ImGui::DragFloat("Noise Frequency", &frequency, 0.001f, 0.0f, 1.0f);
+            mass.GetNoise().SetFrequency(frequency);
+
             // Material type selections
             static const char* materialTypeNames[] = {"Single Material"};
             const char* materialTypeSelection = materialTypeNames[(int)mass.materialType];

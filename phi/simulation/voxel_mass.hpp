@@ -44,6 +44,7 @@ namespace Phi
             AggregateVolume& GetVolume() { return volume; }
             const MaterialType& GetMaterialType() const { return materialType; }
             const std::string& GetMaterial() const { return materialName; }
+            Noise& GetNoise() { return noise; }
 
             // Mutators
             void SetLayer(unsigned char layer) { this->layer = layer; }
@@ -68,6 +69,9 @@ namespace Phi
 
             // The bounding volume of the mass
             AggregateVolume volume;
+
+            // The noise to describe the mass
+            Noise noise;
 
             // Friend so the editor can access
             friend class ::VoxelWorldEditor;

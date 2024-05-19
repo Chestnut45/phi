@@ -151,7 +151,7 @@ namespace Phi
                     // Check for intersection of each mass
                     for (auto& mass : voxelMasses)
                     {
-                        if (mass.GetVolume().Intersects(position))
+                        if (mass.GetVolume().Intersects(position) && mass.GetNoise().Sample(position) > 0.0f)
                         {
                             // This is so insanely slow, obviously
                             // TODO: Preprocess masses, gather material IDs before iteration

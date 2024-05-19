@@ -2,6 +2,8 @@ design / features
 --------------------------------
 
 high priority:
+- multi octave / fractal noise
+- apply noise to terrain as offset?
 - voxel chunk debug rendering
 - grid3d empty value / iteration acceleration?
 - chunk generation
