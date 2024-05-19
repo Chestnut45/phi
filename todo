@@ -67,7 +67,7 @@ bugs / fixes
 --------------------------------
 
 high priority:
-- 
+- flickering / corruption, likely buffer sync issue... affects linux/intel more?
 
 mid priority:
 - move glew dll in windows from system32 to executable folder?

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdint>
-
 #include <glm/glm.hpp>
 #include <FastNoiseLite.h>
 
@@ -13,7 +11,7 @@ namespace Phi
         // Interface
         public:
 
-            Noise(uint32_t seed = 0);
+            Noise(int seed = 0);
             ~Noise();
 
             // Default copy constructor/assignment
@@ -27,8 +25,8 @@ namespace Phi
             // Accessors / mutators
 
             // Seed
-            inline uint32_t GetSeed() const { return seed; }
-            inline void SetSeed(uint32_t seed) { this->seed = seed; }
+            inline int GetSeed() const { return noise.mSeed; }
+            inline void SetSeed(int seed) { noise.SetSeed(seed); }
 
             // Frequency
             inline float GetFrequency() const { return noise.mFrequency; }
@@ -37,12 +35,8 @@ namespace Phi
             // TODO: Other noise parameters
 
             // Sampling
-
-            // Samples the noise at given 2D location
-            float Sample(float x, float y) const;
-
-            // Samples the noise at given 3D location
-            float Sample(float x, float y, float z) const;
+            inline float Sample(float x, float y) const { return noise.GetNoise(x, y); }
+            inline float Sample(float x, float y, float z) const { return noise.GetNoise(x, y, z); }
 
             // GLM sampling helpers
             inline float Sample(const glm::vec2& pos) const { return Sample(pos.x, pos.y); }
@@ -50,9 +44,6 @@ namespace Phi
         
         // Data / implementation
         private:
-            
-            // Seed
-            uint32_t seed;
 
             // Main instance
             FastNoiseLite noise;
