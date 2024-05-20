@@ -274,7 +274,6 @@ namespace Phi
         else
         {
             // Culling is disabled, draw all meshes
-
             for (auto&&[id, mesh] : registry.view<BasicMesh>().each())
             {
                 basicMeshRenderQueue.push_back(&mesh);
@@ -330,7 +329,7 @@ namespace Phi
                 mesh->Render();
             }
             BasicMesh::FlushRenderQueue();
-            
+
             // Render all voxel meshes
             for (VoxelMesh* mesh : voxelMeshRenderQueue)
             {
@@ -400,7 +399,7 @@ namespace Phi
         gTexDepthStencil->Bind(2);
 
         // SSAO pass (only runs if there are any viable rendered components)
-        if (ssao)
+        if (ssao && pbrPass)
         {
             // Bind resources
             ssaoFBO->Bind(GL_DRAW_FRAMEBUFFER);
