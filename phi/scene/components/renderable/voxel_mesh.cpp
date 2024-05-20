@@ -27,7 +27,8 @@ namespace Phi
         if (refCount == 0)
         {
             // Cleanup static resources
-            delete shader;
+            delete geometryPassShader;
+            delete depthPassShader;
             delete voxelDataBuffer;
             delete meshDataBuffer;
             delete indexBuffer;
@@ -42,10 +43,15 @@ namespace Phi
         {
             // Initialize static resources
 
-            shader = new Shader();
-            shader->LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/voxel_mesh.vs");
-            shader->LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/voxel_mesh.fs");
-            shader->Link();
+            geometryPassShader = new Shader();
+            geometryPassShader->LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/voxel_mesh.vs");
+            geometryPassShader->LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/voxel_mesh.fs");
+            geometryPassShader->Link();
+
+            depthPassShader = new Shader();
+            depthPassShader->LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/voxel_mesh.vs");
+            depthPassShader->LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/empty.fs");
+            depthPassShader->Link();
 
             // Dummy vao
             glGenVertexArrays(1, &dummyVAO);
@@ -149,13 +155,21 @@ namespace Phi
         queuedVoxels += vertices.size();
     }
 
-    void VoxelMesh::FlushRenderQueue()
+    void VoxelMesh::FlushRenderQueue(bool depthPrePass)
     {
         if (drawCount == 0) return;
 
+        if (depthPrePass)
+        {
+            depthPassShader->Use();
+        }
+        else
+        {
+            geometryPassShader->Use();
+        }
+
         // Bind resources
         glBindVertexArray(dummyVAO);
-        shader->Use();
         indexBuffer->Bind(GL_ELEMENT_ARRAY_BUFFER);
         indirectBuffer->Bind(GL_DRAW_INDIRECT_BUFFER);
         voxelDataBuffer->BindRange(GL_SHADER_STORAGE_BUFFER, 3, voxelDataBuffer->GetCurrentSection() * voxelDataBuffer->GetSize(), voxelDataBuffer->GetSize());
@@ -169,6 +183,9 @@ namespace Phi
 
         // Unbind
         glBindVertexArray(0);
+
+        // Don't update buffer sections or counters if on the depth pass
+        if (depthPrePass) return;
 
         // Lock buffers
         indirectBuffer->Lock();

@@ -55,7 +55,9 @@ namespace Phi
             void Render(const glm::mat4& transform);
 
             // Flushes internal render queue and displays all meshes
-            static void FlushRenderQueue();
+            // NOTE: If depthPrePass is set to true, the buffers will not be flushed
+            // And all queued meshes will be rendered with an empty fragment shader
+            static void FlushRenderQueue(bool depthPrePass = false);
 
             // Data access
 
@@ -69,7 +71,8 @@ namespace Phi
             std::vector<Vertex> vertices;
 
             // Static mesh resources
-            static inline Shader* shader = nullptr;
+            static inline Shader* geometryPassShader = nullptr;
+            static inline Shader* depthPassShader = nullptr;
             static inline GLuint dummyVAO = 0;
             static inline GPUBuffer* voxelDataBuffer = nullptr;
             static inline GPUBuffer* meshDataBuffer = nullptr;
