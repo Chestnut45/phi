@@ -2,8 +2,7 @@ design / features
 --------------------------------
 
 high priority:
-- multi octave / fractal noise
-- apply noise to terrain as offset?
+- full noise editor (fractal, domain warp, etc.)
 - voxel chunk debug rendering
 - grid3d empty value / iteration acceleration?
 - chunk generation
@@ -12,6 +11,10 @@ high priority:
     - structure generation / model stamping
 - sync VoxelMaterial / PBRMaterial with VoxelWorld
 - bandwidth optimizations for voxel mesh?
+    - precompute voxel vs values
+    - only upload mesh data when updating / loading / unloading chunks?
+    - reuse buffer sections when no updates happen?
+    - static normals per vertex instead of dfdx/dfdy in fragment shader? (mult by inverse model matrix, already available)
 - shadow mapping
 - fluid simulation start
 - 3rd person controller
