@@ -20,12 +20,12 @@ struct MeshData
     mat4 invTransform;
 };
 
-layout(std430, binding = 3) buffer VoxelData
+layout(std430, binding = 3) restrict buffer VoxelData
 {
     uvec2 voxelData[];
 };
 
-layout(std430, binding = 4) buffer InstanceData
+layout(std430, binding = 4) restrict buffer InstanceData
 {
     MeshData meshData[];
 };

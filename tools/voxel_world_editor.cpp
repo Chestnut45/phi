@@ -135,14 +135,18 @@ void VoxelWorldEditor::ShowInterface()
             ImGui::InputText("Name", &mass.name);
 
             // Noise editor
+            ImGui::Text("Noise:");
+            ImGui::Separator();
+
             float frequency = mass.GetNoise().GetFrequency();
-            ImGui::DragFloat("Noise Frequency", &frequency, 0.001f, 0.0f, 1.0f);
-            mass.GetNoise().SetFrequency(frequency);
+            if (ImGui::DragFloat("Frequency", &frequency, 0.001f, 0.0f, 1.0f)) mass.GetNoise().SetFrequency(frequency);
 
             // Material type selections
+            ImGui::Text("Materials:");
+            ImGui::Separator();
             static const char* materialTypeNames[] = {"Single Material"};
             const char* materialTypeSelection = materialTypeNames[(int)mass.materialType];
-            if (ImGui::BeginCombo("Material Type", materialTypeSelection))
+            if (ImGui::BeginCombo("Mapping", materialTypeSelection))
             {
                 for (int n = 0; n < IM_ARRAYSIZE(materialTypeNames); n++)
                 {
