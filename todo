@@ -10,11 +10,12 @@ high priority:
     - feature types? (rivers, waterfalls, flora, mountains, etc.)
     - structure generation / model stamping
 - sync VoxelMaterial / PBRMaterial with VoxelWorld
-- bandwidth optimizations for voxel mesh?
-    - precompute voxel vs values
+- optimizations:
     - only upload mesh data when updating / loading / unloading chunks?
     - reuse buffer sections when no updates happen?
     - static normals per vertex instead of dfdx/dfdy in fragment shader? (mult by inverse model matrix, already available)
+    - mesh culling (generate AABB or OBB for basic / voxel meshes)
+    - occlusion culling (GL query objects, rasterize bounding box, test for samples passed)
 - shadow mapping
 - fluid simulation start
 - 3rd person controller
