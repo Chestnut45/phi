@@ -2,6 +2,12 @@ design / features
 --------------------------------
 
 high priority:
+- voxel material (world loads visual data to pbrmaterial and simulation data to internal buffer)
+- voxel object editor
+    - material loading / palette display
+    - grid3d
+    - raycasting / dda to get mouse voxel pos
+    - test models (player, items, organisms, etc.)
 - full noise editor (fractal, domain warp, etc.)
 - voxel chunk debug rendering
 - grid3d empty value / iteration acceleration?
@@ -9,24 +15,11 @@ high priority:
     - noise parameters
     - feature types? (rivers, waterfalls, flora, mountains, etc.)
     - structure generation / model stamping
-- sync VoxelMaterial / PBRMaterial with VoxelWorld
-- optimizations:
-    - profile voxel mesh render time
-    - only upload mesh data when updating / loading / unloading chunks?
-    - reuse buffer sections when no updates happen?
-    - static normals per vertex instead of dfdx/dfdy in fragment shader? (mult by inverse model matrix, already available)
-    - mesh culling (generate AABB or OBB for basic / voxel meshes)
-    - occlusion culling (GL query objects, rasterize bounding box, test for samples passed)
-- shadow mapping
+
+mid priority:
 - fluid simulation start
 - 3rd person controller
 - animated voxel models
-- terrain interaction with voxel objects (reactphysics3d?)
-- HDR rendering with exposure based tone mapping (configurable via scene)
-- pbr bloom (downsampling method)
-- voxel particle effects?
-
-mid priority:
 - decide material tags from sketchbook list (ferromagnetic (magnetizable, attracted to / repelled by magnets), immovable?)
 - decide per-voxel / per-object flags (asleep, onFire, etc.)
 - plasma (make a sheet of which tags influence which engine behaviours (if you want x behaviour, make a material with x tag))
@@ -55,19 +48,30 @@ low priority:
 - audio library choice (likely OpenAL)
 - extend quadtree to octree (may be useful for speeding up raycast queries in voxel editor?)
 - implement rehash / resize + write unit tests for HashMap
-- design world building workflow (gui app? text format? biomes, landmasses, structures, models, entities, stamps...)
 - physics bodies (rigidbody.cpp, etc.)
 - tunable SSAO (radius, blur, samples, etc.)
-- blur for sun light scattering dither?
 - GPUBuffer::BindSectionRange(...) (alleviate bloat)
 - input buffering
+- voxel particle effects?
+
+optimizations:
+- profile voxel mesh render time
+- only upload mesh data when updating / loading / unloading chunks?
+- reuse buffer sections when no updates happen?
+- static normals per vertex instead of dfdx/dfdy in fragment shader? (mult by inverse model matrix, already available)
+- mesh culling (generate AABB or OBB for basic / voxel meshes)
+- occlusion culling (GL query objects, rasterize bounding box, test for samples passed)
+- speedup cpu particle effect by removing instancing (generate quad in vs, use static index buffer)
+- aggregate volume broadphase (AABB encompassing all internal volumes useful for complex aggregates, early out)
+
+graphics:
+- HDR rendering with exposure based tone mapping (configurable via scene)
+- pbr bloom (downsampling method)
+- shadow mapping
 - debug visualizations
 - BasicMesh .obj loading
 - TexturedMesh?
 - volumetric fog (move away from screenspace scattering method...?)
-    - inject point lights to volumetric texture?
-- speedup cpu particle effect by removing instancing (generate quad in vs, use static index buffer)
-- aggregate volume broadphase (AABB encompassing all internal volumes useful for complex aggregates, early out)
 
 bugs / fixes
 --------------------------------

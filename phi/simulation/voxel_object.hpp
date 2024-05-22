@@ -25,19 +25,9 @@ namespace Phi
 
             // Loading
 
-            // Loads voxel data from a .pvox file, replacing any existing data
+            // Loads voxel data from a .vobj file, replacing any existing data
             // Accepts local paths like data:// and user://
             bool Load(const std::string& path);
-
-            // Rendering
-
-            // Draws the object (using node's transform if it exists)
-            // Drawn objects won't be displayed to the screen until
-            // the next call to VoxelObject::FlushRenderQueue()
-            void Render();
-
-            // Flushes internal render queue and displays all objects
-            static void FlushRenderQueue();
 
             // Management
 
