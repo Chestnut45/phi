@@ -11,6 +11,7 @@ high priority:
     - structure generation / model stamping
 - sync VoxelMaterial / PBRMaterial with VoxelWorld
 - optimizations:
+    - profile voxel mesh render time
     - only upload mesh data when updating / loading / unloading chunks?
     - reuse buffer sections when no updates happen?
     - static normals per vertex instead of dfdx/dfdy in fragment shader? (mult by inverse model matrix, already available)
