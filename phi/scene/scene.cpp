@@ -611,25 +611,26 @@ namespace Phi
             pbrMaterials[it->second] = material;
 
             // Write the new material data to the gpu buffer
-            pbrMaterialBuffer.Sync();
             pbrMaterialBuffer.SetOffset(sizeof(glm::vec4) * 2 * it->second);
             pbrMaterialBuffer.Write(glm::vec4{material.color, 1.0f});
             pbrMaterialBuffer.Write(glm::vec4{material.metallic, material.roughness, 1.0f, 1.0f});
+
+            return it->second;
         }
         else
         {
             // Material does not exist, add it and add the ID to the map
-            pbrMaterialIDs[name] = pbrMaterials.size();
+            int id = pbrMaterials.size();
+            pbrMaterialIDs[name] = id;
             pbrMaterials.push_back(material);
 
             // Write the new material data to the gpu buffer
-            pbrMaterialBuffer.Sync();
-            pbrMaterialBuffer.SetOffset(sizeof(glm::vec4) * 2 * (pbrMaterials.size() - 1));
+            pbrMaterialBuffer.SetOffset(sizeof(glm::vec4) * 2 * id);
             pbrMaterialBuffer.Write(glm::vec4{material.color, 1.0f});
             pbrMaterialBuffer.Write(glm::vec4{material.metallic, material.roughness, 1.0f, 1.0f});
-        }
 
-        return pbrMaterialIDs[name];
+            return id;
+        }
     }
 
     int Scene::GetMaterialID(const std::string& name)
