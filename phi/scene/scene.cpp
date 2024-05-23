@@ -11,6 +11,9 @@
 #include <phi/scene/components/particles/cpu_particle_effect.hpp>
 #include <phi/scene/components/lighting/point_light.hpp>
 
+// DEBUG
+#include <phi/core/debug.hpp>
+
 namespace Phi
 {
     Scene::Scene()
@@ -294,6 +297,13 @@ namespace Phi
         // Only render if we have an active camera
         if (!activeCamera) return;
 
+        // Grab the framebuffer ID (might not be 0)
+        GLint currentFBO = 0;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFBO);
+        
+        // DEBUG
+        GLErrorCheck("Scene Render");
+
         // Set initial rendering state
         glViewport(0, 0, renderWidth, renderHeight);
         glDisable(GL_BLEND);
@@ -339,7 +349,7 @@ namespace Phi
         }
 
         // Bind the main render target to draw to
-        gBuffer->Unbind(GL_DRAW_FRAMEBUFFER);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFBO);
 
         // Lighting passes
         
@@ -411,7 +421,7 @@ namespace Phi
             glDrawArrays(GL_TRIANGLES, 0, 3);
 
             // Unbind (back to default FBO for lighting)
-            ssaoFBO->Unbind(GL_DRAW_FRAMEBUFFER);
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFBO);
 
             // Bind the SSAO texture for the lighting pass
             ssaoScreenTexture->Bind(3);
@@ -455,7 +465,7 @@ namespace Phi
                 activeEnvironment->RenderSun();
 
                 // Apply light scattering post-process effect
-                sunlightFBO->Unbind(GL_DRAW_FRAMEBUFFER);
+                glBindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFBO);
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_ONE, GL_ONE);
                 sunlightTexture->Bind(4);

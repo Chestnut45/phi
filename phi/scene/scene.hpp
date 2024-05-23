@@ -113,7 +113,9 @@ namespace Phi
             // Updates all components in the scene according to simulation settings
             void Update(float delta);
 
-            // Renders all renderable components in the scene according to render settings
+            // Renders all renderable components in the scene according to
+            // render settings and the currently active camera
+            // NOTE: Will render to the framebuffer bound at the start of the call
             void Render();
 
             // Shows debug statistics in an ImGui window

@@ -4,6 +4,7 @@
 
 // Core systems / data structures
 #include "core/app.hpp"
+#include "core/debug.hpp"
 #include "core/file.hpp"
 #include "core/input.hpp"
 #include "core/logging.hpp"

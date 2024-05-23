@@ -92,7 +92,7 @@ namespace Phi
             // Random number generator
             RNG rng{4545};
 
-            // Displayes debug information about the application
+            // Displayes debug information about the application in an imgui window
             void ShowDebug();
 
         private:
