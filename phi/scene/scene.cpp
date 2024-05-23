@@ -47,6 +47,11 @@ namespace Phi
         int alignedSize = ( UBO_ALIGNMENT == 0 ) ? cameraBufferSize : ceil( (float)cameraBufferSize / UBO_ALIGNMENT ) * UBO_ALIGNMENT;
         cameraBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, alignedSize);
 
+        // Create global light buffer
+        int gbSize = (MAX_USER_DIRECTIONAL_LIGHTS + 2) * (sizeof(glm::vec4) * 2);
+        alignedSize = ( UBO_ALIGNMENT == 0 ) ? gbSize : ceil( (float)gbSize / UBO_ALIGNMENT ) * UBO_ALIGNMENT;
+        globalLightBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, alignedSize);
+
         // Empty vertex attributes object for attributeless rendering
         glGenVertexArrays(1, &dummyVAO);
 
@@ -300,9 +305,6 @@ namespace Phi
         // Grab the framebuffer ID (might not be 0)
         GLint currentFBO = 0;
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFBO);
-        
-        // DEBUG
-        GLErrorCheck("Scene Render");
 
         // Set initial rendering state
         glViewport(0, 0, renderWidth, renderHeight);
@@ -354,8 +356,8 @@ namespace Phi
         // Lighting passes
         
         // Update global light buffer
-        globalLightBuffer.Sync();
-        globalLightBuffer.BindRange(GL_UNIFORM_BUFFER, (GLuint)UniformBindingIndex::GlobalLights, globalLightBuffer.GetCurrentSection() * globalLightBuffer.GetSize(), globalLightBuffer.GetSize());
+        globalLightBuffer->Sync();
+        globalLightBuffer->BindRange(GL_UNIFORM_BUFFER, (GLuint)UniformBindingIndex::GlobalLights, globalLightBuffer->GetCurrentSection() * globalLightBuffer->GetSize(), globalLightBuffer->GetSize());
 
         // Write all active global lights to the buffer
         int activeLights = 0;
@@ -364,8 +366,8 @@ namespace Phi
             DirectionalLight* light = globalLights[i];
             if (light)
             {
-                globalLightBuffer.Write(glm::vec4(light->color, 1.0f));
-                globalLightBuffer.Write(glm::vec4(light->direction, light->ambient));
+                globalLightBuffer->Write(glm::vec4(light->color, 1.0f));
+                globalLightBuffer->Write(glm::vec4(light->direction, light->ambient));
                 activeLights++;
             }
         }
@@ -373,15 +375,15 @@ namespace Phi
         // Write the sun if it's active
         if (activeEnvironment && activeEnvironment->renderSun)
         {
-            globalLightBuffer.Write(glm::vec4(activeEnvironment->sunColor, 1.0f));
-            globalLightBuffer.Write(glm::vec4(glm::normalize(-activeEnvironment->sunPos), activeEnvironment->sunAmbient));
+            globalLightBuffer->Write(glm::vec4(activeEnvironment->sunColor, 1.0f));
+            globalLightBuffer->Write(glm::vec4(glm::normalize(-activeEnvironment->sunPos), activeEnvironment->sunAmbient));
             activeLights++;
         }
 
         // Write number of lights and base ambient light value
-        globalLightBuffer.SetOffset((sizeof(glm::vec4) * 2) * (MAX_USER_DIRECTIONAL_LIGHTS + 1));
-        globalLightBuffer.Write(glm::ivec4(activeLights));
-        globalLightBuffer.Write(ambientLight);
+        globalLightBuffer->SetOffset((sizeof(glm::vec4) * 2) * (MAX_USER_DIRECTIONAL_LIGHTS + 1));
+        globalLightBuffer->Write(glm::ivec4(activeLights));
+        globalLightBuffer->Write(ambientLight);
 
         // Blit the geometry buffer's depth and stencil textures to the main render target
         // TODO: Is a blit fastest here? Profile...
@@ -437,8 +439,8 @@ namespace Phi
         }
 
         // Lock global light buffer
-        globalLightBuffer.Lock();
-        globalLightBuffer.SwapSections();
+        globalLightBuffer->Lock();
+        globalLightBuffer->SwapSections();
 
         // Point light pass
         for (auto&&[id, light] : registry.view<PointLight>().each())
