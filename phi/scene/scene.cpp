@@ -804,8 +804,8 @@ namespace Phi
         // renderTarget->CheckCompleteness();
 
         // Create geometry buffer textures
-        gTexNormal = new Texture2D(renderWidth, renderHeight, GL_RGB8_SNORM, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
-        gTexMaterial = new Texture2D(renderWidth, renderHeight, GL_R8UI, GL_RED_INTEGER, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+        gTexNormal = new Texture2D(renderWidth, renderHeight, GL_RGB16_SNORM, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+        gTexMaterial = new Texture2D(renderWidth, renderHeight, GL_R16UI, GL_RED_INTEGER, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
         gTexDepthStencil = new Texture2D(renderWidth, renderHeight, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
 
         // Create geometry buffer and attach textures
