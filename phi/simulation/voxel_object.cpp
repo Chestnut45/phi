@@ -102,6 +102,10 @@ namespace Phi
                 voxels(voxelData[i] - offset.x, voxelData[i + 1] - offset.y, voxelData[i + 2] - offset.z) = voxelData[i + 3];
             }
 
+            // Update AABB
+            aabb.min = min;
+            aabb.max = max;
+
             UpdateMesh();
             return true;
         }

@@ -63,6 +63,9 @@ namespace Phi
             // NOTE: Automatically called by scene on active camera when Scene::SetViewport() is used
             void SetResolution(int width, int height);
 
+            // Returns a normalized ray from the camera's position to the screen coordinate given
+            Ray CastRay(double x, double y);
+
             // Vector accessors
             inline const glm::vec3& GetDirection() const { return forward; };
             inline const glm::vec3& GetPosition() const { return position; };

@@ -136,6 +136,23 @@ namespace Phi
         glm::vec3 max;
     };
 
+    struct Ray
+    {
+        Ray();
+        Ray(const glm::vec3& origin, const glm::vec3& direction);
+        ~Ray();
+
+        // Intersection tests
+
+        // Returns tNear and tFar (vec2.x, vec2.y) using the slabs method
+        // Intersection occurs iff tNear < tFar
+        glm::vec2 Slabs(const AABB& aabb);
+
+        // Data
+        glm::vec3 origin{0.0f};
+        glm::vec3 direction{0.0f, 0.0f, -1.0f};
+    };
+
     // Represents a sphere, supports point, plane, and frustum intersection tests
     struct Sphere
     {

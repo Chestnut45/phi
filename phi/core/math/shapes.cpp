@@ -36,6 +36,32 @@ namespace Phi
         return (left < rect.right && right > rect.left && top > rect.bottom && bottom < rect.top);
     }
 
+    // Ray implementation
+
+    Ray::Ray()
+    {
+    }
+
+    Ray::Ray(const glm::vec3& origin, const glm::vec3& direction)
+        : origin(origin), direction(direction)
+    {
+    }
+
+    Ray::~Ray()
+    {
+    }
+
+    glm::vec2 Ray::Slabs(const AABB& aabb)
+    {
+        glm::vec3 tMin = (aabb.min - origin) / direction;
+        glm::vec3 tMax = (aabb.max - origin) / direction;
+        glm::vec3 t1 = glm::min(tMin, tMax);
+        glm::vec3 t2 = glm::max(tMin, tMax);
+        float tNear = glm::max(glm::max(t1.x, t1.y), t1.z);
+        float tFar = glm::min(glm::min(t2.x, t2.y), t2.z);
+        return glm::vec2(tNear, tFar);
+    }
+
     // Plane implementation
 
     Plane::Plane()

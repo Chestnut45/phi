@@ -36,16 +36,27 @@ namespace Phi
 
             // Mesh management
 
-            // Returns a pointer to the internal mesh component,
-            // or nullptr if none exists
-            VoxelMesh* GetMesh() const { return mesh; };
-
             // Updates the mesh to match the currently visible voxels of the object
             // If no mesh exists, one is added to the node first
             void UpdateMesh();
 
             // Destroys the internal mesh if one exists
             void DestroyMesh();
+
+            // Accessors
+
+            // Returns a pointer to the internal mesh component,
+            // or nullptr if none exists
+            VoxelMesh* GetMesh() const { return mesh; };
+
+            // Returns a const reference to the object local space AABB
+            const AABB& GetAABB() const { return aabb; }
+
+            // Returns a reference to the grid of voxel data
+            Grid3D<int>& Grid() { return voxels; }
+            
+            // Gets the voxel at the object local coordinates provided
+            int GetVoxel(int x, int y, int z) { return voxels(x - offset.x, y - offset.y, z - offset.z); }
         
         // Data / implementation
         private:

@@ -28,6 +28,13 @@ class VoxelObjectEditor : public Phi::App
         // The voxel object instance to edit
         VoxelObject* object = nullptr;
 
+        // Brush settings
+        int selectedMaterial = 0;
+        glm::ivec3 selectedPosition{0};
+
+        // Brush mesh
+        VoxelMesh* brushMesh = nullptr;
+
         // Settings
         bool showGUI = false;
 };
