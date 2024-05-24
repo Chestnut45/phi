@@ -2,10 +2,10 @@ design / features
 --------------------------------
 
 high priority:
+- debug shape rendering (ray, aabb, etc.)
 - voxel material (world loads visual data to pbrmaterial and simulation data to internal buffer)
 - voxel object editor
-    - material loading / palette display
-    - grid3d
+    - palette display
     - raycasting / dda to get mouse voxel pos
     - test models (player, items, organisms, etc.)
 - full noise editor (fractal, domain warp, etc.)

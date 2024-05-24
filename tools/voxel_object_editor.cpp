@@ -63,14 +63,15 @@ void VoxelObjectEditor::Update(float delta)
     if (tNearFar.x < tNearFar.y)
     {
         // Calculate starting / ending positions for traversal
-        glm::ivec3 xyz = glm::ceil(ray.origin + ray.direction * tNearFar.x);
+        glm::vec3 start = ray.origin + ray.direction * tNearFar.x;
+        glm::ivec3 xyz = glm::floor(start);
         glm::ivec3 oob = glm::floor(ray.origin + ray.direction * tNearFar.y);
 
         // Calculate step directions
         glm::ivec3 step = glm::ivec3(glm::sign(ray.direction.x), glm::sign(ray.direction.y), glm::sign(ray.direction.z));
 
         // Calculate tMax and tDelta
-        glm::vec3 tMax = (glm::vec3(xyz) - ray.origin) / ray.direction;
+        glm::vec3 tMax = (start - ray.origin) / ray.direction + (tNearFar.y - tNearFar.x);
         glm::vec3 tDelta = glm::vec3(1.0f) / ray.direction;
 
         // Grid traversal (Amanatides & Woo)
