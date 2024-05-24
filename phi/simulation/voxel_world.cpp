@@ -22,7 +22,7 @@ namespace Phi
         scene.LoadMaterials("data://materials.yaml");
 
         // DEBUG: Test model for benchmarking purposes
-        scene.CreateNode()->AddComponent<VoxelObject>().Load("data://models/dragon.vobj");
+        // scene.CreateNode()->AddComponent<VoxelObject>().Load("data://models/dragon.vobj");
     }
 
     VoxelWorld::~VoxelWorld()
@@ -40,6 +40,39 @@ namespace Phi
     }
 
     void VoxelWorld::Update(float delta)
+    {
+        // Update loaded chunks if necessary
+        if (updateChunks) UpdateChunks();
+
+        // Update the internal scene
+        scene.Update(delta);
+    }
+
+    void VoxelWorld::UnloadChunks()
+    {
+        // Unload all chunks
+        chunksToUnload.clear();
+        for (const auto&[key, _] : loadedChunks)
+        {
+            VoxelChunk* chunk = loadedChunks[key];
+            const auto mesh = chunk->GetNode()->Get<VoxelMesh>();
+            if (mesh)
+            {
+                voxelsRendered -= mesh->Vertices().size();
+            }
+            chunk->GetNode()->Delete();
+        }
+        loadedChunks.clear();
+        chunksToUnload.clear();
+    }
+
+    void VoxelWorld::Render()
+    {
+        // Render the internal scene
+        scene.Render();
+    }
+
+    void VoxelWorld::UpdateChunks()
     {
         // Calculate the current chunk
         Camera* camera = scene.GetActiveCamera();
@@ -91,33 +124,6 @@ namespace Phi
         // TODO: Use queue system to generate over multiple frames
         // TODO: Stream from disk if already generated
         if (chunksToLoad.size() > 0) GenerateChunk(chunksToLoad[0]);
-
-        // Update the internal scene
-        scene.Update(delta);
-    }
-
-    void VoxelWorld::ReloadChunks()
-    {
-        // Unload all chunks
-        chunksToUnload.clear();
-        for (const auto&[key, _] : loadedChunks)
-        {
-            VoxelChunk* chunk = loadedChunks[key];
-            const auto mesh = chunk->GetNode()->Get<VoxelMesh>();
-            if (mesh)
-            {
-                voxelsRendered -= mesh->Vertices().size();
-            }
-            chunk->GetNode()->Delete();
-        }
-        loadedChunks.clear();
-        chunksToUnload.clear();
-    }
-
-    void VoxelWorld::Render()
-    {
-        // Render the internal scene
-        scene.Render();
     }
 
     void VoxelWorld::GenerateChunk(const glm::ivec3& chunkID)

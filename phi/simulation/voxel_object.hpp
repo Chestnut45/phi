@@ -1,8 +1,9 @@
 #pragma once
 
+#include <phi/core/math/shapes.hpp>
+#include <phi/core/structures/grid_3d.hpp>
 #include <phi/scene/components/base_component.hpp>
 #include <phi/scene/components/renderable/voxel_mesh.hpp>
-#include <phi/core/structures/grid_3d.hpp>
 
 namespace Phi
 {
@@ -24,9 +25,14 @@ namespace Phi
             VoxelObject(VoxelObject&& other) = delete;
             VoxelObject& operator=(VoxelObject&& other) = delete;
 
+            // Data management
+
             // Loads voxel data from a .vobj file, replacing any existing data
             // Accepts local paths like data:// and user://
             bool Load(const std::string& path);
+
+            // Resets to initial state, unloads all voxel data and destroys internal resources
+            void Reset();
 
             // Mesh management
 
@@ -40,19 +46,18 @@ namespace Phi
 
             // Destroys the internal mesh if one exists
             void DestroyMesh();
-
-            // Resets to initial state, unloads all voxel data and destroys internal resources
-            void Reset();
         
         // Data / implementation
         private:
 
             // Offset to apply to coordinates
-            glm::ivec3 offset;
+            glm::ivec3 offset{-16};
 
             // Debug grid of voxel materials
             Grid3D<int> voxels{32, 32, 32};
-            
+
+            // AABB instance
+            AABB aabb{glm::vec3(-16.0f), glm::vec3(16.0f)};
 
             // Internal mesh component (NON-OWNING)
             VoxelMesh* mesh = nullptr;

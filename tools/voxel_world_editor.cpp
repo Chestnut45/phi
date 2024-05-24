@@ -113,7 +113,7 @@ void VoxelWorldEditor::ShowInterface()
     ImGui::SeparatorText("Controls");
 
     // Regenerates the world's terrain using the current data
-    if (ImGui::Button("Regenerate")) world.ReloadChunks();
+    if (ImGui::Button("Regenerate")) world.UnloadChunks();
 
     // Display all voxel masses
     ImGui::SeparatorText("Voxel Masses");

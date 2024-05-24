@@ -51,8 +51,8 @@ namespace Phi
             // Updates the voxel world with the given elapsed time in seconds
             void Update(float delta);
 
-            // Reloads all currently loaded chunks
-            void ReloadChunks();
+            // Unloads all currently loaded chunks
+            void UnloadChunks();
 
             // Rendering
 
@@ -91,8 +91,12 @@ namespace Phi
 
             // The approximate radius (in VoxelChunks) to load around the active camera
             int renderDistance = 8;
+            bool updateChunks = false;
 
             // Helper functions
+
+            // Updates which chunks should be loaded / unloaded around the active camera
+            void UpdateChunks();
 
             // Generates the given chunk and loads it into the world
             void GenerateChunk(const glm::ivec3& chunkID);

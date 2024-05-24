@@ -113,6 +113,12 @@ namespace Phi
         }
     }
 
+    void VoxelObject::Reset()
+    {
+        voxels.Clear();
+        if (mesh) mesh->Vertices().clear();
+    }
+
     void VoxelObject::UpdateMesh()
     {
         // Create the mesh if it doesn't exist yet
@@ -180,11 +186,5 @@ namespace Phi
         if (!mesh) return;
         GetNode()->RemoveComponent<VoxelMesh>();
         mesh = nullptr;
-    }
-
-    void VoxelObject::Reset()
-    {
-        voxels.Clear();
-        if (mesh) mesh->Vertices().clear();
     }
 }
