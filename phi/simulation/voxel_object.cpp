@@ -93,14 +93,10 @@ namespace Phi
                     voxelData.emplace_back(material);
                 }
             }
-
-            // Use min and max to determine next size of grid
-            voxels.Resize(max.x - min.x, max.y - min.y, max.z - min.z);
             
             // Update all internal voxel data
-            offset.x = min.x > 0 ? -min.x : min.x;
-            offset.y = min.y > 0 ? -min.y : min.y;
-            offset.z = min.z > 0 ? -min.z : min.z;
+            voxels.Resize(max.x - min.x + 1, max.y - min.y + 1, max.z - min.z + 1);
+            offset = min;
             for (int i = 0; i < voxelData.size() - 4; i += 4)
             {
                 voxels(voxelData[i] - offset.x, voxelData[i + 1] - offset.y, voxelData[i + 2] - offset.z) = voxelData[i + 3];

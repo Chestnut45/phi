@@ -19,7 +19,7 @@ namespace Phi
             // [0, width - 1]
             // [0, height - 1]
             // [0, depth - 1]
-            Grid3D(int32_t width, int32_t height, int32_t depth);
+            Grid3D(int width, int height, int depth);
             ~Grid3D();
 
             // Delete copy constructor/assignment
@@ -33,7 +33,7 @@ namespace Phi
             // Data access / modification
 
             // Fast read-write access, no bounds checking
-            inline T& operator()(int32_t x, int32_t y, int32_t z)
+            inline T& operator()(int x, int y, int z)
             {
                 return data[Index(x, y, z)];
             }
@@ -42,7 +42,7 @@ namespace Phi
             void Clear();
 
             // Resizes and clears the grid
-            void Resize(int32_t width, int32_t height, int32_t depth);
+            void Resize(int width, int height, int depth);
 
             // Dimension accessors
             int GetWidth() const { return width; }
@@ -60,7 +60,7 @@ namespace Phi
             std::vector<T> data;
 
             // Calculate index into the internal array from 3D position
-            inline uint32_t Index(int32_t x, int32_t y, int32_t z) const
+            inline uint32_t Index(int x, int y, int z) const
             {
                 return x + width * (y + depth * z);
             }
@@ -69,7 +69,7 @@ namespace Phi
     // Template implementation
 
     template <typename T>
-    Grid3D<T>::Grid3D(int32_t width, int32_t height, int32_t depth)
+    Grid3D<T>::Grid3D(int width, int height, int depth)
     {
         // Initialize the grid
         Resize(width, height, depth);
@@ -87,7 +87,7 @@ namespace Phi
     }
 
     template <typename T>
-    void Grid3D<T>::Resize(int32_t width, int32_t height, int32_t depth)
+    void Grid3D<T>::Resize(int width, int height, int depth)
     {
         // Set new dimensions
         this->width = width;
@@ -96,7 +96,7 @@ namespace Phi
 
         // Calculate new data element size and default construct each object
         totalElementSize = width * height * depth;
-        data.clear();
-        data.insert(data.end(), totalElementSize, T());
+        data.resize(totalElementSize);
+        Clear();
     }
 }
