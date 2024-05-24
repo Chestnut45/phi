@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <algorithm>
 #include <vector>
 
 namespace Phi
@@ -43,11 +44,17 @@ namespace Phi
             // Resizes and clears the grid
             void Resize(int32_t width, int32_t height, int32_t depth);
 
+            // Dimension accessors
+            int GetWidth() const { return width; }
+            int GetHeight() const { return height; }
+            int GetDepth() const { return depth; }
+
         // Data / implementation
         private:
 
             // Grid dimension boundaries
-            int32_t width, height, depth;
+            int width, height, depth;
+            size_t totalElementSize;
 
             // Data
             std::vector<T> data;
@@ -76,7 +83,7 @@ namespace Phi
     template <typename T>
     void Grid3D<T>::Clear()
     {
-        Resize(width, height, depth);
+        std::fill(data.begin(), data.end(), T());
     }
 
     template <typename T>
@@ -88,7 +95,7 @@ namespace Phi
         this->depth = depth;
 
         // Calculate new data element size and default construct each object
-        size_t totalElementSize = width * height * depth;
+        totalElementSize = width * height * depth;
         data.clear();
         data.insert(data.end(), totalElementSize, T());
     }

@@ -21,12 +21,14 @@ namespace Phi
         {
             // Container for material ids
             std::vector<int> loadedMaterialIDs;
-            std::vector<VertexVoxelHalfPrecision> voxelData;
+            std::vector<int> voxelData;
 
             // Parse the file
             std::string line;
             int phase = 0;
             bool zAxisVertical = false;
+            glm::ivec3 min(0);
+            glm::ivec3 max(0);
             while (std::getline(file, line))
             {
                 // Ignore comments and empty lines
@@ -45,7 +47,7 @@ namespace Phi
                 }
                 if (line == ".z_axis_vertical") zAxisVertical = true;
 
-                // Actual material parsing
+                // Material parsing
                 if (phase == 1)
                 {
                     // Parse index
@@ -57,31 +59,37 @@ namespace Phi
                     loadedMaterialIDs.push_back(GetNode()->GetScene()->GetMaterialID(name));
                 }
                 
-                // Actual voxel data parsing
+                // Voxel data parsing
                 if (phase == 2)
                 {
                     // Parse the voxel data
-                    VertexVoxelHalfPrecision v;
+                    int x, y, z, material;
 
                     if (zAxisVertical)
                     {
-                        std::istringstream(line) >> v.x >> v.z >> v.y >> v.material;
+                        std::istringstream(line) >> x >> z >> y >> material;
                     }
                     else
                     {
-                        std::istringstream(line) >> v.x >> v.y >> v.z >> v.material;
+                        std::istringstream(line) >> x >> y >> z >> material;
                     }
 
-                    // Translate to the currently loaded ID and add to the vector
-                    v.material = loadedMaterialIDs[v.material];
-                    voxelData.push_back(v);
+                    // Translate to the currently loaded ID
+                    material = loadedMaterialIDs[material];
+                    
+                    // Update min and max coords
+                    min.x = x < min.x ? x : min.x;
+                    min.y = y < min.y ? y : min.y;
+                    min.z = z < min.z ? z : min.z;
+                    max.x = x > max.x ? x : max.x;
+                    max.y = y > max.y ? y : max.y;
+                    max.z = z > max.z ? z : max.z;
+
+                    // TODO: Add to voxel data
                 }
             }
 
-            // Update mesh data and return
-            if (!mesh) mesh = &GetNode()->AddComponent<VoxelMesh>();
-            mesh->Vertices() = voxelData;
-
+            UpdateMesh();
             return true;
         }
         else
@@ -92,8 +100,77 @@ namespace Phi
         }
     }
 
+    void VoxelObject::UpdateMesh()
+    {
+        // Create the mesh if it doesn't exist yet
+        if (!mesh)
+        {
+            mesh = GetNode()->Get<VoxelMesh>();
+            if (!mesh)
+            {
+                mesh = &GetNode()->AddComponent<VoxelMesh>();
+            }
+        }
+        auto& verts = mesh->Vertices();
+        int w = voxels.GetWidth();
+        int h = voxels.GetHeight();
+        int d = voxels.GetDepth();
+        
+        // Add only visible voxels to mesh
+        verts.clear();
+        for (int z = 0; z < d; ++z)
+        {
+            for (int y = 0; y < h; ++y)
+            {
+                for (int x = 0; x < w; ++x)
+                {
+                    const auto& v = voxels(x, y, z);
+                    if (v == 0) continue;
+
+                    // Get world-space position of this voxel
+                    glm::vec3 position = glm::vec3(x, y, z) + glm::vec3(offset);
+
+                    if (x == 0 || y == 0 || z == 0 || x == w - 1 || y == h - 1 || z == d - 1)
+                    {
+                        VertexVoxelHalfPrecision vert;
+                        vert.x = position.x;
+                        vert.y = position.y;
+                        vert.z = position.z;
+                        vert.material = v;
+                        verts.push_back(vert);
+
+                        continue;
+                    }
+                    
+                    if (voxels(x - 1, y, z) == 0 ||
+                        voxels(x + 1, y, z) == 0 ||
+                        voxels(x, y - 1, z) == 0 ||
+                        voxels(x, y + 1, z) == 0 ||
+                        voxels(x, y, z - 1) == 0 ||
+                        voxels(x, y, z + 1) == 0)
+                    {
+                        VertexVoxelHalfPrecision vert;
+                        vert.x = position.x;
+                        vert.y = position.y;
+                        vert.z = position.z;
+                        vert.material = v;
+                        verts.push_back(vert);
+                    }
+                }
+            }
+        }
+    }
+
+    void VoxelObject::DestroyMesh()
+    {
+        if (!mesh) return;
+        GetNode()->RemoveComponent<VoxelMesh>();
+        mesh = nullptr;
+    }
+
     void VoxelObject::Reset()
     {
+        voxels.Clear();
         if (mesh) mesh->Vertices().clear();
     }
 }
