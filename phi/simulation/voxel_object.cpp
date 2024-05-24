@@ -98,12 +98,12 @@ namespace Phi
             voxels.Resize(max.x - min.x, max.y - min.y, max.z - min.z);
             
             // Update all internal voxel data
-            offset.x = min.x < 0 ? -min.x : min.x;
-            offset.y = min.y < 0 ? -min.y : min.y;
-            offset.z = min.z < 0 ? -min.z : min.z;
+            offset.x = min.x > 0 ? -min.x : min.x;
+            offset.y = min.y > 0 ? -min.y : min.y;
+            offset.z = min.z > 0 ? -min.z : min.z;
             for (int i = 0; i < voxelData.size() - 4; i += 4)
             {
-                voxels(voxelData[i] + offset.x, voxelData[i + 1] + offset.y, voxelData[i + 2] + offset.z) = voxelData[i + 3];
+                voxels(voxelData[i] - offset.x, voxelData[i + 1] - offset.y, voxelData[i + 2] - offset.z) = voxelData[i + 3];
             }
 
             UpdateMesh();
@@ -147,7 +147,7 @@ namespace Phi
                     if (v == 0) continue;
 
                     // Get world-space position of this voxel
-                    glm::vec3 position = glm::vec3(x, y, z) + glm::vec3(offset);
+                    glm::ivec3 position = glm::ivec3(x, y, z) + offset;
 
                     if (x == 0 || y == 0 || z == 0 || x == w - 1 || y == h - 1 || z == d - 1)
                     {
@@ -157,7 +157,6 @@ namespace Phi
                         vert.z = position.z;
                         vert.material = v;
                         verts.push_back(vert);
-
                         continue;
                     }
                     
