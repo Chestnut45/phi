@@ -77,7 +77,7 @@ bugs / fixes
 --------------------------------
 
 high priority:
-- voxel object .vobj loading
+- 
 
 mid priority:
 - move glew dll in windows from system32 to executable folder?

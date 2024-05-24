@@ -62,7 +62,7 @@ namespace Phi
             // Calculate index into the internal array from 3D position
             inline uint32_t Index(int x, int y, int z) const
             {
-                return x + width * (y + depth * z);
+                return x + width * (y + height * z);
             }
     };
 
