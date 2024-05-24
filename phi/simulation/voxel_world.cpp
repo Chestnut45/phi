@@ -41,9 +41,6 @@ namespace Phi
 
     void VoxelWorld::Update(float delta)
     {
-        // DEBUG: Spin ya boi
-        // testObj->GetNode()->Get<Transform>()->RotateXYZDeg(0, delta * 45, 0);
-
         // Calculate the current chunk
         Camera* camera = scene.GetActiveCamera();
         glm::ivec3 currentChunk = camera->GetPosition() / (float)VoxelChunk::CHUNK_DIM;

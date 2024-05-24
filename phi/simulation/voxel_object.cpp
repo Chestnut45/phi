@@ -78,6 +78,7 @@ namespace Phi
                     material = loadedMaterialIDs[material];
                     
                     // Update min and max coords
+                    // TODO: Safety loading empty models?
                     min.x = x < min.x ? x : min.x;
                     min.y = y < min.y ? y : min.y;
                     min.z = z < min.z ? z : min.z;
@@ -85,8 +86,24 @@ namespace Phi
                     max.y = y > max.y ? y : max.y;
                     max.z = z > max.z ? z : max.z;
 
-                    // TODO: Add to voxel data
+                    // Add to voxel data
+                    voxelData.emplace_back(x);
+                    voxelData.emplace_back(y);
+                    voxelData.emplace_back(z);
+                    voxelData.emplace_back(material);
                 }
+            }
+
+            // Use min and max to determine next size of grid
+            voxels.Resize(max.x - min.x, max.y - min.y, max.z - min.z);
+            
+            // Update all internal voxel data
+            offset.x = min.x < 0 ? -min.x : min.x;
+            offset.y = min.y < 0 ? -min.y : min.y;
+            offset.z = min.z < 0 ? -min.z : min.z;
+            for (int i = 0; i < voxelData.size() - 4; i += 4)
+            {
+                voxels(voxelData[i] + offset.x, voxelData[i + 1] + offset.y, voxelData[i + 2] + offset.z) = voxelData[i + 3];
             }
 
             UpdateMesh();
@@ -111,6 +128,8 @@ namespace Phi
                 mesh = &GetNode()->AddComponent<VoxelMesh>();
             }
         }
+
+        // Grab references
         auto& verts = mesh->Vertices();
         int w = voxels.GetWidth();
         int h = voxels.GetHeight();
