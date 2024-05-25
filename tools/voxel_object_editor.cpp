@@ -63,23 +63,27 @@ void VoxelObjectEditor::Update(float delta)
     glm::vec2 tNearFar = ray.Slabs(aabb);
     if (tNearFar.x < tNearFar.y)
     {
-        // Calculate starting / ending positions for traversal
-        glm::vec3 start = ray.origin + ray.direction * tNearFar.x;
-        glm::ivec3 xyz = glm::floor(start);
-        glm::ivec3 oob = glm::floor(ray.origin + ray.direction * tNearFar.y);
+        // Add half voxel offset since voxels are rendered at their centers
+        ray.origin += glm::vec3(0.5f);
 
+        // Calculate starting position (with fractional component)
+        glm::vec3 start = ray.origin + ray.direction * tNearFar.x;
+        
         // Calculate step directions
         glm::ivec3 step = glm::ivec3(glm::sign(ray.direction.x), glm::sign(ray.direction.y), glm::sign(ray.direction.z));
+
+        // Calculate starting and ending voxel
+        glm::ivec3 xyz = glm::floor(start);
+        glm::ivec3 oob = glm::floor(ray.origin + ray.direction * tNearFar.y);
 
         // TODO: Avoid infinite loop
         if (step == glm::ivec3(0)) { /* Return to caller */ };
 
         // Calculate tMax and tDelta
-        glm::vec3 tMax = glm::vec3(
-            (ray.direction.x > 0 ? glm::ceil(start.x) - start.x : start.x - glm::floor(start.x)) / glm::abs(ray.direction.x),
-            (ray.direction.y > 0 ? glm::ceil(start.y) - start.y : start.y - glm::floor(start.y)) / glm::abs(ray.direction.y),
-            (ray.direction.z > 0 ? glm::ceil(start.z) - start.z : start.z - glm::floor(start.z)) / glm::abs(ray.direction.z)
-        );
+        glm::vec3 tMax;
+        tMax.x = (ray.direction.x > 0 ? glm::ceil(start.x) - start.x : start.x - glm::floor(start.x)) / glm::abs(ray.direction.x);
+        tMax.y = (ray.direction.y > 0 ? glm::ceil(start.y) - start.y : start.y - glm::floor(start.y)) / glm::abs(ray.direction.y);
+        tMax.z = (ray.direction.z > 0 ? glm::ceil(start.z) - start.z : start.z - glm::floor(start.z)) / glm::abs(ray.direction.z);
         glm::vec3 tDelta = glm::vec3(step) / ray.direction;
 
         // Grid traversal (Amanatides & Woo)
