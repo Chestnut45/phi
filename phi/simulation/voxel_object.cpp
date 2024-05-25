@@ -13,6 +13,96 @@ namespace Phi
     {
     }
 
+    VoxelObject::RaycastInfo VoxelObject::Raycast(const Ray& ray)
+    {
+        RaycastInfo result;
+
+        // Create a copy of the ray since we have to offset it
+        Ray r = ray;
+
+        // Add half voxel offset since voxels are rendered at their centers
+        r.origin += glm::vec3(0.5f);
+
+        // Determine intersection with object
+        glm::vec2 tNearFar = r.Slabs(aabb);
+        if (tNearFar.x < tNearFar.y)
+        {
+            // Calculate starting position (with fractional component)
+            glm::vec3 start = r.origin + r.direction * tNearFar.x;
+
+            // Calculate step directions
+            glm::ivec3 step = glm::ivec3(glm::sign(r.direction.x), glm::sign(r.direction.y), glm::sign(r.direction.z));
+
+            // Calculate starting and ending voxel
+            glm::ivec3 xyz = glm::floor(start);
+            glm::ivec3 oob = glm::floor(r.origin + r.direction * tNearFar.y);
+
+            // Avoid infinite loop
+            if (step == glm::ivec3(0))
+            {
+                Error("Bad raycast (0 direction!)");
+                return std::move(result);
+            }
+
+            // Calculate tMax and tDelta
+            glm::vec3 tMax;
+            tMax.x = (r.direction.x > 0 ? glm::ceil(start.x) - start.x : start.x - glm::floor(start.x)) / glm::abs(r.direction.x);
+            tMax.y = (r.direction.y > 0 ? glm::ceil(start.y) - start.y : start.y - glm::floor(start.y)) / glm::abs(r.direction.y);
+            tMax.z = (r.direction.z > 0 ? glm::ceil(start.z) - start.z : start.z - glm::floor(start.z)) / glm::abs(r.direction.z);
+            glm::vec3 tDelta = glm::vec3(step) / r.direction;
+
+            // Grid traversal (Amanatides & Woo)
+            do
+            {
+                // Add to visited list
+                result.visitedVoxels.push_back(xyz);
+
+                // Check for voxel at current position
+                int voxel = GetVoxel(xyz.x, xyz.y, xyz.z);
+                if (voxel != 0)
+                {
+                    result.firstHit = result.visitedVoxels.size() - 1;
+                    break;
+                }
+
+                // Step to next voxel
+                if (tMax.x < tMax.y)
+                {
+                    if (tMax.x < tMax.z)
+                    {
+                        xyz.x += step.x;
+                        if (xyz.x == oob.x) break;
+                        tMax.x += tDelta.x;
+                    }
+                    else
+                    {
+                        xyz.z += step.z;
+                        if (xyz.z == oob.z) break;
+                        tMax.z += tDelta.z;
+                    }
+                }
+                else
+                {
+                    if (tMax.y < tMax.z)
+                    {
+                        xyz.y += step.y;
+                        if (xyz.y == oob.y) break;
+                        tMax.y += tDelta.y;
+                    }
+                    else
+                    {
+                        xyz.z += step.z;
+                        if (xyz.z == oob.z) break;
+                        tMax.z += tDelta.z;
+                    }
+                }
+                
+            } while (true);
+        }
+
+        return std::move(result);
+    }
+
     bool VoxelObject::Load(const std::string& path)
     {
         // Open the file

@@ -116,12 +116,12 @@ namespace Phi
         projDirty = true;
     }
 
-    Ray Camera::CastRay(double x, double y)
+    Ray Camera::GenerateRay(double x, double y)
     {
         glm::vec4 ndc = glm::vec4((2.0f * x / width) - 1.0f, 1.0f - (2.0f * y / height), 0.0f, 1.0f);
         glm::vec4 eye = glm::inverse(proj) * ndc;
         glm::vec4 world = glm::inverse(view) * glm::vec4(eye.x, eye.y, eye.z, 0.0f);
-        return Ray(position, glm::normalize(world));
+        return std::move(Ray(position, glm::normalize(world)));
     }
 
     void Camera::UpdateView() const

@@ -25,6 +25,21 @@ namespace Phi
             VoxelObject(VoxelObject&& other) = delete;
             VoxelObject& operator=(VoxelObject&& other) = delete;
 
+            // Raycast queries
+
+            // Structure for returning ray cast query data
+            struct RaycastInfo
+            {
+                // Each voxel visited in order
+                std::vector<glm::ivec3> visitedVoxels;
+                
+                // The index of the first solid hit voxel, or -1 if no solid voxels were hit by the ray
+                int firstHit = -1;
+            };
+
+            // Casts a ray into the voxel object, returns voxel intersection information
+            RaycastInfo Raycast(const Ray& ray);
+
             // Data management
 
             // Loads voxel data from a .vobj file, replacing any existing data

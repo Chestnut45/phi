@@ -13,11 +13,14 @@ int main(int, char**)
 
 VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
 {
+    // Enable raw mouse if accepted
+    input.EnableRawMouseMotion();
+
     // Create the object
     object = &world.GetScene().CreateNode()->AddComponent<VoxelObject>();
 
     // DEBUG: Load default object
-    object->Load("data://models/teapot.vobj");
+    object->Load("data://models/dragon.vobj");
 
     // Create brush mesh
     brushMesh = &world.GetScene().CreateNode()->AddComponent<VoxelMesh>();
@@ -53,83 +56,18 @@ void VoxelObjectEditor::Update(float delta)
         world.GetScene().ShowDebug();
     }
 
-    // Grab camera and cast ray from mouse position
+    // Grab camera and mouse position
     Camera* cam = world.GetScene().GetActiveCamera();
     const glm::vec2& mousePos = input.GetMousePos();
-    Ray ray = cam->CastRay(mousePos.x, mousePos.y);
 
-    // Determine intersection with object
-    const AABB& aabb = object->GetAABB();
-    glm::vec2 tNearFar = ray.Slabs(aabb);
-    if (tNearFar.x < tNearFar.y)
+    // Cast ray towards voxel object
+    Ray ray = cam->GenerateRay(mousePos.x, mousePos.y);
+    VoxelObject::RaycastInfo result = object->Raycast(ray);
+    
+    // Update selected position if we hit a solid voxel
+    if (result.firstHit != -1)
     {
-        // Add half voxel offset since voxels are rendered at their centers
-        ray.origin += glm::vec3(0.5f);
-
-        // Calculate starting position (with fractional component)
-        glm::vec3 start = ray.origin + ray.direction * tNearFar.x;
-        
-        // Calculate step directions
-        glm::ivec3 step = glm::ivec3(glm::sign(ray.direction.x), glm::sign(ray.direction.y), glm::sign(ray.direction.z));
-
-        // Calculate starting and ending voxel
-        glm::ivec3 xyz = glm::floor(start);
-        glm::ivec3 oob = glm::floor(ray.origin + ray.direction * tNearFar.y);
-
-        // TODO: Avoid infinite loop
-        if (step == glm::ivec3(0)) { /* Return to caller */ };
-
-        // Calculate tMax and tDelta
-        glm::vec3 tMax;
-        tMax.x = (ray.direction.x > 0 ? glm::ceil(start.x) - start.x : start.x - glm::floor(start.x)) / glm::abs(ray.direction.x);
-        tMax.y = (ray.direction.y > 0 ? glm::ceil(start.y) - start.y : start.y - glm::floor(start.y)) / glm::abs(ray.direction.y);
-        tMax.z = (ray.direction.z > 0 ? glm::ceil(start.z) - start.z : start.z - glm::floor(start.z)) / glm::abs(ray.direction.z);
-        glm::vec3 tDelta = glm::vec3(step) / ray.direction;
-
-        // Grid traversal (Amanatides & Woo)
-        do
-        {
-            // Check for voxel at current position
-            int voxel = object->GetVoxel(xyz.x, xyz.y, xyz.z);
-            if (voxel != 0)
-            {
-                selectedPosition = xyz;
-                break;
-            }
-
-            // Step to next voxel
-            if (tMax.x < tMax.y)
-            {
-                if (tMax.x < tMax.z)
-                {
-                    xyz.x += step.x;
-                    if (xyz.x == oob.x) break;
-                    tMax.x += tDelta.x;
-                }
-                else
-                {
-                    xyz.z += step.z;
-                    if (xyz.z == oob.z) break;
-                    tMax.z += tDelta.z;
-                }
-            }
-            else
-            {
-                if (tMax.y < tMax.z)
-                {
-                    xyz.y += step.y;
-                    if (xyz.y == oob.y) break;
-                    tMax.y += tDelta.y;
-                }
-                else
-                {
-                    xyz.z += step.z;
-                    if (xyz.z == oob.z) break;
-                    tMax.z += tDelta.z;
-                }
-            }
-            
-        } while (true);
+        selectedPosition = result.visitedVoxels[result.firstHit];
     }
 
     // Update brush mesh

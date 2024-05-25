@@ -64,7 +64,7 @@ namespace Phi
             void SetResolution(int width, int height);
 
             // Returns a normalized ray from the camera's position to the screen coordinate given
-            Ray CastRay(double x, double y);
+            Ray GenerateRay(double x, double y);
 
             // Vector accessors
             inline const glm::vec3& GetDirection() const { return forward; };
