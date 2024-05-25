@@ -55,7 +55,8 @@ void VoxelObjectEditor::Update(float delta)
 
     // Grab camera and cast ray from mouse position
     Camera* cam = world.GetScene().GetActiveCamera();
-    Ray ray = cam->CastRay(input.GetMousePos().x, input.GetMousePos().y);
+    const glm::vec2& mousePos = input.GetMousePos();
+    Ray ray = cam->CastRay(mousePos.x, mousePos.y);
 
     // Determine intersection with object
     const AABB& aabb = object->GetAABB();
@@ -70,7 +71,7 @@ void VoxelObjectEditor::Update(float delta)
         // Calculate step directions
         glm::ivec3 step = glm::ivec3(glm::sign(ray.direction.x), glm::sign(ray.direction.y), glm::sign(ray.direction.z));
 
-        // Avoid infinite loop
+        // TODO: Avoid infinite loop
         if (step == glm::ivec3(0)) { /* Return to caller */ };
 
         // Calculate tMax and tDelta
