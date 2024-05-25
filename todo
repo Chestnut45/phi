@@ -3,6 +3,7 @@ design / features
 
 high priority:
 - debug shape rendering (ray, aabb, etc.)
+- move voxel object ray tracing to RTInfo VoxelObject::TraceFull(Ray ray) / TraceFirstHit / ...
 - voxel material (world loads visual data to pbrmaterial and simulation data to internal buffer)
 - voxel object editor
     - palette display
@@ -77,7 +78,7 @@ bugs / fixes
 --------------------------------
 
 high priority:
-- 
+- ray casting / voxel traversal bug
 
 mid priority:
 - move glew dll in windows from system32 to executable folder?

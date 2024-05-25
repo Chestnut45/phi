@@ -118,12 +118,10 @@ namespace Phi
 
     Ray Camera::CastRay(double x, double y)
     {
-        glm::vec3 ndc = glm::vec3((2.0f * x) / width - 1.0f, 1.0f - (2.0f * y) / height, 1.0f);
-        glm::vec4 clip = glm::vec4(ndc.x, ndc.y, -1.0f, 1.0f);
-        glm::vec4 eye = glm::inverse(proj) * clip;
-        eye = glm::vec4(eye.x, eye.y, -1.0f, 0.0f);
-        glm::vec3 world = glm::normalize(glm::vec3(glm::inverse(view) * eye));
-        return Ray(position, world);
+        glm::vec4 ndc = glm::vec4((2.0f * x / width) - 1.0f, 1.0f - (2.0f * y / height), 0.0f, 1.0f);
+        glm::vec4 eye = glm::inverse(proj) * ndc;
+        glm::vec4 world = glm::inverse(view) * glm::vec4(eye.x, eye.y, eye.z, 0.0f);
+        return Ray(position, glm::normalize(world));
     }
 
     void Camera::UpdateView() const

@@ -71,7 +71,7 @@ void VoxelObjectEditor::Update(float delta)
         glm::ivec3 step = glm::ivec3(glm::sign(ray.direction.x), glm::sign(ray.direction.y), glm::sign(ray.direction.z));
 
         // Calculate tMax and tDelta
-        glm::vec3 tMax = (start - ray.origin) / ray.direction + (tNearFar.y - tNearFar.x);
+        glm::vec3 tMax = (start - ray.origin) / ray.direction;
         glm::vec3 tDelta = glm::vec3(1.0f) / ray.direction;
 
         // Grid traversal (Amanatides & Woo)
