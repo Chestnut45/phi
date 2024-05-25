@@ -61,7 +61,7 @@ namespace Phi
         // Data / implementation
         private:
 
-            // Offset to apply to coordinates
+            // Offset to apply to obtain object-local space coordinates
             glm::ivec3 offset{-16};
 
             // Debug grid of voxel materials

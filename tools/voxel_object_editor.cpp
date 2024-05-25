@@ -70,26 +70,42 @@ void VoxelObjectEditor::Update(float delta)
         // Calculate step directions
         glm::ivec3 step = glm::ivec3(glm::sign(ray.direction.x), glm::sign(ray.direction.y), glm::sign(ray.direction.z));
 
+        // Avoid infinite loop
+        if (step == glm::ivec3(0)) { /* Return to caller */ };
+
         // Calculate tMax and tDelta
-        glm::vec3 tMax = (start - ray.origin) / ray.direction;
-        glm::vec3 tDelta = glm::vec3(1.0f) / ray.direction;
+        glm::vec3 tMax = glm::vec3(
+            (ray.direction.x > 0 ? glm::ceil(start.x) - start.x : start.x - glm::floor(start.x)) / glm::abs(ray.direction.x),
+            (ray.direction.y > 0 ? glm::ceil(start.y) - start.y : start.y - glm::floor(start.y)) / glm::abs(ray.direction.y),
+            (ray.direction.z > 0 ? glm::ceil(start.z) - start.z : start.z - glm::floor(start.z)) / glm::abs(ray.direction.z)
+        );
+        glm::vec3 tDelta = glm::vec3(step) / ray.direction;
 
         // Grid traversal (Amanatides & Woo)
-        while (true)
+        do
         {
+            // Check for voxel at current position
+            int voxel = object->GetVoxel(xyz.x, xyz.y, xyz.z);
+            if (voxel != 0)
+            {
+                selectedPosition = xyz;
+                break;
+            }
+
+            // Step to next voxel
             if (tMax.x < tMax.y)
             {
                 if (tMax.x < tMax.z)
                 {
                     xyz.x += step.x;
                     if (xyz.x == oob.x) break;
-                    tMax.x = tMax.x + tDelta.x;
+                    tMax.x += tDelta.x;
                 }
                 else
                 {
                     xyz.z += step.z;
                     if (xyz.z == oob.z) break;
-                    tMax.z = tMax.z + tDelta.z;
+                    tMax.z += tDelta.z;
                 }
             }
             else
@@ -98,24 +114,17 @@ void VoxelObjectEditor::Update(float delta)
                 {
                     xyz.y += step.y;
                     if (xyz.y == oob.y) break;
-                    tMax.y = tMax.y + tDelta.y;
+                    tMax.y += tDelta.y;
                 }
                 else
                 {
                     xyz.z += step.z;
                     if (xyz.z == oob.z) break;
-                    tMax.z = tMax.z + tDelta.z;
+                    tMax.z += tDelta.z;
                 }
             }
-
-            // Check for voxel at next position
-            int voxel = object->GetVoxel(xyz.x, xyz.y, xyz.z);
-            if (voxel != 0)
-            {
-                selectedPosition = xyz;
-                break;
-            }
-        }
+            
+        } while (true);
     }
 
     // Update brush mesh

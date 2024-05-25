@@ -16,9 +16,9 @@ namespace Phi
         public:
 
             // Creates a 3D grid with the following bounds:
-            // [0, width - 1]
-            // [0, height - 1]
-            // [0, depth - 1]
+            // [0, width)
+            // [0, height)
+            // [0, depth)
             Grid3D(int width, int height, int depth);
             ~Grid3D();
 
