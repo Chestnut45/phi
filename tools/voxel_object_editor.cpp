@@ -20,9 +20,9 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
     object = &world.GetScene().CreateNode()->AddComponent<VoxelObject>();
 
     // DEBUG: Load default object
-    object->Load("data://models/dragon.vobj");
+    object->Load("data://models/teapot.vobj");
 
-    // Create brush mesh
+    // Create meshes
     brushMesh = &world.GetScene().CreateNode()->AddComponent<VoxelMesh>();
 
     // DEBUG: Single voxel brush for now
@@ -59,11 +59,53 @@ void VoxelObjectEditor::Update(float delta)
         world.GetScene().ShowDebug();
     }
 
-    // Update the voxel mesh
-    if (input.IsLMBDown())
+    if (input.IsLMBJustDown())
     {
-        object->SetVoxel(selectedPosition.x, selectedPosition.y, selectedPosition.z, selectedMaterial);
+        // Initiate a brush stroke
+        currentEdits.insert(selectedPosition);
+    }
+    else if (input.IsLMBHeld())
+    {
+        // Add voxel if not already added to current stroke
+        if (currentEdits.count(selectedPosition) == 0)
+        {
+            currentEdits.insert(selectedPosition);
+            VoxelMesh::Vertex v;
+            v.x = selectedPosition.x;
+            v.y = selectedPosition.y;
+            v.z = selectedPosition.z;
+            v.material = selectedMaterial;
+            brushMesh->Vertices().push_back(v);
+        }
+    }
+    else if (input.IsLMBReleased())
+    {
+        // Flush brush stroke edits
+        for (const auto& pos : currentEdits)
+        {
+            object->SetVoxel(pos.x, pos.y, pos.z, selectedMaterial);
+        }
         object->UpdateMesh();
+        currentEdits.clear();
+        
+        // Reset the brush mesh
+        auto& verts = brushMesh->Vertices();
+        verts.clear();
+        VoxelMesh::Vertex v;
+        v.x = selectedPosition.x;
+        v.y = selectedPosition.y;
+        v.z = selectedPosition.z;
+        v.material = selectedMaterial;
+        verts.push_back(v);
+    }
+    else
+    {
+        // Update the brush mesh
+        auto& v = brushMesh->Vertices()[0];
+        v.x = selectedPosition.x;
+        v.y = selectedPosition.y;
+        v.z = selectedPosition.z;
+        v.material = selectedMaterial;
     }
 
     // Grab camera and mouse position
@@ -79,13 +121,6 @@ void VoxelObjectEditor::Update(float delta)
     {
         selectedPosition = result.visitedVoxels[result.firstHit > 0 ? result.firstHit - 1 : 0];
     }
-
-    // Update brush mesh
-    auto& brushVert = brushMesh->Vertices()[0];
-    brushVert.x = selectedPosition.x;
-    brushVert.y = selectedPosition.y;
-    brushVert.z = selectedPosition.z;
-    brushVert.material = selectedMaterial;
 
     // Update the voxel world
     world.Update(delta);

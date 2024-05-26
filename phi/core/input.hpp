@@ -33,6 +33,8 @@ namespace Phi
             // Key inputs
             bool IsKeyDown(int key) const;
             bool IsKeyJustDown(int key) const;
+            bool IsKeyHeld(int key) const;
+            bool IsKeyReleased(int key) const;
 
             // Mouse inputs
             bool IsLMBDown() const;
@@ -41,6 +43,12 @@ namespace Phi
             bool IsLMBJustDown() const;
             bool IsRMBJustDown() const;
             bool IsMMBJustDown() const;
+            bool IsLMBHeld() const;
+            bool IsRMBHeld() const;
+            bool IsMMBHeld() const;
+            bool IsLMBReleased() const;
+            bool IsRMBReleased() const;
+            bool IsMMBReleased() const;
             bool IsMouseCaptured() const { return mouseCaptured; };
             const glm::vec2& GetMousePos() const;
             const glm::vec2& GetMouseDelta() const;

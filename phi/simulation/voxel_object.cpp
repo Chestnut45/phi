@@ -54,15 +54,25 @@ namespace Phi
             // Grid traversal (Amanatides & Woo)
             do
             {
-                // Add to visited list
-                result.visitedVoxels.push_back(xyz);
+                // Calculate grid coordinate from object local
+                glm::ivec3 gridXYZ = xyz - offset;
 
-                // Check for voxel at current position
-                int voxel = GetVoxel(xyz.x, xyz.y, xyz.z);
-                if (voxel != 0)
+                // Check if coordinate is in bounds of the grid
+                if (gridXYZ.x >= 0 && gridXYZ.y >= 0 && gridXYZ.z >= 0 &&
+                    gridXYZ.x < voxels.GetWidth() &&
+                    gridXYZ.y < voxels.GetHeight() &&
+                    gridXYZ.z < voxels.GetDepth())
                 {
-                    result.firstHit = result.visitedVoxels.size() - 1;
-                    break;
+                    // Add to visited list
+                    result.visitedVoxels.push_back(xyz);
+
+                    // Check for voxel at current position
+                    int voxel = voxels(gridXYZ.x, gridXYZ.y, gridXYZ.z);
+                    if (voxel != 0)
+                    {
+                        result.firstHit = result.visitedVoxels.size() - 1;
+                        break;
+                    }
                 }
 
                 // Step to next voxel

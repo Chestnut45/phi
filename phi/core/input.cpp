@@ -19,23 +19,23 @@ namespace Phi
     {
     }
 
-    bool Input::IsKeyDown(int key) const
-    {
-        return keys[key - GLFW_KEY_SPACE];
-    }
-
-    bool Input::IsKeyJustDown(int key) const
-    {
-        return (keys[key - GLFW_KEY_SPACE] && !prevKeys[key - GLFW_KEY_SPACE]);
-    }
+    bool Input::IsKeyDown(int key) const { return keys[key - GLFW_KEY_SPACE]; }
+    bool Input::IsKeyJustDown(int key) const { return (keys[key - GLFW_KEY_SPACE] && !prevKeys[key - GLFW_KEY_SPACE]); }
+    bool Input::IsKeyHeld(int key) const { return (keys[key - GLFW_KEY_SPACE] && prevKeys[key - GLFW_KEY_SPACE]); }
+    bool Input::IsKeyReleased(int key) const { return (!keys[key - GLFW_KEY_SPACE] && prevKeys[key - GLFW_KEY_SPACE]); }
 
     bool Input::IsLMBDown() const { return lmbDown; };
     bool Input::IsRMBDown() const { return rmbDown; };
     bool Input::IsMMBDown() const { return mmbDown; };
-
     bool Input::IsLMBJustDown() const { return lmbDown && !prevLmbDown; };
     bool Input::IsRMBJustDown() const { return rmbDown && !prevRmbDown; };
     bool Input::IsMMBJustDown() const { return mmbDown && !prevMmbDown; };
+    bool Input::IsLMBHeld() const { return lmbDown && prevLmbDown; };
+    bool Input::IsRMBHeld() const { return rmbDown && prevRmbDown; };
+    bool Input::IsMMBHeld() const { return mmbDown && prevMmbDown; };
+    bool Input::IsLMBReleased() const { return !lmbDown && prevLmbDown; };
+    bool Input::IsRMBReleased() const { return !rmbDown && prevRmbDown; };
+    bool Input::IsMMBReleased() const { return !mmbDown && prevMmbDown; };
 
     const glm::vec2& Input::GetMousePos() const
     {
