@@ -58,7 +58,9 @@ namespace Phi
                 glm::ivec3 gridXYZ = xyz - offset;
 
                 // Check if coordinate is in bounds of the grid
-                if (gridXYZ.x >= 0 && gridXYZ.y >= 0 && gridXYZ.z >= 0 &&
+                if (gridXYZ.x >= 0 &&
+                    gridXYZ.y >= 0 &&
+                    gridXYZ.z >= 0 &&
                     gridXYZ.x < voxels.GetWidth() &&
                     gridXYZ.y < voxels.GetHeight() &&
                     gridXYZ.z < voxels.GetDepth())
