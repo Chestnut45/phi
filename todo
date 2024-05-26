@@ -2,11 +2,15 @@ design / features
 --------------------------------
 
 high priority:
+- move camera UBO to camera class
 - debug shape rendering (ray, aabb, obb)
 - voxel material (world loads visual data to pbrmaterial and simulation data to internal buffer)
 - voxel object editor
     - palette display
-    - raycasting / dda to get mouse voxel pos
+    - erase
+    - replace
+    - resize canvas
+    - select tool / move tool
     - test models (player, items, organisms, etc.)
 - full noise editor (fractal, domain warp, etc.)
 - voxel chunk debug rendering

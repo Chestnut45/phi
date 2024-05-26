@@ -122,7 +122,7 @@ namespace Phi
 
             // Control variables
             float walkSpeed = 4.0f;
-            float runMultiplier = 4.0f;
+            float runMultiplier = 16.0f;
             float lookSensitivity = 0.045f;
 
             // Input handling

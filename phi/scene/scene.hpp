@@ -278,7 +278,8 @@ namespace Phi
 
             // Settings
             bool ssao = true;
-            bool depthPrePass = true;
+            bool debugDrawing = true;
+            bool depthPrePass = false;
 
             // The ambient light level in the scene
             glm::vec3 ambientLight = glm::vec3(0.0f);

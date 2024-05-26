@@ -25,4 +25,14 @@ namespace Phi
             Error("OpenGL: ", error, " @ ", label);
         }
     }
+
+    Debug::Debug()
+    {
+    }
+
+    Debug::~Debug()
+    {
+    }
+
+    
 }
