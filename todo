@@ -3,6 +3,7 @@ design / features
 
 high priority:
 - move camera UBO to camera class
+- orthographic camera projections
 - debug shape rendering (ray, aabb, obb)
 - voxel material (world loads visual data to pbrmaterial and simulation data to internal buffer)
 - voxel object editor
@@ -12,6 +13,7 @@ high priority:
     - resize canvas
     - select tool / move tool
     - test models (player, items, organisms, etc.)
+    - toggleable arbitrary planes to test against
 - full noise editor (fractal, domain warp, etc.)
 - voxel chunk debug rendering
 - grid3d empty value / iteration acceleration?
