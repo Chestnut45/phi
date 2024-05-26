@@ -38,6 +38,9 @@ namespace Phi
             bool IsLMBDown() const;
             bool IsRMBDown() const;
             bool IsMMBDown() const;
+            bool IsLMBJustDown() const;
+            bool IsRMBJustDown() const;
+            bool IsMMBJustDown() const;
             bool IsMouseCaptured() const { return mouseCaptured; };
             const glm::vec2& GetMousePos() const;
             const glm::vec2& GetMouseDelta() const;
@@ -69,6 +72,8 @@ namespace Phi
 
             // Mouse state keeping
             static bool mouseCaptured;
+            static inline bool lmbDown = false, rmbDown = false, mmbDown = false;
+            static inline bool prevLmbDown = false, prevRmbDown = false, prevMmbDown = false;
             static glm::vec2 mousePos;
             static glm::vec2 prevMousePos;
             static glm::vec2 mouseDelta;

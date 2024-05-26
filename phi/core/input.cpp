@@ -29,9 +29,13 @@ namespace Phi
         return (keys[key - GLFW_KEY_SPACE] && !prevKeys[key - GLFW_KEY_SPACE]);
     }
 
-    bool Input::IsLMBDown() const { return glfwGetMouseButton(pWindow, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS; };
-    bool Input::IsRMBDown() const { return glfwGetMouseButton(pWindow, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS; };
-    bool Input::IsMMBDown() const { return glfwGetMouseButton(pWindow, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS; };
+    bool Input::IsLMBDown() const { return lmbDown; };
+    bool Input::IsRMBDown() const { return rmbDown; };
+    bool Input::IsMMBDown() const { return mmbDown; };
+
+    bool Input::IsLMBJustDown() const { return lmbDown && !prevLmbDown; };
+    bool Input::IsRMBJustDown() const { return rmbDown && !prevRmbDown; };
+    bool Input::IsMMBJustDown() const { return mmbDown && !prevMmbDown; };
 
     const glm::vec2& Input::GetMousePos() const
     {
@@ -128,6 +132,14 @@ namespace Phi
         {
             prevKeys[i] = keys[i];
         }
+
+        // Update mouse buttons
+        prevLmbDown = lmbDown;
+        prevRmbDown = rmbDown;
+        prevMmbDown = mmbDown;
+        lmbDown = glfwGetMouseButton(pWindow, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+        rmbDown = glfwGetMouseButton(pWindow, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS;
+        mmbDown = glfwGetMouseButton(pWindow, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS;
 
         // Update mouse positions
         prevMousePos = mousePos;

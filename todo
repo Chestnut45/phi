@@ -77,7 +77,7 @@ bugs / fixes
 --------------------------------
 
 high priority:
-- ray casting voxel object edge cases (negative handling needs to be fixed)
+- ray casting voxel object rounding issue (ensure actually within valid coordinates before sampling grid)
 
 mid priority:
 - move glew dll in windows from system32 to executable folder?

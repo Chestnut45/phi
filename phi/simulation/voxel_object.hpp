@@ -72,6 +72,9 @@ namespace Phi
             
             // Gets the voxel at the object local coordinates provided
             int GetVoxel(int x, int y, int z) { return voxels(x - offset.x, y - offset.y, z - offset.z); }
+
+            // Sets the voxel at the object local coordinates provided
+            void SetVoxel(int x, int y, int z, int material) { voxels(x - offset.x, y - offset.y, z - offset.z) = material; }
         
         // Data / implementation
         private:

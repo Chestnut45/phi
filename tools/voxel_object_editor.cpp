@@ -27,6 +27,9 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
 
     // DEBUG: Single voxel brush for now
     brushMesh->Vertices().push_back(VoxelMesh::Vertex());
+
+    // Default material
+    selectedMaterial = world.GetScene().GetMaterialID("gold");
 }
 
 VoxelObjectEditor::~VoxelObjectEditor()
@@ -56,6 +59,13 @@ void VoxelObjectEditor::Update(float delta)
         world.GetScene().ShowDebug();
     }
 
+    // Update the voxel mesh
+    if (input.IsLMBDown())
+    {
+        object->SetVoxel(selectedPosition.x, selectedPosition.y, selectedPosition.z, selectedMaterial);
+        object->UpdateMesh();
+    }
+
     // Grab camera and mouse position
     Camera* cam = world.GetScene().GetActiveCamera();
     const glm::vec2& mousePos = input.GetMousePos();
@@ -67,7 +77,7 @@ void VoxelObjectEditor::Update(float delta)
     // Update selected position if we hit a solid voxel
     if (result.firstHit != -1)
     {
-        selectedPosition = result.visitedVoxels[result.firstHit];
+        selectedPosition = result.visitedVoxels[result.firstHit > 0 ? result.firstHit - 1 : 0];
     }
 
     // Update brush mesh
