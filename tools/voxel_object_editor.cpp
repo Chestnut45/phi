@@ -59,6 +59,20 @@ void VoxelObjectEditor::Update(float delta)
         world.GetScene().ShowDebug();
     }
 
+    // Grab camera and mouse position
+    Camera* cam = world.GetScene().GetActiveCamera();
+    const glm::vec2& mousePos = input.GetMousePos();
+
+    // Cast ray towards voxel object
+    Ray ray = cam->GenerateRay(mousePos.x, mousePos.y);
+    VoxelObject::RaycastInfo result = object->Raycast(ray);
+    
+    // Update selected position if we hit a solid voxel
+    if (result.firstHit != -1)
+    {
+        selectedPosition = result.visitedVoxels[result.firstHit > 0 ? result.firstHit - 1 : 0];
+    }
+
     if (input.IsLMBJustDown())
     {
         // Initiate a brush stroke
@@ -106,20 +120,6 @@ void VoxelObjectEditor::Update(float delta)
         v.y = selectedPosition.y;
         v.z = selectedPosition.z;
         v.material = selectedMaterial;
-    }
-
-    // Grab camera and mouse position
-    Camera* cam = world.GetScene().GetActiveCamera();
-    const glm::vec2& mousePos = input.GetMousePos();
-
-    // Cast ray towards voxel object
-    Ray ray = cam->GenerateRay(mousePos.x, mousePos.y);
-    VoxelObject::RaycastInfo result = object->Raycast(ray);
-    
-    // Update selected position if we hit a solid voxel
-    if (result.firstHit != -1)
-    {
-        selectedPosition = result.visitedVoxels[result.firstHit > 0 ? result.firstHit - 1 : 0];
     }
 
     // Update the voxel world
