@@ -12,6 +12,7 @@
 #include <phi/core/input.hpp>
 #include <phi/core/math/shapes.hpp>
 #include <phi/scene/components/base_component.hpp>
+#include <phi/graphics/gpu_buffer.hpp>
 
 namespace Phi
 {
@@ -24,16 +25,7 @@ namespace Phi
         // Public interface
         public:
 
-            // Different control modes for the camera
-            enum class Mode : int
-            {
-                FirstPerson,
-                Target,
-                Cutscene
-            };
-
-            Camera();
-            Camera(int width, int height);
+            Camera(int width = 1280, int height = 720);
             ~Camera();
 
             // Delete copy constructor/assignment
@@ -44,8 +36,8 @@ namespace Phi
             Camera(Camera&& other) = delete;
             void operator=(Camera&& other) = delete;
 
-            // Control mode manipulation
-            inline void SetMode(Mode mode) { this->mode = mode; viewDirty = true; };
+            // Updates the camera component
+            void Update(float delta);
 
             // Movement
             void SetPosition(const glm::vec3& position);
@@ -55,9 +47,6 @@ namespace Phi
             void LookAt(const glm::vec3& position);
             void Rotate(float yawOffset, float pitchOffset);
             void Zoom(float amount);
-
-            // Processes input according to the current control mode
-            void Update(float delta);
             
             // Updates the camera's resolution
             // NOTE: Automatically called by scene on active camera when Scene::SetViewport() is used
@@ -66,29 +55,28 @@ namespace Phi
             // Returns a normalized ray from the camera's position to the screen coordinate given
             Ray GenerateRay(double x, double y);
 
-            // Vector accessors
+            // Accessors
             inline const glm::vec3& GetDirection() const { return forward; };
             inline const glm::vec3& GetPosition() const { return position; };
             inline const glm::vec3& GetRight() const { return right; };
-
-            // Matrix accessors (recalculate if data has been changed)
             inline const glm::mat4& GetView() const { if (viewDirty) UpdateView(); return view; };
             inline const glm::mat4& GetProj() const { if (projDirty) UpdateProjection(); return proj; };
-
-            // Other accessors
             inline int GetWidth() const { return width; };
             inline int GetHeight() const { return height; };
-            inline Mode GetMode() const { return mode; };
             inline float GetFov() const { return fov; };
+
+            // Returns the viewing frustum in world space
+            // Useful for culling
             Frustum GetViewFrustum() const;
+
+            // Uniform buffer access
+            void UpdateUBO() const;
+            GPUBuffer* GetUBO() const { return ubo; }
 
         private:
 
             // Pointer stability guarantee for components
             static constexpr auto in_place_delete = true;
-
-            // Default camera control mode
-            Mode mode = Mode::FirstPerson;
 
             // Camera properties
             glm::vec3 position;
@@ -106,27 +94,37 @@ namespace Phi
             mutable bool viewDirty = false;
             mutable bool projDirty = false;
 
-            // View properties (Sensible defaults)
-            int width = 1280;
-            int height = 720;
+            // Viewport dimensions
+            int width;
+            int height;
+
+            // Projection mode
+            bool orthographic = false;
+
+            // Perspective projection data
             float aspect = 1.0f;
             float near = 0.1f;
             float far = 1000.0f;
             float fov = 60.0f;
 
+            // Orthographic projection data
+            float orthoWidth = width;
+            float orthoHeight = height;
+
             // View angles
             float yaw = -90.0f;
             float pitch = 0.0f;
 
-            // TODO: Move controls out of this class
-
-            // Control variables
-            float walkSpeed = 4.0f;
-            float runMultiplier = 16.0f;
-            float lookSensitivity = 0.045f;
-
             // Input handling
             Input input;
+
+            // Control variables
+            float walkSpeed = 8.0f;
+            float runMultiplier = 8.0f;
+            float lookSensitivity = 0.045f;
+
+            // Uniform buffer used for rendering
+            GPUBuffer* ubo = nullptr;
             
             // Internal helper functions
             void UpdateView() const;

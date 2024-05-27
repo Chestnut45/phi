@@ -2,8 +2,8 @@ design / features
 --------------------------------
 
 high priority:
-- move camera UBO to camera class
-- orthographic camera projections
+- orthographic camera projection
+- improved camera controls
 - debug shape rendering (ray, aabb, obb)
 - voxel material (world loads visual data to pbrmaterial and simulation data to internal buffer)
 - voxel object editor
@@ -25,6 +25,7 @@ high priority:
     - structure generation / model stamping
 
 mid priority:
+- gamepad input
 - fluid simulation start
 - 3rd person controller
 - animated voxel models

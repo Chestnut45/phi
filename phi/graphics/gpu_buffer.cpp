@@ -271,9 +271,14 @@ namespace Phi
         glBindBufferBase(target, index, id);
     }
 
-    void GPUBuffer::BindRange(GLenum target, GLuint index, GLintptr offset, GLsizeiptr size)
+    void GPUBuffer::BindRange(GLenum target, GLuint index, GLintptr offset, GLsizeiptr size) const
     {
         glBindBufferRange(target, index, id, offset, size);
+    }
+
+    void GPUBuffer::BindSectionRange(GLenum target, GLuint index) const
+    {
+        glBindBufferRange(target, index, id, size * currentSection, size);
     }
 
     void GPUBuffer::Lock()

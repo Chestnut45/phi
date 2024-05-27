@@ -71,7 +71,8 @@ namespace Phi
             // Binding methods
             void Bind(GLenum target) const;
             void BindBase(GLenum target, GLuint index) const;
-            void BindRange(GLenum target, GLuint index, GLintptr offset, GLsizeiptr size);
+            void BindRange(GLenum target, GLuint index, GLintptr offset, GLsizeiptr size) const;
+            void BindSectionRange(GLenum target, GLuint index) const;
 
             // Synchronization
             void Lock(); // Insert a fence sync for all rendering commands

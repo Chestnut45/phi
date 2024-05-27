@@ -7,24 +7,33 @@
 namespace Phi
 {
 
-    Camera::Camera() : position(0, 4, 16), forward(0, 0, -1), up(0, 1, 0), right(1, 0, 0)
+    Camera::Camera(int width, int height) : position(0), forward(0, 0, -1), up(0, 1, 0), right(1, 0, 0)
     {
         // Ensure our matrices are in a valid state
-        UpdateView();
         SetResolution(width, height);
-    }
+        UpdateView();
 
-    Camera::Camera(int width, int height) : position(0, 4, 16), forward(0, 0, -1), up(0, 1, 0), right(1, 0, 0)
-    {
-        // Ensure our matrices are in a valid state
-        UpdateView();
-        SetResolution(width, height);
+        // Create uniform buffer
+
+        // Query UBO alignment
+        GLint UBO_ALIGNMENT;
+        glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &UBO_ALIGNMENT);
+
+        // Align wanted buffer size to multiple of alignment
+        int cameraBufferSize = sizeof(glm::mat4) * 6 + sizeof(glm::vec4) * 3;
+        int alignedSize = ( UBO_ALIGNMENT == 0 ) ? cameraBufferSize : ceil( (float)cameraBufferSize / UBO_ALIGNMENT ) * UBO_ALIGNMENT;
+
+        // Create the buffer
+        ubo = new GPUBuffer(BufferType::DynamicDoubleBuffer, alignedSize);
     }
 
     Camera::~Camera()
     {
         // Ensure we are removed from any active scene on destruction
         if (activeScene) activeScene->RemoveCamera();
+
+        // Delete uniform buffer
+        delete ubo;
     }
 
     void Camera::SetPosition(const glm::vec3& position)
@@ -63,44 +72,24 @@ namespace Phi
 
     void Camera::Update(float delta)
     {
-        float movementSpeed;
-        glm::vec2 mouseOffset;
-        switch (mode)
+        // DEBUG: View manipulation
+        if (input.IsMouseCaptured())
         {
-            case Mode::FirstPerson:
-
-                // DEBUG: Don't bother updating unless mouse is captured
-                if (!input.IsMouseCaptured()) break;
-
-                // Keyboard movement
-                movementSpeed = walkSpeed * delta * (input.IsKeyDown(GLFW_KEY_LEFT_SHIFT) ? runMultiplier : 1.0f);
-                if (input.IsKeyDown(GLFW_KEY_W)) Translate(forward * movementSpeed);
-                if (input.IsKeyDown(GLFW_KEY_S)) Translate(-forward * movementSpeed);
-                if (input.IsKeyDown(GLFW_KEY_A)) Translate(-right * movementSpeed);
-                if (input.IsKeyDown(GLFW_KEY_D)) Translate(right * movementSpeed);
-                
-                // Calculate mouse movement
-                mouseOffset = input.GetMouseDelta() * lookSensitivity;
-
-                // Rotate the camera according to mouse movement
-                Rotate(mouseOffset.x, -mouseOffset.y);
-
-                // Zoom the camera according to mouse scroll
-                Zoom(input.GetMouseScroll().y);
-
-                break;
+            // Keyboard movement
+            float movementSpeed = walkSpeed * delta * (input.IsKeyDown(GLFW_KEY_LEFT_SHIFT) ? runMultiplier : 1.0f);
+            if (input.IsKeyDown(GLFW_KEY_W)) Translate(forward * movementSpeed);
+            if (input.IsKeyDown(GLFW_KEY_S)) Translate(-forward * movementSpeed);
+            if (input.IsKeyDown(GLFW_KEY_A)) Translate(-right * movementSpeed);
+            if (input.IsKeyDown(GLFW_KEY_D)) Translate(right * movementSpeed);
             
-            case Mode::Target:
+            // Calculate mouse movement
+            glm::vec2 mouseOffset = input.GetMouseDelta() * lookSensitivity;
 
-                // Process user input
+            // Rotate the camera according to mouse movement
+            Rotate(mouseOffset.x, -mouseOffset.y);
 
-                break;
-            
-            case Mode::Cutscene:
-
-                // Advance cutscene / scripted events
-
-                break;
+            // Zoom the camera according to mouse scroll
+            Zoom(input.GetMouseScroll().y);
         }
 
         // DEBUG: Sync with any existing transform
@@ -118,36 +107,53 @@ namespace Phi
 
     Ray Camera::GenerateRay(double x, double y)
     {
-        glm::vec4 ndc = glm::vec4((2.0f * x / width) - 1.0f, 1.0f - (2.0f * y / height), 0.0f, 1.0f);
-        glm::vec4 eye = glm::inverse(proj) * ndc;
-        glm::vec4 world = glm::inverse(view) * glm::vec4(eye.x, eye.y, eye.z, 0.0f);
-        return std::move(Ray(position, glm::normalize(world)));
+        if (orthographic)
+        {
+            float xOfs = (2.0f * x / (float)width - 1.0f) * (0.5f * (float)orthoWidth);
+            float yOfs = 1.0f - (2.0f * y / (float)height) * (0.5f * (float)orthoHeight);
+            glm::vec3 localUp = glm::normalize(glm::cross(right, forward));
+            return std::move(Ray(position + right * xOfs + localUp * yOfs, forward));
+        }
+        else
+        {
+            glm::vec4 ndc = glm::vec4((2.0f * x / width) - 1.0f, 1.0f - (2.0f * y / height), 0.0f, 1.0f);
+            glm::vec4 eye = glm::inverse(proj) * ndc;
+            glm::vec4 world = glm::inverse(view) * glm::vec4(eye.x, eye.y, eye.z, 0.0f);
+            return std::move(Ray(position, glm::normalize(world)));
+        }
     }
 
     void Camera::UpdateView() const
     {
-        if (mode == Mode::FirstPerson)
-        {
-            // Calculate direction from yaw and pitch
-            glm::vec3 dir;
-            float cosPitch = cos(glm::radians(pitch));
-            dir.x = cos(glm::radians(yaw)) * cosPitch;
-            dir.y = sin(glm::radians(pitch));
-            dir.z = sin(glm::radians(yaw)) * cosPitch;
+        // Calculate direction from yaw and pitch
+        glm::vec3 dir;
+        float cosPitch = cos(glm::radians(pitch));
+        dir.x = cos(glm::radians(yaw)) * cosPitch;
+        dir.y = sin(glm::radians(pitch));
+        dir.z = sin(glm::radians(yaw)) * cosPitch;
 
-            // Calculate normalized forward and right axes
-            forward = glm::normalize(dir);
-            right = glm::normalize(glm::cross(forward, up));
-        }
+        // Calculate normalized forward and right axes
+        forward = glm::normalize(dir);
+        right = glm::normalize(glm::cross(forward, up));
 
-        // Update view matrix
+        // Update view
         view = glm::lookAt(position, position + forward, up);
         viewDirty = false;
     }
 
     void Camera::UpdateProjection() const
     {
-        proj = glm::perspective(glm::radians(fov), aspect, near, far);
+        if (orthographic)
+        {
+            float hx = 0.5f * 256;
+            float hy = 0.5f * 256;
+            proj = glm::ortho(-hx, hx, -hy, hy, near, far);
+        }
+        else
+        {
+            proj = glm::perspective(glm::radians(fov), aspect, near, far);
+        }
+        
         projDirty = false;
     }
 
@@ -177,5 +183,28 @@ namespace Phi
         viewFrustum.right.Normalize();
 
         return std::move(viewFrustum);
+    }
+
+    void Camera::UpdateUBO() const
+    {
+        // Grab camera values
+        const glm::mat4& view = GetView();
+        const glm::mat4& proj = GetProj();
+        glm::mat4 viewProj = proj * view;
+
+        // Ensure we don't write when commands are reading
+        ubo->Sync();
+
+        // Write camera matrix data to UBO
+        // Doing this once here on the CPU is a much easier price to pay than per-vertex
+        ubo->Write(viewProj);
+        ubo->Write(glm::inverse(viewProj));
+        ubo->Write(view);
+        ubo->Write(glm::inverse(view));
+        ubo->Write(proj);
+        ubo->Write(glm::inverse(proj));
+        ubo->Write(glm::vec4(position, 1.0f));
+        ubo->Write(glm::vec4(0, 0, width * 0.5f, height * 0.5f));
+        ubo->Write(glm::vec4(near, far, 0.0f, 0.0f));
     }
 }

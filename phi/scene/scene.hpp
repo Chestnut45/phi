@@ -215,9 +215,6 @@ namespace Phi
             int renderWidth = 1280;
             int renderHeight = 720;
 
-            // Camera UBO
-            GPUBuffer* cameraBuffer = nullptr;
-
             // Main render target
             Framebuffer* renderTarget = nullptr;
             Texture2D* rTexColor = nullptr;
@@ -285,7 +282,6 @@ namespace Phi
             glm::vec3 ambientLight = glm::vec3(0.0f);
 
             // Helper functions
-            void UpdateCameraBuffer();
             void RegenerateFramebuffers();
         
         // Friends

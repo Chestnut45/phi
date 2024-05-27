@@ -13,7 +13,7 @@ namespace Phi
     {
     }
 
-    VoxelObject::RaycastInfo VoxelObject::Raycast(const Ray& ray)
+    VoxelObject::RaycastInfo VoxelObject::Raycast(const Ray& ray, int maxSteps)
     {
         RaycastInfo result;
 
@@ -52,8 +52,11 @@ namespace Phi
             glm::vec3 tDelta = glm::vec3(step) / r.direction;
 
             // Grid traversal (Amanatides & Woo)
+            int steps = 0;
             do
             {
+                steps++;
+
                 // Calculate grid coordinate from object local
                 glm::ivec3 gridXYZ = xyz - offset;
 
@@ -109,7 +112,7 @@ namespace Phi
                     }
                 }
                 
-            } while (true);
+            } while (steps <= maxSteps);
         }
 
         return std::move(result);

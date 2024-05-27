@@ -38,7 +38,7 @@ namespace Phi
             };
 
             // Casts a ray into the voxel object, returns voxel intersection information
-            RaycastInfo Raycast(const Ray& ray);
+            RaycastInfo Raycast(const Ray& ray, int maxSteps = 512);
 
             // Data management
 

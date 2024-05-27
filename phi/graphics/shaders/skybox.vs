@@ -14,5 +14,5 @@ out vec2 texCoords;
 void main()
 {
     gl_Position = vec4(verts[gl_VertexID], 1.0, 1.0);
-    texCoords = gl_Position.xy * 0.5 + 0.5;
+    texCoords = gl_Position.xy;
 }

@@ -28,8 +28,7 @@ void main()
 {
     // Calculate unnormalized world-space direction to fragment
     // NOTE: invView is cast to mat3 to remove translation
-    vec4 direction = invProj * vec4(texCoords * 2.0 - 1.0, 1.0, 1.0);
-    direction.xyz /= direction.w;
+    vec4 direction = invProj * vec4(texCoords, -1.0, 1.0);
     direction.xyz = mat3(invView) * direction.xyz;
 
     // Sample both skyboxes

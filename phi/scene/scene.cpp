@@ -42,14 +42,9 @@ namespace Phi
         // Query UBO alignment
         glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &UBO_ALIGNMENT);
 
-        // Create camera buffer
-        int cameraBufferSize = sizeof(glm::mat4) * 6 + sizeof(glm::vec4) * 3;
-        int alignedSize = ( UBO_ALIGNMENT == 0 ) ? cameraBufferSize : ceil( (float)cameraBufferSize / UBO_ALIGNMENT ) * UBO_ALIGNMENT;
-        cameraBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, alignedSize);
-
         // Create global light buffer
         int gbSize = (MAX_USER_DIRECTIONAL_LIGHTS + 2) * (sizeof(glm::vec4) * 2);
-        alignedSize = ( UBO_ALIGNMENT == 0 ) ? gbSize : ceil( (float)gbSize / UBO_ALIGNMENT ) * UBO_ALIGNMENT;
+        int alignedSize = ( UBO_ALIGNMENT == 0 ) ? gbSize : ceil( (float)gbSize / UBO_ALIGNMENT ) * UBO_ALIGNMENT;
         globalLightBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, alignedSize);
 
         // Empty vertex attributes object for attributeless rendering
@@ -311,8 +306,8 @@ namespace Phi
         glDisable(GL_BLEND);
 
         // Update the camera buffer right before rendering
-        UpdateCameraBuffer();
-        cameraBuffer->BindRange(GL_UNIFORM_BUFFER, (int)UniformBindingIndex::Camera, cameraBuffer->GetCurrentSection() * cameraBuffer->GetSize(), cameraBuffer->GetSize());
+        activeCamera->UpdateUBO();
+        activeCamera->GetUBO()->BindSectionRange(GL_UNIFORM_BUFFER, (int)UniformBindingIndex::Camera);
 
         // Pass flags
         bool pbrPass = basicMeshRenderQueue.size() > 0 || voxelMeshRenderQueue.size() > 0;
@@ -529,8 +524,8 @@ namespace Phi
         // renderTarget->Unbind();
 
         // Lock the camera buffer and move to the next section
-        cameraBuffer->Lock();
-        cameraBuffer->SwapSections();
+        activeCamera->GetUBO()->Lock();
+        activeCamera->GetUBO()->SwapSections();
 
         // Clear render queues
         basicMeshRenderQueue.clear();
@@ -844,29 +839,6 @@ namespace Phi
 
         // Set draw buffer
         glDrawBuffers(1, drawBuffers);
-    }
-
-    void Scene::UpdateCameraBuffer()
-    {
-        // Grab camera values
-        const glm::mat4& view = activeCamera->GetView();
-        const glm::mat4& proj = activeCamera->GetProj();
-        glm::mat4 viewProj = proj * view;
-
-        // Ensure we don't write when commands are reading
-        cameraBuffer->Sync();
-
-        // Write camera matrix data to UBO
-        // Doing this once here on the CPU is a much easier price to pay than per-vertex
-        cameraBuffer->Write(viewProj);
-        cameraBuffer->Write(glm::inverse(viewProj));
-        cameraBuffer->Write(view);
-        cameraBuffer->Write(glm::inverse(view));
-        cameraBuffer->Write(proj);
-        cameraBuffer->Write(glm::inverse(proj));
-        cameraBuffer->Write(glm::vec4(activeCamera->GetPosition(), 1.0f));
-        cameraBuffer->Write(glm::vec4(0, 0, activeCamera->GetWidth() * 0.5f, activeCamera->GetHeight() * 0.5f));
-        cameraBuffer->Write(glm::vec4(activeCamera->near, activeCamera->far, 0.0f, 0.0f));
     }
 
     void Scene::BuildQuadtree()
