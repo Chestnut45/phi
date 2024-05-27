@@ -51,7 +51,6 @@ void main()
     vec2 vQuad = UNIT_QUAD[gl_VertexID];
 
     // Calculate final worldspace position
-    // TODO: Size should be configurable
     vec4 vertexPosWorld = viewProj * vec4(sunPos + cameraPos.xyz + (cameraRight * vQuad.x * sunSize) + (cameraUp * vQuad.y * sunSize), 1.0);
 
     // Set final position and texture coordinates

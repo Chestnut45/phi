@@ -110,7 +110,7 @@ namespace Phi
     // Adds an attribute and associates the currently bound buffer with that attribute
     // type must be one of GL_FLOAT, FL_INT, or GL_UNSIGNED_BYTE
     // This object must be bound properly before making any calls to AddAttribute(...)
-    void VertexAttributes::AddAttribute(GLuint numComponents, GLenum type, GLuint divisor, GLuint stride, GLsizeiptr offset)
+    void VertexAttributes::AddAttribute(GLuint numComponents, GLenum type, GLuint divisor, GLuint stride, GLsizeiptr offset, GLboolean normalized)
     {
         // Use default tightly packed stride if none supplied
         if (stride == 0) stride = this->stride;
@@ -122,7 +122,7 @@ namespace Phi
         switch (type)
         {
             case GL_FLOAT:
-                glVertexAttribPointer(attribCount, numComponents, type, GL_FALSE, stride, (void*)offset);
+                glVertexAttribPointer(attribCount, numComponents, type, normalized, stride, (void*)offset);
                 currentOffset += numComponents * sizeof(GLfloat);
                 break;
             
@@ -132,7 +132,7 @@ namespace Phi
                 break;
             
             case GL_UNSIGNED_BYTE:
-                glVertexAttribIPointer(attribCount, numComponents, type, stride, (void*)offset);
+                glVertexAttribPointer(attribCount, numComponents, type, normalized, stride, (void*)offset);
                 currentOffset += numComponents * sizeof(GLubyte);
                 break;
         }

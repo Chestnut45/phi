@@ -23,6 +23,14 @@ class VoxelObjectEditor : public Phi::App
 
     // Data / implementation
     private:
+
+        // Valid brush modes
+        enum class BrushMode
+        {
+            Add,
+            Subtract,
+            Paint
+        };
         
         // The main voxel world
         VoxelWorld world;
@@ -31,6 +39,7 @@ class VoxelObjectEditor : public Phi::App
         VoxelObject* object = nullptr;
 
         // Brush settings
+        BrushMode brushMode{BrushMode::Add};
         int selectedMaterial = 0;
         glm::ivec3 selectedPosition{0};
         std::unordered_set<glm::ivec3> currentEdits;

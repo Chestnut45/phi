@@ -14,6 +14,8 @@ high priority:
     - select tool / move tool
     - test models (player, items, organisms, etc.)
     - toggleable arbitrary planes to test against
+- color class (manage internal hex representation, rgba)
+    - switch all other engine components to use color class where appropriate (materials, vertex data, etc.)
 - full noise editor (fractal, domain warp, etc.)
 - voxel chunk debug rendering
 - grid3d empty value / iteration acceleration?

@@ -33,7 +33,7 @@ namespace Phi
 
             // Adds an attribute and associates the currently bound buffer with that attribute
             // NOTE: This object must be bound before any calls to Add(), else they are invalid (undefined behaviour)
-            void AddAttribute(GLuint numComponents, GLenum type, GLuint divisor = 0, GLuint stride = 0, GLsizeiptr offset = -1);
+            void AddAttribute(GLuint numComponents, GLenum type, GLuint divisor = 0, GLuint stride = 0, GLsizeiptr offset = -1, GLboolean normalized = GL_FALSE);
 
             // Binding methods
             void Bind() const;

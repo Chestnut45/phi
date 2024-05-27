@@ -29,7 +29,7 @@ namespace Phi
 
             // Debug rendering
             static const int MAX_DRAW_CALLS = 16'384;
-            void DrawAABB(const AABB& aabb);
+            void DrawAABB(const AABB& aabb, const glm::vec3& color);
             void FlushShapes(const Camera* camera);
 
         // Data / implementation
@@ -42,8 +42,6 @@ namespace Phi
             // Resources
             Shader shader;
             VertexAttributes vao;
-            GPUBuffer vertexBuffer{BufferType::Static, sizeof(VertexPosColor) * 24};
-            GPUBuffer transformBuffer{BufferType::DynamicDoubleBuffer, sizeof(glm::mat4) * MAX_DRAW_CALLS};
-            GPUBuffer indirectBuffer{BufferType::DynamicDoubleBuffer, sizeof(DrawArraysCommand) * MAX_DRAW_CALLS};
+            GPUBuffer vertexBuffer{BufferType::DynamicDoubleBuffer, sizeof(VertexPosColor) * 24 * MAX_DRAW_CALLS};
     };
 }
