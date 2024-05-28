@@ -5,7 +5,8 @@ high priority:
 - orthographic camera projection
 - improved camera controls
 - debug shape rendering (ray, aabb, obb)
-- voxel material (world loads visual data to pbrmaterial and simulation data to internal buffer)
+- move simulation components to scene (activeVoxelMap)
+- voxel materials
 - voxel object editor
     - palette display
     - erase

@@ -90,7 +90,7 @@ namespace Phi
             // Settings
 
             // The approximate radius (in VoxelChunks) to load around the active camera
-            int renderDistance = 8;
+            int renderDistance = 6;
             bool updateChunks = false;
 
             // Helper functions

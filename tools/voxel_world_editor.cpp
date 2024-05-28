@@ -48,8 +48,6 @@ void VoxelWorldEditor::Update(float delta)
     }
 
     // Update the voxel world
-    // NOTE: Must be done after GUI since regen button can
-    // delete chunks that are already queued for rendering
     world.Update(delta);
 }
 

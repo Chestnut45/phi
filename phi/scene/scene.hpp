@@ -66,11 +66,8 @@ namespace Phi
                 PBRMaterial = 1,
             };
 
-            // Creates an empty scene with the default resolution
-            Scene();
-
             // Creates an empty scene with the given resolution
-            Scene(int width, int height);
+            Scene(int width = 1280, int height = 720);
 
             ~Scene();
 
@@ -200,6 +197,8 @@ namespace Phi
             // Internal registry for access to nodes and their components
             entt::basic_registry<NodeID> registry;
 
+            // Active components
+
             // Currently active camera
             Camera* activeCamera = nullptr;
 
@@ -212,8 +211,8 @@ namespace Phi
             RenderMode renderMode{RenderMode::MatchInternalResolution};
 
             // Internal rendering resolution
-            int renderWidth = 1280;
-            int renderHeight = 720;
+            int renderWidth;
+            int renderHeight;
 
             // Main render target
             Framebuffer* renderTarget = nullptr;
@@ -258,6 +257,9 @@ namespace Phi
 
             // Lighting data
 
+            // The ambient light level in the scene
+            glm::vec3 ambientLight = glm::vec3(0.0f);
+
             // Slots for global directional lights in the scene
             DirectionalLight* globalLights[(int)DirectionalLight::Slot::NUM_SLOTS];
 
@@ -277,9 +279,6 @@ namespace Phi
             bool ssao = true;
             bool debugDrawing = true;
             bool depthPrePass = false;
-
-            // The ambient light level in the scene
-            glm::vec3 ambientLight = glm::vec3(0.0f);
 
             // Helper functions
             void RegenerateFramebuffers();

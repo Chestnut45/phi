@@ -16,7 +16,8 @@
 
 namespace Phi
 {
-    Scene::Scene()
+    Scene::Scene(int width, int height)
+        : renderWidth(width), renderHeight(height)
     {
         // Add the default material
         // Guaranteed to have the ID 0
@@ -120,7 +121,7 @@ namespace Phi
         }
 
         // Create the texture
-        ssaoRotationTexture = new Texture2D(4, 4, GL_RG32F, GL_RG, GL_FLOAT, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST, false, rotationTextureData);
+        ssaoRotationTexture = new Texture2D(4, 4, GL_RG16F, GL_RG, GL_FLOAT, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST, false, rotationTextureData);
 
         // Initialize the framebuffers
         RegenerateFramebuffers();
