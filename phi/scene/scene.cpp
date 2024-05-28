@@ -65,11 +65,6 @@ namespace Phi
         globalLightPBRSSAOShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pbr_ssao.fs");
         globalLightPBRSSAOShader.Link();
 
-        // Wireframes
-        wireframeShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/wireframe.vs");
-        wireframeShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/wireframe.fs");
-        wireframeShader.Link();
-
         // SSAO
         ssaoShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/ssao_pass.vs");
         ssaoShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/ssao_pass.fs");
@@ -508,19 +503,8 @@ namespace Phi
 
         // Wireframe pass
 
-        // Quadtree bounds
-        if (showQuadtree)
-        {
-            wireframeVAO.Bind();
-            wireframeShader.Use();
-            glDrawArrays(GL_LINES, 0, wireframeVerts.size());
-        }
-
         // Debug visualizations
-        if (debugDrawing)
-        {
-            Debug::Instance().FlushShapes();
-        }
+        Debug::Instance().FlushShapes();
 
         // Final blit to default framebuffer
         // TODO: Optimize this!
@@ -863,23 +847,5 @@ namespace Phi
             // Insert into the quadtree
             quadtree.Insert(&sphere, rect);
         }
-
-        // Rebuild wireframe vertices
-        wireframeVerts.clear();
-        for (const Rectangle& rect : quadtree.GetRects())
-        {
-            // Rendered as a list of lines
-            wireframeVerts.push_back({rect.left, 0.0f, rect.top});
-            wireframeVerts.push_back({rect.right, 0.0f, rect.top});
-            wireframeVerts.push_back({rect.right, 0.0f, rect.top});
-            wireframeVerts.push_back({rect.right, 0.0f, rect.bottom});
-            wireframeVerts.push_back({rect.right, 0.0f, rect.bottom});
-            wireframeVerts.push_back({rect.left, 0.0f, rect.bottom});
-            wireframeVerts.push_back({rect.left, 0.0f, rect.bottom});
-            wireframeVerts.push_back({rect.left, 0.0f, rect.top});
-        }
-
-        // Update the buffer
-        wireframeBuffer.Overwrite(wireframeVerts.data(), wireframeVerts.size() * sizeof(VertexPos));
     }
 }

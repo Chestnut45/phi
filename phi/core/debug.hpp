@@ -28,11 +28,13 @@ namespace Phi
             }
 
             // Limits and constants
-            static const int MAX_DRAW_CALLS = 16'384;
+            static const int MAX_VERTICES = 65'536;
             static const int AABB_VERTEX_COUNT = 24;
+            static const int RAY_VERTEX_COUNT = 2;
 
             // Debug rendering
-            void DrawAABB(const AABB& aabb, const glm::vec3& color);
+            void DrawAABB(const AABB& aabb, const glm::vec3& color = glm::vec3(1.0f));
+            void DrawRay(const Ray& ray, float length = 1.0f, const glm::vec3& color = glm::vec3(1.0f));
             void FlushShapes();
 
         // Data / implementation
@@ -48,6 +50,6 @@ namespace Phi
             GPUBuffer* vertexBuffer = nullptr;
 
             // Counters
-            int drawCount = 0;
+            int queuedVertices = 0;
     };
 }

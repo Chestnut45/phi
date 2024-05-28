@@ -266,12 +266,6 @@ namespace Phi
             Shader lightScatteringShader;
             Shader lightTransferShader;
 
-            // Wireframe resources
-            std::vector<VertexPos> wireframeVerts;
-            GPUBuffer wireframeBuffer{BufferType::Static};
-            VertexAttributes wireframeVAO{VertexFormat::POS, &wireframeBuffer};
-            Shader wireframeShader;
-
             // A dummy VAO used for attributeless rendering
             GLuint dummyVAO = 0;
 
@@ -312,9 +306,6 @@ namespace Phi
         // Friends
         private:
 
-            // Necessary for cameras to be able to remove themselves from a scene on destruction
-            friend class Camera;
-
             // Necessary for nodes to be able to add components to the scene
             friend class Node;
 
@@ -327,7 +318,6 @@ namespace Phi
             // Settings
             bool cullingEnabled = false;
             bool cullWithQuadtree = false;
-            bool showQuadtree = false;
             bool dynamicQuadtree = false;
             
             // Builds up a quadtree containing every node that satisfies the following:

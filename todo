@@ -4,7 +4,6 @@ design / features
 high priority:
 - orthographic camera projection
 - improved camera controls
-- debug shape rendering (ray, aabb, obb)
 - voxel materials
 - voxel object editor
     - palette display

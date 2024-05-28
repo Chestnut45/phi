@@ -35,7 +35,7 @@ namespace Phi
         shader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/wireframe.fs");
         shader.Link();
 
-        vertexBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(glm::vec3) * 2 * 24 * MAX_DRAW_CALLS);
+        vertexBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, sizeof(glm::vec3) * 2 * MAX_VERTICES);
         vertexBuffer->Bind(GL_ARRAY_BUFFER);
 
         vao = new VertexAttributes();
@@ -54,10 +54,10 @@ namespace Phi
     void Debug::DrawAABB(const AABB& aabb, const glm::vec3& color)
     {
         // Don't draw if buffer full
-        if (drawCount == MAX_DRAW_CALLS) FlushShapes();
+        if (queuedVertices + AABB_VERTEX_COUNT >= MAX_VERTICES) FlushShapes();
 
         // Sync
-        if (drawCount == 0) vertexBuffer->Sync();
+        if (queuedVertices == 0) vertexBuffer->Sync();
 
         // Write vertex data
         glm::vec3 verts[AABB_VERTEX_COUNT];
@@ -98,20 +98,37 @@ namespace Phi
             vertexBuffer->Write(color);
         }
 
-        drawCount++;
+        queuedVertices += AABB_VERTEX_COUNT;
+    }
+
+    void Debug::DrawRay(const Ray& ray, float length, const glm::vec3& color)
+    {
+        // Don't draw if buffer full
+        if (queuedVertices + RAY_VERTEX_COUNT >= MAX_VERTICES) FlushShapes();
+
+        // Sync
+        if (queuedVertices == 0) vertexBuffer->Sync();
+
+        // Write vertex data
+        vertexBuffer->Write(ray.origin);
+        vertexBuffer->Write(color);
+        vertexBuffer->Write(ray.direction * length);
+        vertexBuffer->Write(color);
+
+        queuedVertices += RAY_VERTEX_COUNT;
     }
 
     void Debug::FlushShapes()
     {
-        if (drawCount == 0) return;
+        if (queuedVertices == 0) return;
 
         vao->Bind();
         shader.Use();
-        glDrawArrays(GL_LINES, 0, AABB_VERTEX_COUNT * drawCount);
+        glDrawArrays(GL_LINES, 0, queuedVertices);
 
         vertexBuffer->Lock();
         vertexBuffer->SwapSections();
         
-        drawCount = 0;
+        queuedVertices = 0;
     }
 }
