@@ -3,6 +3,7 @@
 #include <phi/core/math/constants.hpp>
 #include <phi/core/file.hpp>
 #include <phi/scene/scene.hpp>
+#include <phi/scene/node.hpp>
 #include <phi/core/resource_manager.hpp>
 
 namespace Phi
@@ -52,7 +53,11 @@ namespace Phi
         refCount--;
 
         // Safely remove ourselves from any active scene
-        if (activeScene) activeScene->RemoveEnvironment();
+        Scene* scene = GetNode()->GetScene();
+        if (scene->GetActiveEnvironment() == this)
+        {
+            scene->RemoveEnvironment();
+        }
 
         // If last instance, cleanup static resources
         if (refCount == 0)

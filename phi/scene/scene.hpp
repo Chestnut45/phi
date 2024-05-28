@@ -1,22 +1,30 @@
 #pragma once
 
+// System
 #include <string>
 #include <unordered_map>
 #include <vector>
 
+// Third party
 #include <entt.hpp>
 
+// Core systems
 #include <phi/core/structures/quadtree.hpp>
+
+// Graphics
 #include <phi/graphics/materials.hpp>
 #include <phi/graphics/framebuffer.hpp>
 #include <phi/graphics/texture_2d.hpp>
+
+// Components
 #include <phi/scene/components/camera.hpp>
 #include <phi/scene/components/transform.hpp>
 #include <phi/scene/components/collision/bounding_sphere.hpp>
+#include <phi/scene/components/lighting/directional_light.hpp>
 #include <phi/scene/components/renderable/basic_mesh.hpp>
 #include <phi/scene/components/renderable/environment.hpp>
 #include <phi/scene/components/renderable/voxel_mesh.hpp>
-#include <phi/scene/components/lighting/directional_light.hpp>
+#include <phi/scene/components/simulation/voxel_map.hpp>
 
 namespace Phi
 {
@@ -115,9 +123,6 @@ namespace Phi
             // NOTE: Will render to the framebuffer bound at the start of the call
             void Render();
 
-            // Shows debug statistics in an ImGui window
-            void ShowDebug();
-
             // Material management
 
             // Adds a single material to the internal registry
@@ -154,12 +159,31 @@ namespace Phi
 
             // Environment management
 
+            // Returns the currently active environment for the scene
+            // Guaranteed to either be a valid environment or nullptr
+            Environment* GetActiveEnvironment() { return activeEnvironment; }
+
             // Sets the active environment instance to use
             void SetActiveEnvironment(Environment& environment);
 
             // Removes the currently active environment
             // NOTE: Does not delete the component!
             void RemoveEnvironment();
+
+            // Voxel map management
+
+            // Returns the currently active voxel map in the scene
+            // Guaranteed to either be a valid voxel map or nullptr
+            VoxelMap* GetActiveVoxelMap() { return activeVoxelMap; }
+
+            // Sets the voxel map component for the scene to update
+            void SetActiveVoxelMap(VoxelMap& map);
+
+            // Removes the currently active voxel map
+            // NOTE: Does not delete the component!
+            void RemoveVoxelMap();
+
+            // Lighting
 
             // Sets the base ambient light in the scene
             void SetAmbientLight(const glm::vec3& ambient) { ambientLight = ambient; }
@@ -178,6 +202,9 @@ namespace Phi
 
             // Changes the rendering mode
             void SetRenderMode(RenderMode mode);
+
+            // Shows debug statistics in an ImGui window
+            void ShowDebug();
 
             // TODO: Interface for iterating components / nodes directly
 
@@ -198,12 +225,9 @@ namespace Phi
             entt::basic_registry<NodeID> registry;
 
             // Active components
-
-            // Currently active camera
             Camera* activeCamera = nullptr;
-
-            // Currently active environment
             Environment* activeEnvironment = nullptr;
+            VoxelMap* activeVoxelMap = nullptr;
 
             // Render data
 
@@ -213,6 +237,10 @@ namespace Phi
             // Internal rendering resolution
             int renderWidth;
             int renderHeight;
+
+            // Render queues and lists
+            std::vector<BasicMesh*> basicMeshRenderQueue;
+            std::vector<VoxelMesh*> voxelMeshRenderQueue;
 
             // Main render target
             Framebuffer* renderTarget = nullptr;
@@ -238,6 +266,15 @@ namespace Phi
             Shader lightScatteringShader;
             Shader lightTransferShader;
 
+            // Wireframe resources
+            std::vector<VertexPos> wireframeVerts;
+            GPUBuffer wireframeBuffer{BufferType::Static};
+            VertexAttributes wireframeVAO{VertexFormat::POS, &wireframeBuffer};
+            Shader wireframeShader;
+
+            // A dummy VAO used for attributeless rendering
+            GLuint dummyVAO = 0;
+
             // Material data
 
             // PBR Materials
@@ -245,15 +282,7 @@ namespace Phi
             std::unordered_map<std::string, int> pbrMaterialIDs;
             GPUBuffer pbrMaterialBuffer{BufferType::Dynamic, MAX_BASIC_MATERIALS * sizeof(glm::vec4) * 2};
 
-            // Render queues and lists
-            std::vector<BasicMesh*> basicMeshRenderQueue;
-            std::vector<VoxelMesh*> voxelMeshRenderQueue;
-
-            // Wireframe resources
-            std::vector<VertexPos> wireframeVerts;
-            GPUBuffer wireframeBuffer{BufferType::Static};
-            VertexAttributes wireframeVAO{VertexFormat::POS, &wireframeBuffer};
-            Shader wireframeShader;
+            // TODO: Voxel Materials
 
             // Lighting data
 
@@ -268,17 +297,14 @@ namespace Phi
             Shader globalLightPBRShader;
             Shader globalLightPBRSSAOShader;
 
-            // A dummy VAO used for attributeless rendering
-            GLuint dummyVAO = 0;
-
-            // Internal statistics
-            float totalElapsedTime = 0.0f;
-            size_t nodeCount = 0;
-
             // Settings
             bool ssao = true;
             bool debugDrawing = true;
             bool depthPrePass = false;
+
+            // Internal statistics
+            float totalElapsedTime = 0.0f;
+            size_t nodeCount = 0;
 
             // Helper functions
             void RegenerateFramebuffers();

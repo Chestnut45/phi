@@ -219,14 +219,10 @@ namespace Phi
 
     void Scene::Update(float delta)
     {
-        // Only update if we have an active camera
-        if (!activeCamera) return;
-        
-        // Update the camera
-        activeCamera->Update(delta);
-
-        // Update the sky
+        // Update active components
+        if (activeCamera) activeCamera->Update(delta);
         if (activeEnvironment) activeEnvironment->Update(delta);
+        if (activeVoxelMap) activeVoxelMap->Update(delta);
 
         // Update all particle effects
         for (auto&&[id, effect] : registry.view<CPUParticleEffect>().each())
@@ -235,7 +231,7 @@ namespace Phi
         }
 
         // Perform frustum culling if enabled
-        if (cullingEnabled)
+        if (activeCamera && cullingEnabled)
         {
             // Grab the camera's view frustum
             Frustum viewFrustum = activeCamera->GetViewFrustum();
@@ -690,60 +686,47 @@ namespace Phi
 
     void Scene::SetActiveCamera(Camera& camera)
     {
-        // Check if the camera is already attached to a scene
-        if (camera.activeScene)
+        // Validate the component
+        if (camera.GetNode()->GetScene() == this)
         {
-            // If the camera's active scene is this, early out
-            if (camera.activeScene == this) return;
-
-            // Remove the camera from the other scene first
-            camera.activeScene->RemoveCamera();
+            RemoveCamera();
+            activeCamera = &camera;
         }
-
-        // Detatch current camera if any is attached
-        RemoveCamera();
-
-        // Make the camera this scene's active camera
-        activeCamera = &camera;
-        camera.activeScene = this;
     }
 
     void Scene::RemoveCamera()
     {
-        if (activeCamera)
-        {
-            activeCamera->activeScene = nullptr;
-            activeCamera = nullptr;
-        }
+        activeCamera = nullptr;
     }
 
     void Scene::SetActiveEnvironment(Environment& environment)
     {
-        // Check if the environment is already attached to a scene
-        if (environment.activeScene)
+        // Validate the component
+        if (environment.GetNode()->GetScene() == this)
         {
-            // If the environment's active scene is this, early out
-            if (environment.activeScene == this) return;
-
-            // Remove the environment from the other scene first
-            environment.activeScene->RemoveEnvironment();
+            RemoveEnvironment();
+            activeEnvironment = &environment;
         }
-
-        // Detatch current environment if any is attached
-        RemoveEnvironment();
-
-        // Make the environment this scene's active environment
-        activeEnvironment = &environment;
-        environment.activeScene = this;
     }
 
     void Scene::RemoveEnvironment()
     {
-        if (activeEnvironment)
+        activeEnvironment = nullptr;
+    }
+
+    void Scene::SetActiveVoxelMap(VoxelMap& map)
+    {
+        // Validate the component
+        if (map.GetNode()->GetScene() == this)
         {
-            activeEnvironment->activeScene = nullptr;
-            activeEnvironment = nullptr;
+            RemoveVoxelMap();
+            activeVoxelMap = &map;
         }
+    }
+
+    void Scene::RemoveVoxelMap()
+    {
+        activeVoxelMap = nullptr;
     }
 
     void Scene::SetResolution(int width, int height)

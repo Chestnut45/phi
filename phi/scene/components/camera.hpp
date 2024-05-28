@@ -135,10 +135,5 @@ namespace Phi
 
             // Scene requires access to set / get some data
             friend class Scene;
-
-            // Our currently active scene, if any
-            // NOTE: This exists solely to ensure deleting a camera component
-            // will properly update the scene's active camera to nullptr
-            Scene* activeScene = nullptr;
     };
 }

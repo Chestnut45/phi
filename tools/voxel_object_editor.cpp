@@ -16,20 +16,30 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
     // Enable raw mouse if accepted
     input.EnableRawMouseMotion();
 
-    // Create the object
-    object = &world.GetScene().CreateNode()->AddComponent<VoxelObject>();
+    // Initialize scene
 
-    // DEBUG: Load default object
+    // Materials
+    scene.LoadMaterials("data://materials.yaml");
+
+    // Main camera
+    Camera& camera = scene.CreateNode3D()->AddComponent<Camera>();
+    camera.SetPosition({0, 16, 128});
+    scene.SetActiveCamera(camera);
+
+    // DEBUG: Environment
+    Environment& env = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_old");
+    scene.SetActiveEnvironment(env);
+
+    // Main object
+    object = &scene.CreateNode()->AddComponent<VoxelObject>();
     object->Load("data://models/teapot.vobj");
 
-    // Create meshes
-    brushMesh = &world.GetScene().CreateNode()->AddComponent<VoxelMesh>();
-
-    // DEBUG: Single voxel brush for now
+    // Brush mesh
+    brushMesh = &scene.CreateNode()->AddComponent<VoxelMesh>();
     brushMesh->Vertices().push_back(VoxelMesh::Vertex());
 
     // Default material
-    selectedMaterial = world.GetScene().GetMaterialID("gold");
+    selectedMaterial = scene.GetMaterialID("gold");
 }
 
 VoxelObjectEditor::~VoxelObjectEditor()
@@ -42,7 +52,7 @@ void VoxelObjectEditor::Update(float delta)
     // Manually update scene resolution on window resize
     if (windowResized)
     {
-        world.GetScene().SetResolution(wWidth, wHeight);
+        scene.SetResolution(wWidth, wHeight);
         windowResized = false;
     }
 
@@ -56,11 +66,11 @@ void VoxelObjectEditor::Update(float delta)
     if (showGUI)
     {
         ShowDebug();
-        world.GetScene().ShowDebug();
+        scene.ShowDebug();
     }
 
     // Grab camera and mouse position
-    Camera* cam = world.GetScene().GetActiveCamera();
+    Camera* cam = scene.GetActiveCamera();
     const glm::vec2& mousePos = input.GetMousePos();
 
     // Cast ray towards voxel object
@@ -123,10 +133,10 @@ void VoxelObjectEditor::Update(float delta)
     }
 
     // Update the voxel world
-    world.Update(delta);
+    scene.Update(delta);
 }
 
 void VoxelObjectEditor::Render()
 {
-    world.Render();
+    scene.Render();
 }

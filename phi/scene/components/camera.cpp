@@ -30,7 +30,11 @@ namespace Phi
     Camera::~Camera()
     {
         // Ensure we are removed from any active scene on destruction
-        if (activeScene) activeScene->RemoveCamera();
+        Scene* scene = GetNode()->GetScene();
+        if (scene->GetActiveCamera() == this)
+        {
+            scene->RemoveCamera();
+        }
 
         // Delete uniform buffer
         delete ubo;

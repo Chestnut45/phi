@@ -46,9 +46,6 @@
 #include "scene/components/renderable/basic_mesh.hpp"
 #include "scene/components/renderable/environment.hpp"
 #include "scene/components/renderable/voxel_mesh.hpp"
-
-// Simulation systems
-#include "simulation/voxel_chunk.hpp"
-#include "simulation/voxel_mass.hpp"
-#include "simulation/voxel_object.hpp"
-#include "simulation/voxel_world.hpp"
+#include "scene/components/simulation/voxel_chunk.hpp"
+#include "scene/components/simulation/voxel_map.hpp"
+#include "scene/components/simulation/voxel_object.hpp"

@@ -5,7 +5,6 @@ high priority:
 - orthographic camera projection
 - improved camera controls
 - debug shape rendering (ray, aabb, obb)
-- move simulation components to scene (activeVoxelMap)
 - voxel materials
 - voxel object editor
     - palette display
@@ -18,7 +17,6 @@ high priority:
 - color class (manage internal hex representation, rgba)
     - switch all other engine components to use color class where appropriate (materials, vertex data, etc.)
 - full noise editor (fractal, domain warp, etc.)
-- voxel chunk debug rendering
 - grid3d empty value / iteration acceleration?
 - chunk generation
     - noise parameters

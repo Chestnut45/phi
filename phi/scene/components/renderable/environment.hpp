@@ -98,8 +98,7 @@ namespace Phi
             // Reference counting for static resources
             static inline int refCount = 0;
 
-            // Active scene pointer for safe destruction
-            Scene* activeScene = nullptr;
+            // Allow imgui access to internals through scene editor
             friend class Scene;
     };
 }

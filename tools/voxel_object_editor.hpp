@@ -31,21 +31,21 @@ class VoxelObjectEditor : public Phi::App
             Subtract,
             Paint
         };
-        
-        // The main voxel world
-        VoxelWorld world;
+
+        // Main scene
+        Scene scene;
 
         // The voxel object instance to edit
         VoxelObject* object = nullptr;
+
+        // Brush mesh
+        VoxelMesh* brushMesh = nullptr;
 
         // Brush settings
         BrushMode brushMode{BrushMode::Add};
         int selectedMaterial = 0;
         glm::ivec3 selectedPosition{0};
         std::unordered_set<glm::ivec3> currentEdits;
-
-        // Brush mesh
-        VoxelMesh* brushMesh = nullptr;
 
         // Settings
         bool showGUI = false;
