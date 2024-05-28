@@ -27,10 +27,13 @@ namespace Phi
                 return instance;
             }
 
-            // Debug rendering
+            // Limits and constants
             static const int MAX_DRAW_CALLS = 16'384;
+            static const int AABB_VERTEX_COUNT = 24;
+
+            // Debug rendering
             void DrawAABB(const AABB& aabb, const glm::vec3& color);
-            void FlushShapes(const Camera* camera);
+            void FlushShapes();
 
         // Data / implementation
         private:
@@ -41,7 +44,10 @@ namespace Phi
 
             // Resources
             Shader shader;
-            VertexAttributes vao;
-            GPUBuffer vertexBuffer{BufferType::DynamicDoubleBuffer, sizeof(VertexPosColor) * 24 * MAX_DRAW_CALLS};
+            VertexAttributes* vao = nullptr;
+            GPUBuffer* vertexBuffer = nullptr;
+
+            // Counters
+            int drawCount = 0;
     };
 }

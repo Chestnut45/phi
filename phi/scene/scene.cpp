@@ -278,10 +278,17 @@ namespace Phi
             {
                 basicMeshRenderQueue.push_back(&mesh);
             }
-
             for (auto&&[id, mesh] : registry.view<VoxelMesh>().each())
             {
                 voxelMeshRenderQueue.push_back(&mesh);
+            }
+        }
+
+        if (debugDrawing)
+        {
+            for (auto&&[id, object] : registry.view<VoxelObject>().each())
+            {
+                Debug::Instance().DrawAABB(object.GetAABB(), glm::vec3(1.0f));
             }
         }
 
@@ -509,6 +516,12 @@ namespace Phi
             glDrawArrays(GL_LINES, 0, wireframeVerts.size());
         }
 
+        // Debug visualizations
+        if (debugDrawing)
+        {
+            Debug::Instance().FlushShapes();
+        }
+
         // Final blit to default framebuffer
         // TODO: Optimize this!
         // NOTES: Potential pipeline stall here... can't blit until rendering has finished
@@ -537,6 +550,7 @@ namespace Phi
 
         ImGui::SeparatorText("Graphics Settings");
         ImGui::Checkbox("SSAO", &ssao);
+        ImGui::Checkbox("Debug Drawing", &debugDrawing);
 
         ImGui::SeparatorText("Environment");
         ImGui::ColorEdit3("Ambient Light", &ambientLight.x);
