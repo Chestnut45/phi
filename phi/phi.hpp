@@ -48,4 +48,5 @@
 #include "scene/components/renderable/voxel_mesh.hpp"
 #include "scene/components/simulation/voxel_chunk.hpp"
 #include "scene/components/simulation/voxel_map.hpp"
+#include "scene/components/simulation/voxel_material.hpp"
 #include "scene/components/simulation/voxel_object.hpp"

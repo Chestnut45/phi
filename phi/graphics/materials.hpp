@@ -8,7 +8,7 @@ namespace Phi
     struct PBRMaterial
     {
         glm::vec3 color{0.5f, 0.5f, 0.5f};
-        float metallic = 0.5f;
+        float metallic = 0.0f;
         float roughness = 0.5f;
         
         // Constructors
