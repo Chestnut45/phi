@@ -526,68 +526,25 @@ namespace Phi
         voxelMeshRenderQueue.clear();
     }
 
-    void Scene::ShowDebug()
+    void Scene::SetRenderMode(RenderMode mode)
     {
-        ImGui::SetNextWindowPos(ImVec2(renderWidth - 364, renderHeight - 454));
-        ImGui::SetNextWindowSize(ImVec2(360, 450));
-        ImGui::Begin("Scene Debug", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+        renderMode = mode;
+    }
 
-        ImGui::SeparatorText("Graphics Settings");
-        ImGui::Checkbox("SSAO", &ssao);
-        ImGui::Checkbox("Debug Drawing", &debugDrawing);
-
-        ImGui::SeparatorText("Environment");
-        ImGui::ColorEdit3("Ambient Light", &ambientLight.x);
-
-        if (activeEnvironment)
+    void Scene::SetResolution(int width, int height)
+    {
+        if (width < 1 || height < 1)
         {
-            ImGui::Text("Timing");
-            ImGui::Separator();
-            if (ImGui::Button("Sunrise")) activeEnvironment->SetTime(Environment::SUNRISE); ImGui::SameLine();
-            if (ImGui::Button("Noon")) activeEnvironment->SetTime(Environment::NOON); ImGui::SameLine();
-            if (ImGui::Button("Sunset")) activeEnvironment->SetTime(Environment::SUNSET); ImGui::SameLine();
-            if (ImGui::Button("Midnight")) activeEnvironment->SetTime(Environment::MIDNIGHT);
-            ImGui::Checkbox("Advance Time", &activeEnvironment->advanceTime);
-            ImGui::DragFloat("Time", &activeEnvironment->timeOfDay, 0.001f, 0.0f, 1.0f);
-            ImGui::DragFloat("Day Time", &activeEnvironment->dayLength, 1.0f, 0.0f, INT32_MAX);
-            ImGui::DragFloat("Night Time", &activeEnvironment->nightLength, 1.0f, 0.0f, INT32_MAX);
-
-            ImGui::Text("Sun:");
-            ImGui::Separator();
-            ImGui::Checkbox("Render Sun", &activeEnvironment->renderSun);
-            if (activeEnvironment->renderSun)
-            {
-                ImGui::DragFloat("Size", &activeEnvironment->sunSize, 0.1f, 0.0f, 16'384.0f);
-                ImGui::DragFloat("Distance", &activeEnvironment->sunDistance, 0.1f, 0.0f, 16'384.0f);
-                ImGui::DragFloat("Rotation", &activeEnvironment->sunRotation, 0.001f, 0.0f, TAU);
-                ImGui::DragFloat("Ambience", &activeEnvironment->sunAmbient, 0.001f, 0.0f, 1.0f);
-                ImGui::ColorEdit3("Color", &activeEnvironment->sunColor.r);
-                ImGui::Checkbox("God Rays", &activeEnvironment->godRays);
-                if (activeEnvironment->godRays)
-                {
-                    ImGui::DragFloat("Exposure", &activeEnvironment->exposure, 0.001f, 0.0f, 1.0f);
-                    ImGui::DragFloat("Decay", &activeEnvironment->decay, 0.001f, 0.0f, 1.0f);
-                    ImGui::DragFloat("Density", &activeEnvironment->density, 0.001f, 0.0f, 1.0f);
-                    ImGui::DragFloat("Weight", &activeEnvironment->weight, 0.001f, 0.0f, 1.0f);
-                }
-            }
+            Phi::Error("Scene width and height must both be positive");
+            return;
         }
 
-        ImGui::SeparatorText("Camera");
-        if (activeCamera)
-        {
-            const glm::vec3& pos = activeCamera->GetPosition();
-            const glm::vec3& dir = activeCamera->GetDirection();
-            ImGui::Text("Position: (%.1f %.1f, %.1f)", pos.x, pos.y, pos.z);
-            ImGui::Text("Direction: (%.1f %.1f, %.1f)", dir.x, dir.y, dir.z);
-            ImGui::Text("FOV: %.0f", activeCamera->GetFov());
-        }
-        else
-        {
-            ImGui::Text("Null");
-        }
+        this->renderWidth = width;
+        this->renderHeight = height;
 
-        ImGui::End();
+        // Update camera viewport
+        if (activeCamera) activeCamera->SetResolution(width, height);
+        RegenerateFramebuffers();
     }
 
     int Scene::RegisterMaterial(const std::string& name, const PBRMaterial& material)
@@ -623,7 +580,13 @@ namespace Phi
         }
     }
 
-    int Scene::GetMaterialID(const std::string& name)
+    const PBRMaterial& Scene::GetPBRMaterial(int id)
+    {
+        if (id < 0 || id >= pbrMaterials.size()) return pbrMaterials[0];
+        return pbrMaterials[id];
+    }
+
+    int Scene::GetPBRMaterialID(const std::string& name)
     {
         // Find if the material exists
         const auto& it = pbrMaterialIDs.find(name);
@@ -636,12 +599,6 @@ namespace Phi
 
         // Does not exist, return default value
         return 0;
-    }
-
-    const PBRMaterial& Scene::GetMaterial(int id)
-    {
-        if (id < 0 || id >= pbrMaterials.size()) return pbrMaterials[0];
-        return pbrMaterials[id];
     }
 
     void Scene::LoadMaterials(const std::string& path)
@@ -727,27 +684,70 @@ namespace Phi
         activeVoxelMap = nullptr;
     }
 
-    void Scene::SetResolution(int width, int height)
+    void Scene::ShowDebug()
     {
-        if (width < 1 || height < 1)
+        ImGui::SetNextWindowPos(ImVec2(renderWidth - 364, renderHeight - 454));
+        ImGui::SetNextWindowSize(ImVec2(360, 450));
+        ImGui::Begin("Scene Debug", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+        ImGui::SeparatorText("Graphics Settings");
+        ImGui::Checkbox("SSAO", &ssao);
+        ImGui::Checkbox("Debug Drawing", &debugDrawing);
+
+        ImGui::SeparatorText("Environment");
+        ImGui::ColorEdit3("Ambient Light", &ambientLight.x);
+
+        if (activeEnvironment)
         {
-            Phi::Error("Scene width and height must both be positive");
-            return;
+            ImGui::Text("Timing");
+            ImGui::Separator();
+            if (ImGui::Button("Sunrise")) activeEnvironment->SetTime(Environment::SUNRISE); ImGui::SameLine();
+            if (ImGui::Button("Noon")) activeEnvironment->SetTime(Environment::NOON); ImGui::SameLine();
+            if (ImGui::Button("Sunset")) activeEnvironment->SetTime(Environment::SUNSET); ImGui::SameLine();
+            if (ImGui::Button("Midnight")) activeEnvironment->SetTime(Environment::MIDNIGHT);
+            ImGui::Checkbox("Advance Time", &activeEnvironment->advanceTime);
+            ImGui::DragFloat("Time", &activeEnvironment->timeOfDay, 0.001f, 0.0f, 1.0f);
+            ImGui::DragFloat("Day Time", &activeEnvironment->dayLength, 1.0f, 0.0f, INT32_MAX);
+            ImGui::DragFloat("Night Time", &activeEnvironment->nightLength, 1.0f, 0.0f, INT32_MAX);
+
+            ImGui::Text("Sun:");
+            ImGui::Separator();
+            ImGui::Checkbox("Render Sun", &activeEnvironment->renderSun);
+            if (activeEnvironment->renderSun)
+            {
+                ImGui::DragFloat("Size", &activeEnvironment->sunSize, 0.1f, 0.0f, 16'384.0f);
+                ImGui::DragFloat("Distance", &activeEnvironment->sunDistance, 0.1f, 0.0f, 16'384.0f);
+                ImGui::DragFloat("Rotation", &activeEnvironment->sunRotation, 0.001f, 0.0f, TAU);
+                ImGui::DragFloat("Ambience", &activeEnvironment->sunAmbient, 0.001f, 0.0f, 1.0f);
+                ImGui::ColorEdit3("Color", &activeEnvironment->sunColor.r);
+                ImGui::Checkbox("God Rays", &activeEnvironment->godRays);
+                if (activeEnvironment->godRays)
+                {
+                    ImGui::DragFloat("Exposure", &activeEnvironment->exposure, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat("Decay", &activeEnvironment->decay, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat("Density", &activeEnvironment->density, 0.001f, 0.0f, 1.0f);
+                    ImGui::DragFloat("Weight", &activeEnvironment->weight, 0.001f, 0.0f, 1.0f);
+                }
+            }
         }
 
-        this->renderWidth = width;
-        this->renderHeight = height;
+        ImGui::SeparatorText("Camera");
+        if (activeCamera)
+        {
+            const glm::vec3& pos = activeCamera->GetPosition();
+            const glm::vec3& dir = activeCamera->GetDirection();
+            ImGui::Text("Position: (%.1f %.1f, %.1f)", pos.x, pos.y, pos.z);
+            ImGui::Text("Direction: (%.1f %.1f, %.1f)", dir.x, dir.y, dir.z);
+            ImGui::Text("FOV: %.0f", activeCamera->GetFov());
+        }
+        else
+        {
+            ImGui::Text("Null");
+        }
 
-        // Update camera viewport if render mode matches
-        if (activeCamera) activeCamera->SetResolution(width, height);
-        RegenerateFramebuffers();
+        ImGui::End();
     }
-
-    void Scene::SetRenderMode(RenderMode mode)
-    {
-        renderMode = mode;
-    }
-
+    
     void Scene::RegenerateFramebuffers()
     {
         if (gBuffer)

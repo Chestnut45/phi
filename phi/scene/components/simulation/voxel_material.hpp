@@ -12,7 +12,6 @@ namespace Phi
         struct SimulationFlags
         {
             typedef uint32_t type;
-            type value;
             enum
             {
                 NONE = 0,
@@ -21,6 +20,10 @@ namespace Phi
                 FLAMMABLE = 1 << 2,
                 // ...
             };
+
+            // Don't actually construct this! Use SimulationFlags::type instead
+            // This is so we can use bitwise operators without casting all the time
+            SimulationFlags() = delete;
         };
 
         VoxelMaterial(const std::string& name = "new_material", SimulationFlags::type simulationFlags = SimulationFlags::NONE, int pbrID = 0);

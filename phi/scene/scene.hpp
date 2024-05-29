@@ -25,6 +25,7 @@
 #include <phi/scene/components/renderable/environment.hpp>
 #include <phi/scene/components/renderable/voxel_mesh.hpp>
 #include <phi/scene/components/simulation/voxel_map.hpp>
+#include <phi/scene/components/simulation/voxel_material.hpp>
 
 namespace Phi
 {
@@ -123,25 +124,38 @@ namespace Phi
             // NOTE: Will render to the framebuffer bound at the start of the call
             void Render();
 
+            // Changes the rendering mode
+            void SetRenderMode(RenderMode mode);
+
+            // Updates the resolution the scene is rendered at
+            // Updates the current active camera's viewport and internal framebuffer texture resolutions
+            // NOTE: Nonpositive (negative or zero) values are rejected (no behaviour)
+            // TODO: Add auto setting that updates when the window is resized
+            // RATIONALE: Tying the scene's resolution to a window should be opt-in, not opt-out
+            void SetResolution(int width, int height);
+
             // Material management
 
             // Adds a single material to the internal registry
             // If a material already exists with the given name,
             // the new material data replaces the old, and keeps the same ID
-            // Returns the ID of the material
+            // Returns the ID of the material (IDs are per material type!)
             int RegisterMaterial(const std::string& name, const PBRMaterial& material);
-
-            // Loads materials from a YAML file and adds them to the scene
-            // NOTE: Currently works with PBRMaterial
-            void LoadMaterials(const std::string& path);
-            
-            // Returns the ID for the given named material, if it exists
-            // Returns 0 (the default material) otherwise
-            int GetMaterialID(const std::string& name);
+            int RegisterMaterial(const std::string& name, const VoxelMaterial& material);
 
             // Returns a constant reference to the internal material data
             // for the given ID. If ID is invalid, the default material will be returned instead
-            const PBRMaterial& GetMaterial(int id);
+            const PBRMaterial& GetPBRMaterial(int id);
+            const VoxelMaterial& GetVoxelMaterial(int id);
+            
+            // Returns the ID for the given material name, if it exists
+            // Returns 0 (the default material) otherwise
+            int GetPBRMaterialID(const std::string& name);
+            int GetVoxelMaterialID(const std::string& name);
+
+            // Loads materials from a YAML file and adds them to the scene
+            // NOTE: Currently works with PBRMaterial and VoxelMaterial
+            void LoadMaterials(const std::string& path);
 
             // Camera management
 
@@ -190,18 +204,6 @@ namespace Phi
 
             // Gets the base ambient light in the scene
             const glm::vec3& GetAmbientLight() const { return ambientLight; }
-
-            // Resolution management
-
-            // Updates the resolution the scene is rendered at
-            // Updates the current active camera's viewport and internal framebuffer texture resolutions
-            // NOTE: Nonpositive (negative or zero) values are rejected (no behaviour)
-            // TODO: Add auto setting that updates when the window is resized
-            // RATIONALE: Tying the scene's resolution to a window should be opt-in, not opt-out
-            void SetResolution(int width, int height);
-
-            // Changes the rendering mode
-            void SetRenderMode(RenderMode mode);
 
             // Shows debug statistics in an ImGui window
             void ShowDebug();

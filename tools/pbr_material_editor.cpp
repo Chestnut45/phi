@@ -86,7 +86,7 @@ void PBRMaterialEditor::ShowInterface()
     ImGui::InputText("Name", &materialName);
 
     // Editable data
-    PBRMaterial mat = scene.GetMaterial(0);
+    PBRMaterial mat = scene.GetPBRMaterial(0);
     glm::vec3 color = mat.color;
     float metallic = mat.metallic;
     float roughness = mat.roughness;

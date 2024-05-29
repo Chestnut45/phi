@@ -84,7 +84,7 @@ bugs / fixes
 --------------------------------
 
 high priority:
-- infinite loop (likely in raycast)
+- voxel raycasting bug (selection incorrect at certain edge cases?)
 
 mid priority:
 - move glew dll in windows from system32 to executable folder?

@@ -119,7 +119,7 @@ namespace Phi
                         {
                             // This is so insanely slow, obviously
                             // TODO: Preprocess masses, gather material IDs before iteration
-                            chunk->voxelGrid(x, y, z) = scene->GetMaterialID(mass.materialName);
+                            chunk->voxelGrid(x, y, z) = scene->GetPBRMaterialID(mass.materialName);
                         }
                     }
                 }

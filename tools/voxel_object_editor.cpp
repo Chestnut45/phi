@@ -39,7 +39,7 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
     brushMesh->Vertices().push_back(VoxelMesh::Vertex());
 
     // Default material
-    selectedMaterial = scene.GetMaterialID("gold");
+    selectedMaterial = scene.GetPBRMaterialID("gold");
 }
 
 VoxelObjectEditor::~VoxelObjectEditor()

@@ -28,7 +28,7 @@ namespace Phi
         if (tNearFar.x < tNearFar.y)
         {
             // Calculate starting position (with fractional component)
-            glm::vec3 start = r.origin + r.direction * tNearFar.x;
+            glm::vec3 start = r.origin + r.direction * (tNearFar.x > 0.0f ? tNearFar.x : 0.0f);
 
             // Calculate step directions
             glm::ivec3 step = glm::ivec3(glm::sign(r.direction.x), glm::sign(r.direction.y), glm::sign(r.direction.z));
@@ -49,6 +49,7 @@ namespace Phi
             tMax.x = (r.direction.x > 0 ? glm::ceil(start.x) - start.x : start.x - glm::floor(start.x)) / glm::abs(r.direction.x);
             tMax.y = (r.direction.y > 0 ? glm::ceil(start.y) - start.y : start.y - glm::floor(start.y)) / glm::abs(r.direction.y);
             tMax.z = (r.direction.z > 0 ? glm::ceil(start.z) - start.z : start.z - glm::floor(start.z)) / glm::abs(r.direction.z);
+            
             glm::vec3 tDelta = glm::vec3(step) / r.direction;
 
             // Grid traversal (Amanatides & Woo)
@@ -161,7 +162,7 @@ namespace Phi
 
                     // Extract the name and load the proper ID for it
                     std::string name = line.substr(line.find_first_of(':') + 2);
-                    loadedMaterialIDs.push_back(GetNode()->GetScene()->GetMaterialID(name));
+                    loadedMaterialIDs.push_back(GetNode()->GetScene()->GetPBRMaterialID(name));
                 }
                 
                 // Voxel data parsing
