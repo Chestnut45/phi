@@ -7,7 +7,8 @@
 
 namespace Phi
 {
-    // A custom component representing an instance of a voxel object
+    // A custom component representing a single voxel object
+    // Used for various simulations involving material interactions and physics
     class VoxelObject : public BaseComponent
     {
         // Interface
@@ -25,7 +26,18 @@ namespace Phi
             VoxelObject(VoxelObject&& other) = delete;
             VoxelObject& operator=(VoxelObject&& other) = delete;
 
-            // Raycast queries
+            // Simulation flags for how the object will be updated
+            struct Flags
+            {
+                Flags() = delete;
+                typedef uint32_t type;
+                enum : type
+                {
+                    None = 0,
+                    SimulateFluids = 1,
+                    SimulateFire = 1 << 1,
+                };
+            };
 
             // Structure for returning ray cast query data
             struct RaycastInfo
@@ -37,19 +49,42 @@ namespace Phi
                 int firstHit = -1;
             };
 
-            // Casts a ray into the voxel object, returns voxel intersection information
-            RaycastInfo Raycast(const Ray& ray, int maxSteps = 512);
+            // Simulation
 
-            // Data management
+            // Updates the object according to the simulation flags set
+            void Update(float delta);
+
+            // Sets the given simulation flags
+            inline void Enable(Flags::type flags) { this->flags |= flags; }
+
+            // Unsets the given simulation flags
+            inline void Disable(Flags::type flags) { this->flags &= !flags; }
+
+            // Voxel data management
+
+            // Gets the voxel at the object local coordinates provided
+            inline int GetVoxel(int x, int y, int z) { return voxels(x - offset.x, y - offset.y, z - offset.z); }
+            
+            // Sets the voxel at the object local coordinates provided
+            inline void SetVoxel(int x, int y, int z, int material) { voxels(x - offset.x, y - offset.y, z - offset.z) = material; }
 
             // Loads voxel data from a .vobj file, replacing any existing data
             // Accepts local paths like data:// and user://
             bool Load(const std::string& path);
 
-            // Resets to initial state, unloads all voxel data and destroys internal resources
+            // Resets and unloads all voxel data, including mesh vertices
             void Reset();
 
+            // Spatial queries
+
+            // Casts an object-local ray into the voxel object, returns voxel intersection information
+            RaycastInfo Raycast(const Ray& ray, int maxSteps = 512);
+
             // Mesh management
+
+            // Returns a pointer to the internal mesh component,
+            // or nullptr if none exists
+            inline VoxelMesh* GetMesh() const { return mesh; }
 
             // Updates the mesh to match the currently visible voxels of the object
             // If no mesh exists, one is added to the node first
@@ -58,23 +93,8 @@ namespace Phi
             // Destroys the internal mesh if one exists
             void DestroyMesh();
 
-            // Accessors
-
-            // Returns a pointer to the internal mesh component,
-            // or nullptr if none exists
-            VoxelMesh* GetMesh() const { return mesh; };
-
             // Returns a const reference to the object local space AABB
-            const AABB& GetAABB() const { return aabb; }
-
-            // Returns a reference to the grid of voxel data
-            Grid3D<int>& Grid() { return voxels; }
-            
-            // Gets the voxel at the object local coordinates provided
-            int GetVoxel(int x, int y, int z) { return voxels(x - offset.x, y - offset.y, z - offset.z); }
-
-            // Sets the voxel at the object local coordinates provided
-            void SetVoxel(int x, int y, int z, int material) { voxels(x - offset.x, y - offset.y, z - offset.z) = material; }
+            inline const AABB& GetAABB() const { return aabb; }
         
         // Data / implementation
         private:
@@ -82,10 +102,13 @@ namespace Phi
             // Offset to apply to obtain object-local space coordinates
             glm::ivec3 offset{-16};
 
-            // Debug grid of voxel materials
+            // Spatial index for voxels
             Grid3D<int> voxels{32, 32, 32};
 
-            // AABB instance
+            // Simulation flags
+            Flags::type flags{Flags::None};
+
+            // AABB that bounds voxels in object local space
             AABB aabb{glm::vec3(-16.0f), glm::vec3(16.0f)};
 
             // Internal mesh component (NON-OWNING)

@@ -2,8 +2,8 @@
 
 namespace Phi
 {
-    VoxelMaterial::VoxelMaterial(const std::string& name, SimulationFlags::type simulationFlags, int pbrID)
-        : name(name), simulationFlags(simulationFlags), pbrID(pbrID)
+    VoxelMaterial::VoxelMaterial(const std::string& name, Flags::type flags, int pbrID)
+        : name(name), flags(flags), pbrID(pbrID)
     {
     }
 
