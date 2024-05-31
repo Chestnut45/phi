@@ -19,9 +19,10 @@ namespace Phi
     Scene::Scene(int width, int height)
         : renderWidth(width), renderHeight(height)
     {
-        // Add the default material
+        // Add the default materials
         // Guaranteed to have the ID 0
         RegisterMaterial("default", PBRMaterial());
+        RegisterMaterial("default", VoxelMaterial());
 
         // Set all global light pointers to nullptr
         for (int i = 0; i < (int)DirectionalLight::Slot::NUM_SLOTS; ++i)
@@ -580,10 +581,37 @@ namespace Phi
         }
     }
 
+    int Scene::RegisterMaterial(const std::string& name, const VoxelMaterial& material)
+    {
+        // Find if the material exists
+        const auto& it = voxelMaterialIDs.find(name);
+
+        if (it != voxelMaterialIDs.end())
+        {
+            // Material with provided name exists, replace it
+            voxelMaterials[it->second] = material;
+            return it->second;
+        }
+        else
+        {
+            // Material does not exist, add it and add the ID to the map
+            int id = voxelMaterials.size();
+            voxelMaterialIDs[name] = id;
+            voxelMaterials.push_back(material);
+            return id;
+        }
+    }
+
     const PBRMaterial& Scene::GetPBRMaterial(int id)
     {
         if (id < 0 || id >= pbrMaterials.size()) return pbrMaterials[0];
         return pbrMaterials[id];
+    }
+
+    const VoxelMaterial& Scene::GetVoxelMaterial(int id)
+    {
+        if (id < 0 || id >= voxelMaterials.size()) return voxelMaterials[0];
+        return voxelMaterials[id];
     }
 
     int Scene::GetPBRMaterialID(const std::string& name)
@@ -601,6 +629,21 @@ namespace Phi
         return 0;
     }
 
+    int Scene::GetVoxelMaterialID(const std::string& name)
+    {
+        // Find if the material exists
+        const auto& it = voxelMaterialIDs.find(name);
+
+        if (it != voxelMaterialIDs.end())
+        {
+            // Material with provided name exists
+            return it->second;
+        }
+
+        // Does not exist, return default value
+        return 0;
+    }
+
     void Scene::LoadMaterials(const std::string& path)
     {
         try
@@ -608,7 +651,7 @@ namespace Phi
             // Load YAML file
             YAML::Node node = YAML::LoadFile(File::GlobalizePath(path));
 
-            // Process pbr materials
+            // Process PBR materials
             if (node["pbr_materials"])
             {
                 const auto& mats = node["pbr_materials"];
@@ -621,7 +664,7 @@ namespace Phi
                     PBRMaterial m{};
 
                     // Load properties from node
-                    std::string name = mat["name"] ? mat["name"].as<std::string>() : "Unnamed PBR Material";
+                    std::string name = mat["name"] ? mat["name"].as<std::string>() : "new_material";
                     m.color.r = mat["color"]["r"] ? mat["color"]["r"].as<float>() : m.color.r;
                     m.color.g = mat["color"]["g"] ? mat["color"]["g"].as<float>() : m.color.g;
                     m.color.b = mat["color"]["b"] ? mat["color"]["b"].as<float>() : m.color.b;
@@ -630,6 +673,27 @@ namespace Phi
 
                     // Add the material to the scene
                     RegisterMaterial(name, m);
+                }
+            }
+
+            // Process voxel materials
+            if (node["voxel_materials"])
+            {
+                const auto& mats = node["voxel_materials"];
+                for (int i = 0; i < mats.size(); ++i)
+                {
+                    // Grab the specific material node
+                    const auto& mat = mats[i];
+
+                    // Create the material
+                    VoxelMaterial m{};
+
+                    // Load properties from node
+                    m.name = mat["name"] ? mat["name"].as<std::string>() : "new_material";
+                    m.pbrID = mat["pbr_name"] ? GetPBRMaterialID(mat["pbr_name"].as<std::string>()) : m.pbrID;
+
+                    // Add the material to the scene
+                    RegisterMaterial(m.name, m);
                 }
             }
         }

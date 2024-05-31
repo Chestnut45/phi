@@ -162,7 +162,7 @@ namespace Phi
 
                     // Extract the name and load the proper ID for it
                     std::string name = line.substr(line.find_first_of(':') + 2);
-                    loadedMaterialIDs.push_back(GetNode()->GetScene()->GetPBRMaterialID(name));
+                    loadedMaterialIDs.push_back(GetNode()->GetScene()->GetVoxelMaterialID(name));
                 }
                 
                 // Voxel data parsing
@@ -293,7 +293,6 @@ namespace Phi
 
     void VoxelObject::DestroyMesh()
     {
-        if (!mesh) return;
         GetNode()->RemoveComponent<VoxelMesh>();
         mesh = nullptr;
     }

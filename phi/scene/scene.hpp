@@ -278,6 +278,10 @@ namespace Phi
             std::unordered_map<std::string, int> pbrMaterialIDs;
             GPUBuffer pbrMaterialBuffer{BufferType::Dynamic, MAX_BASIC_MATERIALS * sizeof(glm::vec4) * 2};
 
+            // Voxel materials
+            std::vector<VoxelMaterial> voxelMaterials;
+            std::unordered_map<std::string, int> voxelMaterialIDs;
+
             // TODO: Voxel Materials
 
             // Lighting data

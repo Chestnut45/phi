@@ -6,6 +6,12 @@ pbr_materials: [
         metallic: 0
     },
     {
+        name: water,
+        color: {r: 0.05, g: 0.45, b: 0.86, a: 0.5},
+        roughness: 0.8,
+        metallic: 0
+    },
+    {
         name: fungal_stem,
         color: {r: 1.0, g: 0.829, b: 0.64},
         roughness: 0.6,
@@ -95,4 +101,17 @@ pbr_materials: [
         roughness: 0.7,
         metallic: 0.2
     },
+]
+
+voxel_materials: [
+    {
+        name: grass,
+        flags: [solid, flammable],
+        pbr_name: grass
+    },
+    {
+        name: water,
+        flags: [liquid],
+        pbr_name: water
+    }
 ]
