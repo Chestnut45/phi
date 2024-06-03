@@ -2,12 +2,6 @@ design / features
 --------------------------------
 
 high priority:
-- voxel materials
-    - properly link to pbr materials
-    - transparent voxel rendering (transparent pbr materials? color class?)
-- color class (manage internal float representation, cheap convert to hex, rgba, FromHex(string), FromRGBA(float4))
-    - switch all other engine components to use color class where appropriate (materials, vertex data, etc.)
-- voxel objects simulation / sparse element storage for grid, dense only for spatial indices into sparse data
 - voxel object editor
     - palette display
     - erase
@@ -19,8 +13,11 @@ high priority:
     - toggleable arbitrary planes to test against
 - orthographic camera projection
 - improved camera controls
+- voxel objects simulation / sparse element storage for grid, dense only for spatial indices into sparse data
+- transparent voxel rendering (transparent pbr materials?)
+- color class (manage internal float representation, cheap convert to hex, rgba, FromHex(string), FromRGBA(float4))
+    - switch all other engine components to use color class where appropriate (materials, vertex data, etc.)
 - full noise editor (fractal, domain warp, etc.)
-- grid3d empty value / iteration acceleration?
 - chunk generation
     - noise parameters
     - feature types? (rivers, waterfalls, flora, mountains, etc.)
