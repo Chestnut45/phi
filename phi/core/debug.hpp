@@ -34,6 +34,7 @@ namespace Phi
 
             // Debug rendering
             void DrawAABB(const AABB& aabb, const glm::vec3& color = glm::vec3(1.0f));
+            void DrawAABB(const IAABB& aabb, const glm::vec3& color = glm::vec3(1.0f));
             void DrawRay(const Ray& ray, float length = 1.0f, const glm::vec3& color = glm::vec3(1.0f));
             void FlushShapes();
 

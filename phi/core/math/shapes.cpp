@@ -62,6 +62,17 @@ namespace Phi
         return glm::vec2(tNear, tFar);
     }
 
+    glm::vec2 Ray::Slabs(const IAABB& aabb)
+    {
+        glm::vec3 tMin = (glm::vec3(aabb.min) - origin) / direction;
+        glm::vec3 tMax = (glm::vec3(aabb.max) - origin) / direction;
+        glm::vec3 t1 = glm::min(tMin, tMax);
+        glm::vec3 t2 = glm::max(tMin, tMax);
+        float tNear = glm::max(glm::max(t1.x, t1.y), t1.z);
+        float tFar = glm::min(glm::min(t2.x, t2.y), t2.z);
+        return glm::vec2(tNear, tFar);
+    }
+
     // Plane implementation
 
     Plane::Plane()
@@ -107,6 +118,15 @@ namespace Phi
         );
     }
 
+    bool AABB::Intersects(const glm::ivec3& point) const
+    {
+        return (
+            point.x >= min.x && point.x <= max.x &&
+            point.y >= min.y && point.y <= max.y &&
+            point.z >= min.z && point.z <= max.z
+        );
+    }
+
     bool AABB::Intersects(const Plane& plane) const
     {
         // Convert to center / extents form
@@ -124,6 +144,75 @@ namespace Phi
     }
 
     bool AABB::IntersectsFast(const Frustum& frustum) const
+    {
+        const Plane planes[6] =
+        {
+            frustum.near, frustum.far, frustum.left, frustum.right, frustum.top, frustum.bottom
+        };
+
+        // Check all the planes of the frustum
+        for (int i = 0; i < 6; i++)
+        {
+            const Plane& plane = planes[i];
+
+            int nx = plane.normal.x > 0.0f;
+            int ny = plane.normal.y > 0.0f;
+            int nz = plane.normal.z > 0.0f;
+
+            float dot = (plane.normal.x * MinMax(nx).x) + (plane.normal.y * MinMax(ny).y) + (plane.normal.z * MinMax(nz).z);
+
+            if (dot < -plane.distance) return false;
+        }
+
+        return true;
+    }
+
+    // IAABB implementation
+
+    IAABB::IAABB(const glm::ivec3& min, const glm::ivec3& max)
+        : min(min), max(max)
+    {
+    }
+
+    IAABB::~IAABB()
+    {
+    }
+
+    bool IAABB::Intersects(const glm::vec3& point) const
+    {
+        return (
+            point.x >= min.x && point.x <= max.x &&
+            point.y >= min.y && point.y <= max.y &&
+            point.z >= min.z && point.z <= max.z
+        );
+    }
+
+    bool IAABB::Intersects(const glm::ivec3& point) const
+    {
+        return (
+            point.x >= min.x && point.x <= max.x &&
+            point.y >= min.y && point.y <= max.y &&
+            point.z >= min.z && point.z <= max.z
+        );
+    }
+
+    bool IAABB::Intersects(const Plane& plane) const
+    {
+        // Convert to center / extents form
+        glm::vec3 center = glm::vec3(min + max) * 0.5f;
+        glm::vec3 extents = glm::vec3(max) - center;
+        
+        // Calculate projection interval radius
+        float r = extents.x * abs(plane.normal.x) + extents.y * abs(plane.normal.y) + extents.z * abs(plane.normal.z);
+
+        // Calculate distance of center from plane
+        float dist = glm::dot(plane.normal, center) - plane.distance;
+
+        // Intersection happens when distance falls within that radius
+        return abs(dist) <= r;
+    }
+
+    bool IAABB::IntersectsFast(const Frustum& frustum) const
     {
         const Plane planes[6] =
         {

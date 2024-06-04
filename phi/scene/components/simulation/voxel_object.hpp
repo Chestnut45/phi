@@ -7,7 +7,13 @@
 
 namespace Phi
 {
-    // A custom component representing a single voxel object
+    // Data for a single voxel
+    struct Voxel
+    {
+        int material = 0;
+    };
+
+    // A custom component representing an object consisting of grid aligned voxels
     // Used for various simulations involving material interactions and physics
     class VoxelObject : public BaseComponent
     {
@@ -93,8 +99,8 @@ namespace Phi
             // Destroys the internal mesh if one exists
             void DestroyMesh();
 
-            // Returns a const reference to the object local space AABB
-            inline const AABB& GetAABB() const { return aabb; }
+            // Returns a const reference to the voxel-space integer AABB
+            inline const IAABB& GetAABB() const { return aabb; }
         
         // Data / implementation
         private:
@@ -109,7 +115,7 @@ namespace Phi
             Flags::type flags{Flags::None};
 
             // AABB that bounds voxels in object local space
-            AABB aabb{glm::vec3(-16.0f), glm::vec3(16.0f)};
+            IAABB aabb{glm::ivec3(-16.0f), glm::ivec3(16.0f)};
 
             // Internal mesh component (NON-OWNING)
             VoxelMesh* mesh = nullptr;

@@ -122,6 +122,7 @@ namespace Phi
 
         // Intersection tests
         bool Intersects(const glm::vec3& point) const;
+        bool Intersects(const glm::ivec3& point) const;
         bool Intersects(const Plane& plane) const;
 
         // NOTE: May give false positives!
@@ -136,6 +137,32 @@ namespace Phi
         glm::vec3 max;
     };
 
+    // Represents an axis-aligned bounding box with fixed point integer coordinates
+    // Supports point and plane intersection tests
+    struct IAABB
+    {
+        // Creates an IAABB with the given max and min coordinates
+        IAABB(const glm::ivec3& min = glm::ivec3(-1.0f), const glm::ivec3& max = glm::ivec3(1.0f));
+
+        ~IAABB();
+
+        // Intersection tests
+        bool Intersects(const glm::vec3& point) const;
+        bool Intersects(const glm::ivec3& point) const;
+        bool Intersects(const Plane& plane) const;
+
+        // NOTE: May give false positives!
+        // Mostly used for culling since false positives can be corrected later
+        bool IntersectsFast(const Frustum& frustum) const;
+
+        // Accessors
+        const glm::ivec3& MinMax(bool minMax) const { return minMax ? max : min; };
+
+        // Data
+        glm::ivec3 min;
+        glm::ivec3 max;
+    };
+
     struct Ray
     {
         Ray();
@@ -147,6 +174,7 @@ namespace Phi
         // Returns tNear and tFar (vec2.x, vec2.y) using the slabs method
         // Intersection occurs iff tNear < tFar
         glm::vec2 Slabs(const AABB& aabb);
+        glm::vec2 Slabs(const IAABB& aabb);
 
         // Data
         glm::vec3 origin{0.0f};
