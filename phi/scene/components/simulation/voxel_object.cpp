@@ -16,15 +16,204 @@ namespace Phi
     {
     }
 
+    void VoxelObject::Update(float delta)
+    {
+        // Grab reference to scene material data
+        const auto& voxelMaterials = GetNode()->GetScene()->GetVoxelMaterials();
+
+        // Fluid simulation step
+        if (flags & Flags::SimulateFluids)
+        {
+            for (auto& voxel : voxels)
+            {
+                // Only simulate voxels with a fluid material
+                if (!(voxelMaterials[voxel.material].flags & VoxelMaterial::Flags::Liquid)) continue;
+
+                // Calculate grid position
+                int gridX = voxel.position.x - offset.x;
+                int gridY = voxel.position.y - offset.y;
+                int gridZ = voxel.position.z - offset.z;
+
+                // Grab current voxel's index
+                int index = voxelGrid(gridX, gridY, gridZ);
+                int empty = voxelGrid.GetEmptyValue();
+                
+                // Move down if we can
+                if (voxel.position.y > aabb.min.y)
+                {
+                    if (voxelGrid(gridX, gridY - 1, gridZ) == empty)
+                    {
+                        voxelGrid(gridX, gridY, gridZ) = empty;
+                        voxelGrid(gridX, gridY - 1, gridZ) = index;
+                        voxel.position.y--;
+                        continue;
+                    }
+                }
+
+                // Move horizontally if we can
+                if (voxel.position.x > aabb.min.x)
+                {
+                    if (voxelGrid(gridX - 1, gridY, gridZ) == empty)
+                    {
+                        voxelGrid(gridX, gridY, gridZ) = empty;
+                        voxelGrid(gridX - 1, gridY, gridZ) = index;
+                        voxel.position.x--;
+                        continue;
+                    }
+                }
+                if (voxel.position.z > aabb.min.z)
+                {
+                    if (voxelGrid(gridX, gridY, gridZ - 1) == empty)
+                    {
+                        voxelGrid(gridX, gridY, gridZ) = empty;
+                        voxelGrid(gridX, gridY, gridZ - 1) = index;
+                        voxel.position.z--;
+                        continue;
+                    }
+                }
+                if (voxel.position.x < aabb.max.x - 1)
+                {
+                    if (voxelGrid(gridX + 1, gridY, gridZ) == empty)
+                    {
+                        voxelGrid(gridX, gridY, gridZ) = empty;
+                        voxelGrid(gridX + 1, gridY, gridZ) = index;
+                        voxel.position.x++;
+                        continue;
+                    }
+                }
+                if (voxel.position.z < aabb.max.z - 1)
+                {
+                    if (voxelGrid(gridX, gridY, gridZ + 1) == empty)
+                    {
+                        voxelGrid(gridX, gridY, gridZ) = empty;
+                        voxelGrid(gridX, gridY, gridZ + 1) = index;
+                        voxel.position.z++;
+                        continue;
+                    }
+                }
+            }
+
+            // DEBUG: Always update mesh
+            UpdateMesh();
+        }
+    }
+
+    bool VoxelObject::Load(const std::string& path)
+    {
+        // Open the file
+        File file(path, File::Mode::Read);
+        if (file.is_open())
+        {
+            // Container for material ids
+            std::vector<int> loadedMaterialIDs;
+            std::vector<Voxel> newVoxels;
+
+            // Material translation access
+            Scene* scene = GetNode()->GetScene();
+
+            // Parse the file
+            std::string line;
+            int phase = 0;
+            bool zAxisVertical = false;
+            glm::ivec3 min(0);
+            glm::ivec3 max(0);
+            while (std::getline(file, line))
+            {
+                // Ignore comments and empty lines
+                if (line[0] == '#' || line.size() < 1) continue;
+
+                // Setup phase
+                if (line == ".materials")
+                {
+                    phase = 1;
+                    continue;
+                }
+                if (line == ".voxels")
+                {
+                    phase = 2;
+                    continue;
+                }
+                if (line == ".z_axis_vertical") zAxisVertical = true;
+
+                // Material parsing
+                if (phase == 1)
+                {
+                    // Parse index
+                    int id;
+                    std::istringstream(line) >> id;
+
+                    // Extract the name and load the proper ID for it
+                    std::string name = line.substr(line.find_first_of(':') + 2);
+                    loadedMaterialIDs.push_back(scene->GetVoxelMaterialID(name));
+                }
+                
+                // Voxel data parsing
+                if (phase == 2)
+                {
+                    // Parse the voxel data
+                    Voxel voxel;
+
+                    if (zAxisVertical)
+                    {
+                        std::istringstream(line) >> voxel.position.x >> voxel.position.z >> voxel.position.y >> voxel.material;
+                    }
+                    else
+                    {
+                        std::istringstream(line) >> voxel.position.x >> voxel.position.y >> voxel.position.z >> voxel.material;
+                    }
+
+                    // Translate to the currently loaded ID
+                    voxel.material = loadedMaterialIDs[voxel.material];
+                    
+                    // Update min and max coords
+                    // TODO: Safety loading empty models?
+                    min.x = voxel.position.x < min.x ? voxel.position.x : min.x;
+                    min.y = voxel.position.y < min.y ? voxel.position.y : min.y;
+                    min.z = voxel.position.z < min.z ? voxel.position.z : min.z;
+                    max.x = voxel.position.x > max.x ? voxel.position.x : max.x;
+                    max.y = voxel.position.y > max.y ? voxel.position.y : max.y;
+                    max.z = voxel.position.z > max.z ? voxel.position.z : max.z;
+
+                    // Add to voxel data
+                    newVoxels.emplace_back(voxel);
+                }
+            }
+            
+            // Update all internal voxel data
+            voxelGrid.Resize(max.x - min.x + 1, max.y - min.y + 1, max.z - min.z + 1);
+            offset = min;
+            for (const auto& voxel : newVoxels)
+            {
+                SetVoxel(voxel);
+            }
+
+            // Update AABB
+            aabb.min = min;
+            aabb.max = max + 1;
+
+            UpdateMesh();
+            return true;
+        }
+        else
+        {
+            // Give an error message and return
+            Error("File could not be opened: ", file.GetGlobalPath());
+            return false;
+        }
+    }
+
+    void VoxelObject::Reset()
+    {
+        voxelGrid.Clear();
+        if (mesh) mesh->Vertices().clear();
+    }
+
     VoxelObject::RaycastInfo VoxelObject::Raycast(const Ray& ray, int maxSteps)
     {
         RaycastInfo result;
 
         // Create a copy of the ray since we have to offset it
         Ray r = ray;
-
-        // Add half voxel offset since voxels are rendered at their centers
-        r.origin += glm::vec3(0.5f);
 
         // Determine intersection with object
         glm::vec2 tNearFar = r.Slabs(aabb);
@@ -122,113 +311,6 @@ namespace Phi
         return std::move(result);
     }
 
-    bool VoxelObject::Load(const std::string& path)
-    {
-        // Open the file
-        File file(path, File::Mode::Read);
-        if (file.is_open())
-        {
-            // Container for material ids
-            std::vector<int> loadedMaterialIDs;
-            std::vector<Voxel> newVoxels;
-
-            // Parse the file
-            std::string line;
-            int phase = 0;
-            bool zAxisVertical = false;
-            glm::ivec3 min(0);
-            glm::ivec3 max(0);
-            while (std::getline(file, line))
-            {
-                // Ignore comments and empty lines
-                if (line[0] == '#' || line.size() < 1) continue;
-
-                // Setup phase
-                if (line == ".materials")
-                {
-                    phase = 1;
-                    continue;
-                }
-                if (line == ".voxels")
-                {
-                    phase = 2;
-                    continue;
-                }
-                if (line == ".z_axis_vertical") zAxisVertical = true;
-
-                // Material parsing
-                if (phase == 1)
-                {
-                    // Parse index
-                    int id;
-                    std::istringstream(line) >> id;
-
-                    // Extract the name and load the proper ID for it
-                    std::string name = line.substr(line.find_first_of(':') + 2);
-                    loadedMaterialIDs.push_back(GetNode()->GetScene()->GetVoxelMaterialID(name));
-                }
-                
-                // Voxel data parsing
-                if (phase == 2)
-                {
-                    // Parse the voxel data
-                    Voxel voxel;
-
-                    if (zAxisVertical)
-                    {
-                        std::istringstream(line) >> voxel.position.x >> voxel.position.z >> voxel.position.y >> voxel.material;
-                    }
-                    else
-                    {
-                        std::istringstream(line) >> voxel.position.x >> voxel.position.y >> voxel.position.z >> voxel.material;
-                    }
-
-                    // Translate to the currently loaded ID
-                    voxel.material = loadedMaterialIDs[voxel.material];
-                    
-                    // Update min and max coords
-                    // TODO: Safety loading empty models?
-                    min.x = voxel.position.x < min.x ? voxel.position.x : min.x;
-                    min.y = voxel.position.y < min.y ? voxel.position.y : min.y;
-                    min.z = voxel.position.z < min.z ? voxel.position.z : min.z;
-                    max.x = voxel.position.x > max.x ? voxel.position.x : max.x;
-                    max.y = voxel.position.y > max.y ? voxel.position.y : max.y;
-                    max.z = voxel.position.z > max.z ? voxel.position.z : max.z;
-
-                    // Add to voxel data
-                    newVoxels.emplace_back(voxel);
-                }
-            }
-            
-            // Update all internal voxel data
-            voxelGrid.Resize(max.x - min.x + 1, max.y - min.y + 1, max.z - min.z + 1);
-            offset = min;
-            for (const auto& voxel : newVoxels)
-            {
-                SetVoxel(voxel);
-            }
-
-            // Update AABB
-            aabb.min = min;
-            aabb.max = max;
-
-            UpdateMesh();
-            return true;
-        }
-        else
-        {
-            // Give an error message and return
-            Error("File could not be opened: ", file.GetGlobalPath());
-            return false;
-        }
-    }
-
-    void VoxelObject::Reset()
-    {
-        voxelGrid.Clear();
-        if (mesh) mesh->Vertices().clear();
-    }
-
     void VoxelObject::UpdateMesh()
     {
         // Create the mesh if it doesn't exist yet
@@ -244,7 +326,7 @@ namespace Phi
         // Clear vertices and update mesh
         auto& verts = mesh->Vertices();
         verts.clear();
-        Scene* scene = GetNode()->GetScene();
+        const auto& voxelMaterials = GetNode()->GetScene()->GetVoxelMaterials();
         for (const auto& voxel : voxels)
         {
             // TODO: Profile, is visibility culling worth the cost in mesh construction time?
@@ -252,7 +334,7 @@ namespace Phi
             vert.x = voxel.position.x;
             vert.y = voxel.position.y;
             vert.z = voxel.position.z;
-            vert.material = scene->GetVoxelMaterial(voxel.material).pbrID;
+            vert.material = voxelMaterials[voxel.material].pbrID;
             verts.push_back(vert);
         }
     }

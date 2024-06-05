@@ -157,6 +157,10 @@ namespace Phi
             // NOTE: Currently works with PBRMaterial and VoxelMaterial
             void LoadMaterials(const std::string& path);
 
+            // Const access to internal material lists
+            inline const std::vector<PBRMaterial>& GetPBRMaterials() const { return pbrMaterials; }
+            inline const std::vector<VoxelMaterial>& GetVoxelMaterials() const { return voxelMaterials; }
+
             // Camera management
 
             // Returns the currently active camera for the scene

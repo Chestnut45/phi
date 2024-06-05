@@ -55,14 +55,11 @@ void main()
     uint mask = (uint(localCamPos.x > 0) | uint(localCamPos.y > 0) << 1 | uint(localCamPos.z > 0) << 2);
     vertexID ^= mask;
 
-    // Generate cube position (0, 1)
+    // Generate cube position on (0, 1)
     uvec3 xyz = uvec3(vertexID & 0x1, (vertexID & 0x2) >> 1, (vertexID & 0x4) >> 2);
 
-    // Convert to (-0.5, 0.5)
-    vec3 pos = vec3(xyz) - 0.5;
-
     // Apply mesh transformation to calculate world space position
-    vec4 worldPos = meshData[gl_DrawID].transform * vec4(pos + voxelPos, 1.0);
+    vec4 worldPos = meshData[gl_DrawID].transform * vec4(vec3(xyz) + voxelPos, 1.0);
 
     // Set position
     gl_Position = viewProj * worldPos;

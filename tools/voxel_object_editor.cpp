@@ -33,13 +33,14 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
     // Main object
     object = &scene.CreateNode()->AddComponent<VoxelObject>();
     object->Load("data://models/teapot.vobj");
+    object->Enable(VoxelObject::Flags::SimulateFluids);
 
     // Brush mesh
     brushMesh = &scene.CreateNode()->AddComponent<VoxelMesh>();
     brushMesh->Vertices().push_back(VoxelMesh::Vertex());
 
     // Default material
-    selectedVoxel.material = scene.GetVoxelMaterialID("grass");
+    selectedVoxel.material = scene.GetVoxelMaterialID("water");
 }
 
 VoxelObjectEditor::~VoxelObjectEditor()

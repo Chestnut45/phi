@@ -1,5 +1,6 @@
 #pragma once
 
+#include <phi/core/math/rng.hpp>
 #include <phi/core/math/shapes.hpp>
 #include <phi/core/structures/grid_3d.hpp>
 #include <phi/scene/components/base_component.hpp>
@@ -12,6 +13,7 @@ namespace Phi
     {
         glm::ivec3 position{0};
         int material = 0;
+        float pressure = 0.0f;
     };
 
     // A custom component representing an object consisting of grid aligned voxels

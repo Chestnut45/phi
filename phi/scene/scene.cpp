@@ -221,9 +221,18 @@ namespace Phi
         if (activeVoxelMap) activeVoxelMap->Update(delta);
 
         // Update all particle effects
-        for (auto&&[id, effect] : registry.view<CPUParticleEffect>().each())
+        for (auto&&[_, effect] : registry.view<CPUParticleEffect>().each())
         {
             effect.Update(delta);
+        }
+
+        // Update all voxel objects
+        for (auto&&[_, voxelObject] : registry.view<VoxelObject>().each())
+        {
+            voxelObject.Update(delta);
+            
+            // Draw aabbs if requested
+            if (debugDrawing) Debug::Instance().DrawAABB(voxelObject.GetAABB());
         }
 
         // Perform frustum culling if enabled
@@ -277,14 +286,6 @@ namespace Phi
             for (auto&&[id, mesh] : registry.view<VoxelMesh>().each())
             {
                 voxelMeshRenderQueue.push_back(&mesh);
-            }
-        }
-
-        if (debugDrawing)
-        {
-            for (auto&&[id, object] : registry.view<VoxelObject>().each())
-            {
-                Debug::Instance().DrawAABB(object.GetAABB());
             }
         }
 
@@ -691,6 +692,14 @@ namespace Phi
                     // Load properties from node
                     m.name = mat["name"] ? mat["name"].as<std::string>() : "new_material";
                     m.pbrID = mat["pbr_name"] ? GetPBRMaterialID(mat["pbr_name"].as<std::string>()) : m.pbrID;
+
+                    // Material flag parsing
+                    // TODO: This can be faster
+                    for (auto& flag : mat["flags"])
+                    {
+                        std::string flagName = flag.as<std::string>();
+                        if (flagName == "liquid") m.flags |= VoxelMaterial::Flags::Liquid;
+                    }
 
                     // Add the material to the scene
                     RegisterMaterial(m.name, m);

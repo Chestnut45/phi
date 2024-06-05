@@ -15,7 +15,6 @@ high priority:
     - switch all other engine components to use color class where appropriate (materials, vertex data, etc.)
 - orthographic camera projection
 - improved camera controls
-- voxel objects simulation
 - transparent voxel rendering (transparent pbr materials?)
 - full noise editor (fractal, domain warp, etc.)
 - chunk generation
@@ -25,7 +24,6 @@ high priority:
 
 mid priority:
 - gamepad input
-- fluid simulation start
 - 3rd person controller
 - animated voxel models
 - decide material tags from sketchbook list (ferromagnetic (magnetizable, attracted to / repelled by magnets), immovable?)
