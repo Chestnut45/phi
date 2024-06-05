@@ -5,8 +5,11 @@
 
 namespace Phi
 {
-    VoxelObject::VoxelObject()
+    VoxelObject::VoxelObject(int width, int height, int depth, const glm::ivec3& offset)
+        : voxelGrid(width, height, depth, -1), offset(offset), flags(Flags::None)
     {
+        aabb.min = offset;
+        aabb.max = glm::ivec3(width + offset.x, height + offset.y, depth + offset.z);
     }
 
     VoxelObject::~VoxelObject()
@@ -65,16 +68,16 @@ namespace Phi
                 if (gridXYZ.x >= 0 &&
                     gridXYZ.y >= 0 &&
                     gridXYZ.z >= 0 &&
-                    gridXYZ.x < voxels.GetWidth() &&
-                    gridXYZ.y < voxels.GetHeight() &&
-                    gridXYZ.z < voxels.GetDepth())
+                    gridXYZ.x < voxelGrid.GetWidth() &&
+                    gridXYZ.y < voxelGrid.GetHeight() &&
+                    gridXYZ.z < voxelGrid.GetDepth())
                 {
                     // Add to visited list
                     result.visitedVoxels.push_back(xyz);
 
                     // Check for voxel at current position
-                    int voxel = voxels(gridXYZ.x, gridXYZ.y, gridXYZ.z);
-                    if (voxel != 0)
+                    int voxel = voxelGrid(gridXYZ.x, gridXYZ.y, gridXYZ.z);
+                    if (voxel != voxelGrid.GetEmptyValue())
                     {
                         result.firstHit = result.visitedVoxels.size() - 1;
                         break;
@@ -127,7 +130,7 @@ namespace Phi
         {
             // Container for material ids
             std::vector<int> loadedMaterialIDs;
-            std::vector<int> voxelData;
+            std::vector<Voxel> newVoxels;
 
             // Parse the file
             std::string line;
@@ -169,43 +172,40 @@ namespace Phi
                 if (phase == 2)
                 {
                     // Parse the voxel data
-                    int x, y, z, material;
+                    Voxel voxel;
 
                     if (zAxisVertical)
                     {
-                        std::istringstream(line) >> x >> z >> y >> material;
+                        std::istringstream(line) >> voxel.position.x >> voxel.position.z >> voxel.position.y >> voxel.material;
                     }
                     else
                     {
-                        std::istringstream(line) >> x >> y >> z >> material;
+                        std::istringstream(line) >> voxel.position.x >> voxel.position.y >> voxel.position.z >> voxel.material;
                     }
 
                     // Translate to the currently loaded ID
-                    material = loadedMaterialIDs[material];
+                    voxel.material = loadedMaterialIDs[voxel.material];
                     
                     // Update min and max coords
                     // TODO: Safety loading empty models?
-                    min.x = x < min.x ? x : min.x;
-                    min.y = y < min.y ? y : min.y;
-                    min.z = z < min.z ? z : min.z;
-                    max.x = x > max.x ? x : max.x;
-                    max.y = y > max.y ? y : max.y;
-                    max.z = z > max.z ? z : max.z;
+                    min.x = voxel.position.x < min.x ? voxel.position.x : min.x;
+                    min.y = voxel.position.y < min.y ? voxel.position.y : min.y;
+                    min.z = voxel.position.z < min.z ? voxel.position.z : min.z;
+                    max.x = voxel.position.x > max.x ? voxel.position.x : max.x;
+                    max.y = voxel.position.y > max.y ? voxel.position.y : max.y;
+                    max.z = voxel.position.z > max.z ? voxel.position.z : max.z;
 
                     // Add to voxel data
-                    voxelData.emplace_back(x);
-                    voxelData.emplace_back(y);
-                    voxelData.emplace_back(z);
-                    voxelData.emplace_back(material);
+                    newVoxels.emplace_back(voxel);
                 }
             }
             
             // Update all internal voxel data
-            voxels.Resize(max.x - min.x + 1, max.y - min.y + 1, max.z - min.z + 1);
+            voxelGrid.Resize(max.x - min.x + 1, max.y - min.y + 1, max.z - min.z + 1);
             offset = min;
-            for (int i = 0; i < voxelData.size() - 4; i += 4)
+            for (const auto& voxel : newVoxels)
             {
-                voxels(voxelData[i] - offset.x, voxelData[i + 1] - offset.y, voxelData[i + 2] - offset.z) = voxelData[i + 3];
+                SetVoxel(voxel);
             }
 
             // Update AABB
@@ -225,7 +225,7 @@ namespace Phi
 
     void VoxelObject::Reset()
     {
-        voxels.Clear();
+        voxelGrid.Clear();
         if (mesh) mesh->Vertices().clear();
     }
 
@@ -241,53 +241,19 @@ namespace Phi
             }
         }
 
-        // Grab references
+        // Clear vertices and update mesh
         auto& verts = mesh->Vertices();
-        int w = voxels.GetWidth();
-        int h = voxels.GetHeight();
-        int d = voxels.GetDepth();
-        
-        // Add only visible voxels to mesh
         verts.clear();
-        for (int z = 0; z < d; ++z)
+        Scene* scene = GetNode()->GetScene();
+        for (const auto& voxel : voxels)
         {
-            for (int y = 0; y < h; ++y)
-            {
-                for (int x = 0; x < w; ++x)
-                {
-                    const auto& v = voxels(x, y, z);
-                    if (v == 0) continue;
-
-                    // Get world-space position of this voxel
-                    glm::ivec3 position = glm::ivec3(x, y, z) + offset;
-
-                    if (x == 0 || y == 0 || z == 0 || x == w - 1 || y == h - 1 || z == d - 1)
-                    {
-                        VertexVoxelHalfPrecision vert;
-                        vert.x = position.x;
-                        vert.y = position.y;
-                        vert.z = position.z;
-                        vert.material = v;
-                        verts.push_back(vert);
-                        continue;
-                    }
-                    
-                    if (voxels(x - 1, y, z) == 0 ||
-                        voxels(x + 1, y, z) == 0 ||
-                        voxels(x, y - 1, z) == 0 ||
-                        voxels(x, y + 1, z) == 0 ||
-                        voxels(x, y, z - 1) == 0 ||
-                        voxels(x, y, z + 1) == 0)
-                    {
-                        VertexVoxelHalfPrecision vert;
-                        vert.x = position.x;
-                        vert.y = position.y;
-                        vert.z = position.z;
-                        vert.material = v;
-                        verts.push_back(vert);
-                    }
-                }
-            }
+            // TODO: Profile, is visibility culling worth the cost in mesh construction time?
+            VertexVoxelHalfPrecision vert;
+            vert.x = voxel.position.x;
+            vert.y = voxel.position.y;
+            vert.z = voxel.position.z;
+            vert.material = scene->GetVoxelMaterial(voxel.material).pbrID;
+            verts.push_back(vert);
         }
     }
 

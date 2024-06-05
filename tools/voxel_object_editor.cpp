@@ -39,7 +39,7 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
     brushMesh->Vertices().push_back(VoxelMesh::Vertex());
 
     // Default material
-    selectedMaterial = scene.GetVoxelMaterialID("grass");
+    selectedVoxel.material = scene.GetVoxelMaterialID("grass");
 }
 
 VoxelObjectEditor::~VoxelObjectEditor()
@@ -72,42 +72,40 @@ void VoxelObjectEditor::Update(float delta)
     // Grab camera and mouse position
     Camera* cam = scene.GetActiveCamera();
     const glm::vec2& mousePos = input.GetMousePos();
-
-    // Cast ray towards voxel object
+    
+    // Update selected position if we hit a solid voxel with the mouse
     Ray ray = cam->GenerateRay(mousePos.x, mousePos.y);
     VoxelObject::RaycastInfo result = object->Raycast(ray);
-    
-    // Update selected position if we hit a solid voxel
     if (result.firstHit != -1)
     {
-        selectedPosition = result.visitedVoxels[result.firstHit > 0 ? result.firstHit - 1 : 0];
+        selectedVoxel.position = result.visitedVoxels[result.firstHit > 0 ? result.firstHit - 1 : 0];
     }
 
     if (input.IsLMBJustDown())
     {
         // Initiate a brush stroke
-        currentEdits.insert(selectedPosition);
+        currentEdits[selectedVoxel.position] = selectedVoxel;
     }
     else if (input.IsLMBHeld())
     {
         // Add voxel if not already added to current stroke
-        if (currentEdits.count(selectedPosition) == 0)
+        if (currentEdits.count(selectedVoxel.position) == 0)
         {
-            currentEdits.insert(selectedPosition);
+            currentEdits[selectedVoxel.position] = selectedVoxel;
             VoxelMesh::Vertex v;
-            v.x = selectedPosition.x;
-            v.y = selectedPosition.y;
-            v.z = selectedPosition.z;
-            v.material = selectedMaterial;
+            v.x = selectedVoxel.position.x;
+            v.y = selectedVoxel.position.y;
+            v.z = selectedVoxel.position.z;
+            v.material = selectedVoxel.material;
             brushMesh->Vertices().push_back(v);
         }
     }
     else if (input.IsLMBReleased())
     {
         // Flush brush stroke edits
-        for (const auto& pos : currentEdits)
+        for (const auto& it : currentEdits)
         {
-            object->SetVoxel(pos.x, pos.y, pos.z, selectedMaterial);
+            object->SetVoxel(it.second);
         }
         object->UpdateMesh();
         currentEdits.clear();
@@ -116,20 +114,20 @@ void VoxelObjectEditor::Update(float delta)
         auto& verts = brushMesh->Vertices();
         verts.clear();
         VoxelMesh::Vertex v;
-        v.x = selectedPosition.x;
-        v.y = selectedPosition.y;
-        v.z = selectedPosition.z;
-        v.material = selectedMaterial;
+        v.x = selectedVoxel.position.x;
+        v.y = selectedVoxel.position.y;
+        v.z = selectedVoxel.position.z;
+        v.material = selectedVoxel.material;
         verts.push_back(v);
     }
     else
     {
         // Update the brush mesh
         auto& v = brushMesh->Vertices()[0];
-        v.x = selectedPosition.x;
-        v.y = selectedPosition.y;
-        v.z = selectedPosition.z;
-        v.material = selectedMaterial;
+        v.x = selectedVoxel.position.x;
+        v.y = selectedVoxel.position.y;
+        v.z = selectedVoxel.position.z;
+        v.material = selectedVoxel.material;
     }
 
     // Update the voxel world

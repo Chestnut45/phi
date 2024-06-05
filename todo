@@ -3,13 +3,13 @@ design / features
 
 high priority:
 - voxel object editor
+    - material loading
     - palette display
     - erase
     - replace
     - resize canvas
     - save / load .vobj
     - select tool / move tool
-    - test models (player, items, organisms, etc.)
     - toggleable arbitrary planes to test against
 - color class (manage internal float representation, cheap convert to hex, rgba, FromHex(string), FromRGBA(float4))
     - switch all other engine components to use color class where appropriate (materials, vertex data, etc.)
@@ -29,7 +29,7 @@ mid priority:
 - 3rd person controller
 - animated voxel models
 - decide material tags from sketchbook list (ferromagnetic (magnetizable, attracted to / repelled by magnets), immovable?)
-- decide per-voxel / per-object flags (asleep, onFire, etc.)
+- decide per-material / per-voxel / per-object flags (asleep, onFire, etc.)
 - plasma (make a sheet of which tags influence which engine behaviours (if you want x behaviour, make a material with x tag))
 - ^ {scripting language for custom behaviour / interactions (anything that needs more data than a flag)}
 - is organic growth a separate column, or part of the scriptable behaviour?
@@ -58,7 +58,6 @@ low priority:
 - implement rehash / resize + write unit tests for HashMap
 - physics bodies (rigidbody.cpp, etc.)
 - tunable SSAO (radius, blur, samples, etc.)
-- GPUBuffer::BindSectionRange(...) (alleviate bloat)
 - input buffering
 - voxel particle effects?
 

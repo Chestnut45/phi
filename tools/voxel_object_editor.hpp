@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_set>
+#include <unordered_map>
 
 // Phi engine
 #include <phi/phi.hpp>
@@ -41,11 +41,12 @@ class VoxelObjectEditor : public Phi::App
         // Brush mesh
         VoxelMesh* brushMesh = nullptr;
 
-        // Brush settings
-        BrushMode brushMode{BrushMode::Add};
-        int selectedMaterial = 0;
-        glm::ivec3 selectedPosition{0};
-        std::unordered_set<glm::ivec3> currentEdits;
+        // Brush
+        BrushMode brushMode = BrushMode::Add;
+        Voxel selectedVoxel;
+
+        // Brush stroke edits
+        std::unordered_map<glm::ivec3, Voxel> currentEdits;
 
         // Settings
         bool showGUI = false;

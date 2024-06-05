@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cassert>
 #include <algorithm>
 #include <vector>
 
@@ -19,7 +20,8 @@ namespace Phi
             // [0, width)
             // [0, height)
             // [0, depth)
-            Grid3D(int width, int height, int depth);
+            // Empty value is initially a default constructed T() unless otherwise specified
+            Grid3D(int width, int height, int depth, const T& emptyValue = T());
             ~Grid3D();
 
             // Delete copy constructor/assignment
@@ -44,10 +46,11 @@ namespace Phi
             // Resizes and clears the grid
             void Resize(int width, int height, int depth);
 
-            // Dimension accessors
+            // Accessors
             int GetWidth() const { return width; }
             int GetHeight() const { return height; }
             int GetDepth() const { return depth; }
+            const T& GetEmptyValue() const { return emptyValue; }
 
         // Data / implementation
         private:
@@ -57,6 +60,7 @@ namespace Phi
             size_t totalElementSize;
 
             // Data
+            T emptyValue;
             std::vector<T> data;
 
             // Calculate index into the internal array from 3D position
@@ -69,8 +73,11 @@ namespace Phi
     // Template implementation
 
     template <typename T>
-    Grid3D<T>::Grid3D(int width, int height, int depth)
+    Grid3D<T>::Grid3D(int width, int height, int depth, const T& emptyValue)
+        : emptyValue(emptyValue)
     {
+        assert(width > 0 && height > 0 && depth > 0);
+
         // Initialize the grid
         Resize(width, height, depth);
     }
@@ -83,7 +90,7 @@ namespace Phi
     template <typename T>
     void Grid3D<T>::Clear()
     {
-        std::fill(data.begin(), data.end(), T());
+        std::fill(data.begin(), data.end(), emptyValue);
     }
 
     template <typename T>

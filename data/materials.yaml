@@ -113,5 +113,10 @@ voxel_materials: [
         name: water,
         flags: [liquid],
         pbr_name: water
-    }
+    },
+    {
+        name: silver,
+        flags: [solid],
+        pbr_name: silver
+    },
 ]

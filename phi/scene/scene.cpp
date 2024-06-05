@@ -284,7 +284,7 @@ namespace Phi
         {
             for (auto&&[id, object] : registry.view<VoxelObject>().each())
             {
-                Debug::Instance().DrawAABB(object.GetAABB(), glm::vec3(1.0f, 0.0f, 0.0f));
+                Debug::Instance().DrawAABB(object.GetAABB());
             }
         }
 
