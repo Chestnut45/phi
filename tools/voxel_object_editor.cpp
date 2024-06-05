@@ -30,17 +30,52 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
     Environment& env = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_old");
     scene.SetActiveEnvironment(env);
 
-    // Main object
-    object = &scene.CreateNode()->AddComponent<VoxelObject>();
-    object->Load("data://models/teapot.vobj");
-    object->Enable(VoxelObject::Flags::SimulateFluids);
-
     // Brush mesh
     brushMesh = &scene.CreateNode()->AddComponent<VoxelMesh>();
     brushMesh->Vertices().push_back(VoxelMesh::Vertex());
 
+    // Main object
+    object = &scene.CreateNode()->AddComponent<VoxelObject>();
+    object->Load("data://models/teapot.vobj");
+
+    // DEBUG: Add some water and enable simulation
+    const auto& aabb = object->GetAABB();
+    int grass = scene.GetVoxelMaterialID("grass");
+    int water = scene.GetVoxelMaterialID("water");
+    Noise noise;
+    noise.SetFrequency(0.1f);
+    for (int y = aabb.max.y - 1; y >= aabb.min.y; --y)
+    {
+        for (int z = aabb.min.z; z < aabb.max.z; ++z)
+        {
+            for (int x = aabb.min.x; x < aabb.max.x; ++x)
+            {
+                Voxel v;
+                v.position.x = x;
+                v.position.y = y;
+                v.position.z = z;
+                if (y < aabb.min.y + 4)
+                {
+                    if (noise.Sample(x, y, z) < 0.0f) continue;
+                    v.material = grass;
+                }
+                else if (y < aabb.max.y - 3)
+                {
+                    continue;
+                }
+                else
+                {
+                    v.material = water;
+                }
+                object->SetVoxel(v);
+            }
+        }
+    }
+    object->Enable(VoxelObject::Flags::SimulateFluids);
+    ToggleVsync();
+
     // Default material
-    selectedVoxel.material = scene.GetVoxelMaterialID("water");
+    selectedVoxel.material = water;
 }
 
 VoxelObjectEditor::~VoxelObjectEditor()
