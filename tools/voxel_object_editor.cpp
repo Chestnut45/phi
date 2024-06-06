@@ -72,7 +72,6 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
         }
     }
     object->Enable(VoxelObject::Flags::SimulateFluids);
-    ToggleVsync();
 
     // Default material
     selectedVoxel.material = water;

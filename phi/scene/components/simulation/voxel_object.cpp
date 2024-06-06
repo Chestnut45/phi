@@ -18,6 +18,13 @@ namespace Phi
 
     void VoxelObject::Update(float delta)
     {
+        // Update timer
+        timeAccum += delta;
+        if (timeAccum < updateRate) return;
+        
+        // Reset timer on each successful update
+        timeAccum = 0.0f;
+
         // Grab reference to scene material data
         const auto& voxelMaterials = GetNode()->GetScene()->GetVoxelMaterials();
 

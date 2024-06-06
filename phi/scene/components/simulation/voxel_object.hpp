@@ -131,9 +131,6 @@ namespace Phi
 
         // Data / implementation
         private:
-            
-            // Offset to apply to obtain object-local space coordinates
-            glm::ivec3 offset;
 
             // Spatial index for voxels
             // -1 indicates an empty spot on the grid
@@ -142,6 +139,14 @@ namespace Phi
 
             // Array of all voxel data
             std::vector<Voxel> voxels;
+
+            // Offset to apply to obtain object-local space coordinates
+            glm::ivec3 offset;
+
+            // Timing
+            int updatesPerSecond = 60;
+            float timeAccum = 0.0f;
+            float updateRate = 1.0f / updatesPerSecond;
 
             // Simulation flags
             Flags::type flags;

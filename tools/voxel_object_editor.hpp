@@ -49,5 +49,5 @@ class VoxelObjectEditor : public Phi::App
         std::unordered_map<glm::ivec3, Voxel> currentEdits;
 
         // Settings
-        bool showGUI = false;
+        bool showGUI = true;
 };
