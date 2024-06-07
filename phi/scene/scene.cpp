@@ -499,7 +499,7 @@ namespace Phi
         }
         CPUParticleEffect::FlushRenderQueue();
 
-        // Re-enable depth writing
+        // Re-enable depth writing / testing
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
 

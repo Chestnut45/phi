@@ -42,16 +42,16 @@ namespace Phi
                 int gridZ = voxel.position.z - offset.z;
 
                 // Grab current voxel's index
-                int index = voxelGrid(gridX, gridY, gridZ);
+                int& index = voxelGrid(gridX, gridY, gridZ);
                 int empty = voxelGrid.GetEmptyValue();
                 
                 // Move down if we can
                 if (voxel.position.y > aabb.min.y)
                 {
-                    if (voxelGrid(gridX, gridY - 1, gridZ) == empty)
+                    int& belowIndex = voxelGrid(gridX, gridY - 1, gridZ);
+                    if (belowIndex == empty)
                     {
-                        voxelGrid(gridX, gridY, gridZ) = empty;
-                        voxelGrid(gridX, gridY - 1, gridZ) = index;
+                        std::swap(index, belowIndex);
                         voxel.position.y--;
                         continue;
                     }
@@ -60,40 +60,43 @@ namespace Phi
                 // Move horizontally if we can
                 if (voxel.position.x > aabb.min.x)
                 {
-                    if (voxelGrid(gridX - 1, gridY, gridZ) == empty)
+                    int& leftIndex = voxelGrid(gridX - 1, gridY, gridZ);
+                    if (leftIndex == empty)
                     {
-                        voxelGrid(gridX, gridY, gridZ) = empty;
-                        voxelGrid(gridX - 1, gridY, gridZ) = index;
+                        std::swap(index, leftIndex);
                         voxel.position.x--;
                         continue;
                     }
                 }
+
                 if (voxel.position.z > aabb.min.z)
                 {
-                    if (voxelGrid(gridX, gridY, gridZ - 1) == empty)
+                    int& forwardIndex = voxelGrid(gridX, gridY, gridZ - 1);
+                    if (forwardIndex == empty)
                     {
-                        voxelGrid(gridX, gridY, gridZ) = empty;
-                        voxelGrid(gridX, gridY, gridZ - 1) = index;
+                        std::swap(index, forwardIndex);
                         voxel.position.z--;
                         continue;
                     }
                 }
+
                 if (voxel.position.x < aabb.max.x - 1)
                 {
-                    if (voxelGrid(gridX + 1, gridY, gridZ) == empty)
+                    int& rightIndex = voxelGrid(gridX + 1, gridY, gridZ);
+                    if (rightIndex == empty)
                     {
-                        voxelGrid(gridX, gridY, gridZ) = empty;
-                        voxelGrid(gridX + 1, gridY, gridZ) = index;
+                        std::swap(index, rightIndex);
                         voxel.position.x++;
                         continue;
                     }
                 }
+
                 if (voxel.position.z < aabb.max.z - 1)
                 {
-                    if (voxelGrid(gridX, gridY, gridZ + 1) == empty)
+                    int& backIndex = voxelGrid(gridX, gridY, gridZ + 1);
+                    if (backIndex == empty)
                     {
-                        voxelGrid(gridX, gridY, gridZ) = empty;
-                        voxelGrid(gridX, gridY, gridZ + 1) = index;
+                        std::swap(index, backIndex);
                         voxel.position.z++;
                         continue;
                     }
