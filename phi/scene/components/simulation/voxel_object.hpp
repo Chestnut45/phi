@@ -13,7 +13,7 @@ namespace Phi
     {
         glm::ivec3 position{0};
         int material = 0;
-        float pressure = 0.0f;
+        float pressure = 1.0f;
     };
 
     // A custom component representing an object consisting of grid aligned voxels

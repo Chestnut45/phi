@@ -31,7 +31,19 @@ namespace Phi
         // Fluid simulation step
         if (flags & Flags::SimulateFluids)
         {
+            // Grab empty grid value
             int empty = voxelGrid.GetEmptyValue();
+
+            // Initialize neighbour index pointers
+            // NOTE: Initialized to nullptr each iteration, don't worry
+            int* pBelow;
+            int* pAbove;
+            int* pLeft;
+            int* pRight;
+            int* pForward;
+            int* pBack;
+
+            // Iterate all voxels
             for (auto& voxel : voxels)
             {
                 // Only simulate voxels with a fluid material
@@ -42,63 +54,24 @@ namespace Phi
                 int gridY = voxel.position.y - offset.y;
                 int gridZ = voxel.position.z - offset.z;
 
-                // Grab current voxel's index
+                // Grab current voxel index reference
                 int& index = voxelGrid(gridX, gridY, gridZ);
-                
-                // Move down if we can
-                if (voxel.position.y > aabb.min.y)
-                {
-                    int& belowIndex = voxelGrid(gridX, gridY - 1, gridZ);
-                    if (belowIndex == empty)
-                    {
-                        std::swap(index, belowIndex);
-                        voxel.position.y--;
-                        continue;
-                    }
-                }
 
-                // Move horizontally if we can
-                if (voxel.position.x > aabb.min.x)
-                {
-                    int& leftIndex = voxelGrid(gridX - 1, gridY, gridZ);
-                    if (leftIndex == empty)
-                    {
-                        std::swap(index, leftIndex);
-                        voxel.position.x--;
-                        continue;
-                    }
-                }
+                // Reset neighbour index pointers
+                pBelow = (voxel.position.y > aabb.min.y) ? &voxelGrid(gridX, gridY - 1, gridZ) : nullptr;
+                pAbove = (voxel.position.y < aabb.max.y - 1) ? &voxelGrid(gridX, gridY + 1, gridZ) : nullptr;
+                pLeft = (voxel.position.x > aabb.min.x) ? &voxelGrid(gridX - 1, gridY, gridZ) : nullptr;
+                pRight = (voxel.position.x < aabb.max.x - 1) ? &voxelGrid(gridX + 1, gridY, gridZ) : nullptr;
+                pForward = (voxel.position.z > aabb.min.z) ? &voxelGrid(gridX, gridY, gridZ - 1) : nullptr;
+                pBack = (voxel.position.z > aabb.min.z) ? &voxelGrid(gridX, gridY, gridZ + 1) : nullptr;
 
-                if (voxel.position.z > aabb.min.z)
+                // Calculate net forces
+                if (pAbove && *pAbove != empty)
                 {
-                    int& forwardIndex = voxelGrid(gridX, gridY, gridZ - 1);
-                    if (forwardIndex == empty)
+                    Voxel& neighbour = voxels[*pAbove];
+                    if (voxelMaterials[neighbour.material].flags & VoxelMaterial::Flags::Liquid)
                     {
-                        std::swap(index, forwardIndex);
-                        voxel.position.z--;
-                        continue;
-                    }
-                }
-
-                if (voxel.position.x < aabb.max.x - 1)
-                {
-                    int& rightIndex = voxelGrid(gridX + 1, gridY, gridZ);
-                    if (rightIndex == empty)
-                    {
-                        std::swap(index, rightIndex);
-                        voxel.position.x++;
-                        continue;
-                    }
-                }
-
-                if (voxel.position.z < aabb.max.z - 1)
-                {
-                    int& backIndex = voxelGrid(gridX, gridY, gridZ + 1);
-                    if (backIndex == empty)
-                    {
-                        std::swap(index, backIndex);
-                        voxel.position.z++;
-                        continue;
+                        // TODO: Distribute pressure
                     }
                 }
             }
