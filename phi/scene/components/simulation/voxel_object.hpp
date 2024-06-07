@@ -12,6 +12,7 @@ namespace Phi
     struct Voxel
     {
         glm::ivec3 position{0};
+        glm::vec3 velocity{0.0f};
         int material = 0;
         float pressure = 1.0f;
     };
@@ -80,17 +81,22 @@ namespace Phi
                 return index == -1 ? nullptr : &voxels[index];
             }
 
-            // Sets the voxel data using the internal position as coordinates
+            // Sets the voxel data to a specific material
             // NOTE: Does not validate position
-            inline void SetVoxel(const Voxel& voxel)
+            inline void SetVoxel(int x, int y, int z, int material)
             {
-                int x = voxel.position.x - offset.x;
-                int y = voxel.position.y - offset.y;
-                int z = voxel.position.z - offset.z;
-                int index = voxelGrid(x, y, z);
+                // Initialize voxel data
+                Voxel voxel;
+                voxel.position.x = x;
+                voxel.position.y = y;
+                voxel.position.z = z;
+                voxel.material = material;
+
+                // Place on grid (update existing or push back)
+                int& index = voxelGrid(x - offset.x, y - offset.y, z - offset.z);
                 if (index == -1)
                 {
-                    voxelGrid(x, y, z) = voxels.size();
+                    index = voxels.size();
                     voxels.push_back(voxel);
                 }
                 else

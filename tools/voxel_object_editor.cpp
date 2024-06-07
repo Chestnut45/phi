@@ -67,7 +67,7 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
                 {
                     v.material = water;
                 }
-                object->SetVoxel(v);
+                object->SetVoxel(v.position.x, v.position.y, v.position.z, v.material);
             }
         }
     }
@@ -140,7 +140,8 @@ void VoxelObjectEditor::Update(float delta)
         // Flush brush stroke edits
         for (const auto& it : currentEdits)
         {
-            object->SetVoxel(it.second);
+            const Voxel& v = it.second;
+            object->SetVoxel(v.position.x, v.position.y, v.position.z, v.material);
         }
         object->UpdateMesh();
         currentEdits.clear();
