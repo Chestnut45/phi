@@ -31,6 +31,7 @@ namespace Phi
         // Fluid simulation step
         if (flags & Flags::SimulateFluids)
         {
+            int empty = voxelGrid.GetEmptyValue();
             for (auto& voxel : voxels)
             {
                 // Only simulate voxels with a fluid material
@@ -43,7 +44,6 @@ namespace Phi
 
                 // Grab current voxel's index
                 int& index = voxelGrid(gridX, gridY, gridZ);
-                int empty = voxelGrid.GetEmptyValue();
                 
                 // Move down if we can
                 if (voxel.position.y > aabb.min.y)
