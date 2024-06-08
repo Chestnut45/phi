@@ -33,6 +33,7 @@ namespace Phi
         {
             // Grab empty grid value
             int empty = voxelGrid.GetEmptyValue();
+            int h = voxelGrid.GetHeight();
 
             // Iterate all voxels
             for (auto& voxel : voxels)
@@ -57,7 +58,7 @@ namespace Phi
                 int* pBack = (voxel.position.z < aabb.max.z - 1) ? &voxelGrid(gridX, gridY, gridZ + 1) : nullptr;
                 int* pNeighbours[] =
                 {
-                    pAbove, pBelow, pLeft, pRight, pForward, pBack
+                    pBelow, pLeft, pRight, pForward, pBack, pAbove
                 };
 
                 // Calculate and distribute pressure
@@ -76,11 +77,11 @@ namespace Phi
                         float flow = 0.0f;
                         Voxel* vNeighbour = *pNeighbour == empty ? nullptr : &voxels[*pNeighbour];
                         
-                        // Only distribute pressure between liquids
+                        // Only distribute pressure between fluids
                         if (vNeighbour && !(voxelMaterials[vNeighbour->material].flags & VoxelMaterial::Flags::Liquid)) continue;
 
-                        float voxelPressure = voxel.pressure - (gridY * 0.01f);
-                        float neighbourPressure = vNeighbour ? (vNeighbour->pressure + (vNeighbour->position.y - offset.y) * 0.01f) : 0.0f;
+                        float voxelPressure = voxel.pressure;
+                        float neighbourPressure = vNeighbour ? vNeighbour->pressure : 0.0f;
                         float deltaPressure = voxelPressure - neighbourPressure;
 
                         if (pNeighbour == pAbove)
@@ -115,18 +116,21 @@ namespace Phi
                             flow = deltaPressure * 0.5f;
                         }
                         
-                        // Distribute flow
+                        // Distribute flow or move
                         voxel.pressure -= flow;
                         if (vNeighbour) vNeighbour->pressure += flow;
-
-                        // Move if necessary
-                        if (!vNeighbour && deltaPressure > 0.01f)
+                        else
                         {
-                            voxel.position.x += pNeighbour == pLeft ? -1 : pNeighbour == pRight ? 1 : 0;
-                            voxel.position.y += pNeighbour == pBelow ? -1 : pNeighbour == pAbove ? 1 : 0;
-                            voxel.position.z += pNeighbour == pForward ? -1 : pNeighbour == pBack ? 1 : 0;
-                            std::swap(index, *pNeighbour);
-                            continue;
+                            // Move if there is an empty spot below or if pressure says so
+                            if (pNeighbour == pBelow || deltaPressure > 0.01f)
+                            {
+                                voxel.position.x += pNeighbour == pLeft ? -1 : pNeighbour == pRight ? 1 : 0;
+                                voxel.position.y += pNeighbour == pBelow ? -1 : pNeighbour == pAbove ? 1 : 0;
+                                voxel.position.z += pNeighbour == pForward ? -1 : pNeighbour == pBack ? 1 : 0;
+                                // voxel.pressure = 0.0f;
+                                std::swap(index, *pNeighbour);
+                                // continue;
+                            }
                         }
                     }
                 }
