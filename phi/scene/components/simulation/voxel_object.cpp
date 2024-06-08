@@ -55,6 +55,10 @@ namespace Phi
                 int* pRight = (voxel.position.x < aabb.max.x - 1) ? &voxelGrid(gridX + 1, gridY, gridZ) : nullptr;
                 int* pForward = (voxel.position.z > aabb.min.z) ? &voxelGrid(gridX, gridY, gridZ - 1) : nullptr;
                 int* pBack = (voxel.position.z < aabb.max.z - 1) ? &voxelGrid(gridX, gridY, gridZ + 1) : nullptr;
+                int* pNeighbours[] =
+                {
+                    pAbove, pBelow, pLeft, pRight, pForward, pBack
+                };
 
                 // Calculate and distribute pressure
 
@@ -63,7 +67,71 @@ namespace Phi
                 // - don't start with any pressure in the system
                 // - add implicit pressure based on gridY value (guaranteed positive)
                 // - flow modelling
+
+                for (int i = 0; i < 6; ++i)
+                {
+                    int* pNeighbour = pNeighbours[i];
+                    if (pNeighbour)
+                    {
+                        float flow = 0.0f;
+                        Voxel* vNeighbour = *pNeighbour == empty ? nullptr : &voxels[*pNeighbour];
+                        
+                        // Only distribute pressure between liquids
+                        if (vNeighbour && !(voxelMaterials[vNeighbour->material].flags & VoxelMaterial::Flags::Liquid)) continue;
+
+                        float voxelPressure = voxel.pressure - (gridY * 0.01f);
+                        float neighbourPressure = vNeighbour ? (vNeighbour->pressure + (vNeighbour->position.y - offset.y) * 0.01f) : 0.0f;
+                        float deltaPressure = voxelPressure - neighbourPressure;
+
+                        if (pNeighbour == pAbove)
+                        {
+                            // Neighbour is above
+                            if (voxelPressure < 0.01f || neighbourPressure < 0.01f)
+                            {
+                                flow = voxelPressure - 0.01f;
+                            }
+                            else
+                            {
+                                flow = deltaPressure - 0.01f;
+                                flow *= 0.5f;
+                            }
+                        }
+                        else if (pNeighbour == pBelow)
+                        {
+                            // Neighbour is below
+                            if (voxelPressure < 0.01f || neighbourPressure < 0.01f)
+                            {
+                                flow = 0.01f - neighbourPressure;
+                            }
+                            else
+                            {
+                                flow = deltaPressure + 0.01f;
+                                flow *= 0.5f;
+                            }
+                        }
+                        else
+                        {
+                            // Neighbour is same height
+                            flow = deltaPressure * 0.5f;
+                        }
+                        
+                        // Distribute flow
+                        voxel.pressure -= flow;
+                        if (vNeighbour) vNeighbour->pressure += flow;
+
+                        // Move if necessary
+                        if (!vNeighbour && deltaPressure > 0.01f)
+                        {
+                            voxel.position.x += pNeighbour == pLeft ? -1 : pNeighbour == pRight ? 1 : 0;
+                            voxel.position.y += pNeighbour == pBelow ? -1 : pNeighbour == pAbove ? 1 : 0;
+                            voxel.position.z += pNeighbour == pForward ? -1 : pNeighbour == pBack ? 1 : 0;
+                            std::swap(index, *pNeighbour);
+                            continue;
+                        }
+                    }
+                }
                 
+                // TEST METHOD 02
                 // for (int i = 0; i < 6; ++i)
                 // {
                 //     // Grab neighbour index pointer
@@ -101,179 +169,180 @@ namespace Phi
                 //     }
                 // }
 
-                if (pBelow)
-                {
-                    // Calculate pressure and distribute
-                    float deltaPressure = voxel.pressure;
-                    if (*pBelow == empty)
-                    {
-                        // Move due to pressure
-                        if (deltaPressure > 1.0f)
-                        {
-                            voxel.position.y--;
-                            std::swap(*pBelow, index);
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        Voxel& neighbour = voxels[*pBelow];
-                        if (voxelMaterials[neighbour.material].flags & VoxelMaterial::Flags::Liquid)
-                        {
-                            // Distribute pressure
-                            deltaPressure = voxel.pressure - neighbour.pressure + 0.01f;
-                            float flow = deltaPressure * 1.0f;
-                            flow = glm::clamp(flow, voxel.pressure * 0.1666f, -neighbour.pressure * 0.1666f);
-                            voxel.pressure -= flow;
-                            neighbour.pressure += flow;
-                        }
-                    }
-                }
+                // BIASED METHOD 01
+                // if (pBelow)
+                // {
+                //     // Calculate pressure and distribute
+                //     float deltaPressure = voxel.pressure;
+                //     if (*pBelow == empty)
+                //     {
+                //         // Move due to pressure
+                //         if (deltaPressure > 1.0f)
+                //         {
+                //             voxel.position.y--;
+                //             std::swap(*pBelow, index);
+                //             continue;
+                //         }
+                //     }
+                //     else
+                //     {
+                //         Voxel& neighbour = voxels[*pBelow];
+                //         if (voxelMaterials[neighbour.material].flags & VoxelMaterial::Flags::Liquid)
+                //         {
+                //             // Distribute pressure
+                //             deltaPressure = voxel.pressure - neighbour.pressure + 0.01f;
+                //             float flow = deltaPressure * 1.0f;
+                //             flow = glm::clamp(flow, voxel.pressure * 0.1666f, -neighbour.pressure * 0.1666f);
+                //             voxel.pressure -= flow;
+                //             neighbour.pressure += flow;
+                //         }
+                //     }
+                // }
 
-                if (pLeft)
-                {
-                    // Calculate pressure and distribute
-                    float deltaPressure = voxel.pressure;
-                    if (*pLeft == empty)
-                    {
-                        // Move due to pressure
-                        if (deltaPressure > 1.0f)
-                        {
-                            voxel.position.x--;
-                            std::swap(*pLeft, index);
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        Voxel& neighbour = voxels[*pLeft];
-                        if (voxelMaterials[neighbour.material].flags & VoxelMaterial::Flags::Liquid)
-                        {
-                            // Distribute pressure
-                            deltaPressure = voxel.pressure - neighbour.pressure + 0.01f;
-                            float flow = deltaPressure * 1.0f;
-                            flow = glm::clamp(flow, voxel.pressure * 0.1666f, -neighbour.pressure * 0.1666f);
-                            voxel.pressure -= flow;
-                            neighbour.pressure += flow;
-                        }
-                    }
-                }
+                // if (pLeft)
+                // {
+                //     // Calculate pressure and distribute
+                //     float deltaPressure = voxel.pressure;
+                //     if (*pLeft == empty)
+                //     {
+                //         // Move due to pressure
+                //         if (deltaPressure > 1.0f)
+                //         {
+                //             voxel.position.x--;
+                //             std::swap(*pLeft, index);
+                //             continue;
+                //         }
+                //     }
+                //     else
+                //     {
+                //         Voxel& neighbour = voxels[*pLeft];
+                //         if (voxelMaterials[neighbour.material].flags & VoxelMaterial::Flags::Liquid)
+                //         {
+                //             // Distribute pressure
+                //             deltaPressure = voxel.pressure - neighbour.pressure + 0.01f;
+                //             float flow = deltaPressure * 1.0f;
+                //             flow = glm::clamp(flow, voxel.pressure * 0.1666f, -neighbour.pressure * 0.1666f);
+                //             voxel.pressure -= flow;
+                //             neighbour.pressure += flow;
+                //         }
+                //     }
+                // }
 
-                if (pRight)
-                {
-                    // Calculate pressure and distribute
-                    float deltaPressure = voxel.pressure;
-                    if (*pRight == empty)
-                    {
-                        // Move due to pressure
-                        if (deltaPressure > 1.0f)
-                        {
-                            voxel.position.x++;
-                            std::swap(*pRight, index);
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        Voxel& neighbour = voxels[*pRight];
-                        if (voxelMaterials[neighbour.material].flags & VoxelMaterial::Flags::Liquid)
-                        {
-                            // Distribute pressure
-                            deltaPressure = voxel.pressure - neighbour.pressure + 0.01f;
-                            float flow = deltaPressure * 1.0f;
-                            flow = glm::clamp(flow, voxel.pressure * 0.1666f, -neighbour.pressure * 0.1666f);
-                            voxel.pressure -= flow;
-                            neighbour.pressure += flow;
-                        }
-                    }
-                }
+                // if (pRight)
+                // {
+                //     // Calculate pressure and distribute
+                //     float deltaPressure = voxel.pressure;
+                //     if (*pRight == empty)
+                //     {
+                //         // Move due to pressure
+                //         if (deltaPressure > 1.0f)
+                //         {
+                //             voxel.position.x++;
+                //             std::swap(*pRight, index);
+                //             continue;
+                //         }
+                //     }
+                //     else
+                //     {
+                //         Voxel& neighbour = voxels[*pRight];
+                //         if (voxelMaterials[neighbour.material].flags & VoxelMaterial::Flags::Liquid)
+                //         {
+                //             // Distribute pressure
+                //             deltaPressure = voxel.pressure - neighbour.pressure + 0.01f;
+                //             float flow = deltaPressure * 1.0f;
+                //             flow = glm::clamp(flow, voxel.pressure * 0.1666f, -neighbour.pressure * 0.1666f);
+                //             voxel.pressure -= flow;
+                //             neighbour.pressure += flow;
+                //         }
+                //     }
+                // }
 
-                if (pForward)
-                {
-                    // Calculate pressure and distribute
-                    float deltaPressure = voxel.pressure;
-                    if (*pForward == empty)
-                    {
-                        // Move due to pressure
-                        if (deltaPressure > 1.0f)
-                        {
-                            voxel.position.z--;
-                            std::swap(*pForward, index);
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        Voxel& neighbour = voxels[*pForward];
-                        if (voxelMaterials[neighbour.material].flags & VoxelMaterial::Flags::Liquid)
-                        {
-                            // Distribute pressure
-                            deltaPressure = voxel.pressure - neighbour.pressure + 0.01f;
-                            float flow = deltaPressure * 1.0f;
-                            flow = glm::clamp(flow, voxel.pressure * 0.1666f, -neighbour.pressure * 0.1666f);
-                            voxel.pressure -= flow;
-                            neighbour.pressure += flow;
-                        }
-                    }
-                }
+                // if (pForward)
+                // {
+                //     // Calculate pressure and distribute
+                //     float deltaPressure = voxel.pressure;
+                //     if (*pForward == empty)
+                //     {
+                //         // Move due to pressure
+                //         if (deltaPressure > 1.0f)
+                //         {
+                //             voxel.position.z--;
+                //             std::swap(*pForward, index);
+                //             continue;
+                //         }
+                //     }
+                //     else
+                //     {
+                //         Voxel& neighbour = voxels[*pForward];
+                //         if (voxelMaterials[neighbour.material].flags & VoxelMaterial::Flags::Liquid)
+                //         {
+                //             // Distribute pressure
+                //             deltaPressure = voxel.pressure - neighbour.pressure + 0.01f;
+                //             float flow = deltaPressure * 1.0f;
+                //             flow = glm::clamp(flow, voxel.pressure * 0.1666f, -neighbour.pressure * 0.1666f);
+                //             voxel.pressure -= flow;
+                //             neighbour.pressure += flow;
+                //         }
+                //     }
+                // }
 
-                if (pBack)
-                {
-                    // Calculate pressure and distribute
-                    float deltaPressure = voxel.pressure;
-                    if (*pBack == empty)
-                    {
-                        // Move due to pressure
-                        if (deltaPressure > 1.0f)
-                        {
-                            voxel.position.z++;
-                            std::swap(*pBack, index);
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        Voxel& neighbour = voxels[*pBack];
-                        if (voxelMaterials[neighbour.material].flags & VoxelMaterial::Flags::Liquid)
-                        {
-                            // Distribute pressure
-                            deltaPressure = voxel.pressure - neighbour.pressure + 0.01f;
-                            float flow = deltaPressure * 1.0f;
-                            flow = glm::clamp(flow, voxel.pressure * 0.1666f, -neighbour.pressure * 0.1666f);
-                            voxel.pressure -= flow;
-                            neighbour.pressure += flow;
-                        }
-                    }
-                }
+                // if (pBack)
+                // {
+                //     // Calculate pressure and distribute
+                //     float deltaPressure = voxel.pressure;
+                //     if (*pBack == empty)
+                //     {
+                //         // Move due to pressure
+                //         if (deltaPressure > 1.0f)
+                //         {
+                //             voxel.position.z++;
+                //             std::swap(*pBack, index);
+                //             continue;
+                //         }
+                //     }
+                //     else
+                //     {
+                //         Voxel& neighbour = voxels[*pBack];
+                //         if (voxelMaterials[neighbour.material].flags & VoxelMaterial::Flags::Liquid)
+                //         {
+                //             // Distribute pressure
+                //             deltaPressure = voxel.pressure - neighbour.pressure + 0.01f;
+                //             float flow = deltaPressure * 1.0f;
+                //             flow = glm::clamp(flow, voxel.pressure * 0.1666f, -neighbour.pressure * 0.1666f);
+                //             voxel.pressure -= flow;
+                //             neighbour.pressure += flow;
+                //         }
+                //     }
+                // }
 
-                if (pAbove)
-                {
-                    // Calculate pressure and distribute
-                    float deltaPressure = -voxel.pressure;
-                    if (*pAbove == empty)
-                    {
-                        // Move due to pressure
-                        if (deltaPressure > 1.0f)
-                        {
-                            voxel.position.y++;
-                            std::swap(*pAbove, index);
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        Voxel& neighbour = voxels[*pAbove];
-                        if (voxelMaterials[neighbour.material].flags & VoxelMaterial::Flags::Liquid)
-                        {
-                            // Distribute pressure
-                            deltaPressure = voxel.pressure - neighbour.pressure + 0.02f;
-                            float flow = deltaPressure * 1.0f;
-                            flow = glm::clamp(flow, voxel.pressure * 0.1666f, -neighbour.pressure * 0.1666f);
-                            voxel.pressure -= flow;
-                            neighbour.pressure += flow;
-                        }
-                    }
-                }
+                // if (pAbove)
+                // {
+                //     // Calculate pressure and distribute
+                //     float deltaPressure = -voxel.pressure;
+                //     if (*pAbove == empty)
+                //     {
+                //         // Move due to pressure
+                //         if (deltaPressure > 1.0f)
+                //         {
+                //             voxel.position.y++;
+                //             std::swap(*pAbove, index);
+                //             continue;
+                //         }
+                //     }
+                //     else
+                //     {
+                //         Voxel& neighbour = voxels[*pAbove];
+                //         if (voxelMaterials[neighbour.material].flags & VoxelMaterial::Flags::Liquid)
+                //         {
+                //             // Distribute pressure
+                //             deltaPressure = voxel.pressure - neighbour.pressure + 0.02f;
+                //             float flow = deltaPressure * 1.0f;
+                //             flow = glm::clamp(flow, voxel.pressure * 0.1666f, -neighbour.pressure * 0.1666f);
+                //             voxel.pressure -= flow;
+                //             neighbour.pressure += flow;
+                //         }
+                //     }
+                // }
             }
 
             // DEBUG: Always update mesh
