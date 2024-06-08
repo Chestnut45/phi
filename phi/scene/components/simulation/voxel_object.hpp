@@ -12,9 +12,8 @@ namespace Phi
     struct Voxel
     {
         glm::ivec3 position{0};
-        glm::vec3 velocity{0.0f};
         int material = 0;
-        float pressure = 1.0f;
+        float pressure = 2.0f;
     };
 
     // A custom component representing an object consisting of grid aligned voxels

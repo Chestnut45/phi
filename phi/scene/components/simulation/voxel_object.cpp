@@ -65,7 +65,50 @@ namespace Phi
                 pForward = (voxel.position.z > aabb.min.z) ? &voxelGrid(gridX, gridY, gridZ - 1) : nullptr;
                 pBack = (voxel.position.z < aabb.max.z - 1) ? &voxelGrid(gridX, gridY, gridZ + 1) : nullptr;
 
-                // Calculate net forces
+                // Calculate and distribute pressure
+
+                // TODO:
+                // - don't prefer any direction
+                // - don't start with any pressure in the system
+                // - add implicit pressure based on gridY value (guaranteed positive)
+                // - flow modelling
+                
+                // for (int i = 0; i < 6; ++i)
+                // {
+                //     // Grab neighbour index pointer
+                //     int* pNeighbour = neighbours[i];
+
+                //     if (pNeighbour)
+                //     {
+                //         // Calculate pressure and distribute
+                //         float voxelPressure = voxel.pressure + 0.01f * (voxelGrid.GetHeight() - gridY);
+                //         float deltaPressure = voxelPressure;
+                //         if (*pNeighbour != empty)
+                //         {
+                //             Voxel& neighbour = voxels[*pNeighbour];
+                //             if (voxelMaterials[neighbour.material].flags & VoxelMaterial::Flags::Liquid)
+                //             {
+                //                 // Distribute pressure
+                //                 float neighbourPressure = neighbour.pressure + 0.1f * (voxelGrid.GetHeight() - gridY);
+                //                 deltaPressure = voxelPressure - neighbourPressure;
+                //                 float flow = deltaPressure * 1.0f;
+                //                 flow = glm::clamp(flow, voxelPressure * 0.1666f, -neighbourPressure * 0.1666f);
+                //                 voxel.pressure -= flow;
+                //                 neighbour.pressure += flow;
+                //             }
+                //         }
+
+                //         // Move
+                //         if ((deltaPressure > 0.1f || pNeighbour == pBelow) && *pNeighbour == empty)
+                //         {
+                //             voxel.position.x += pNeighbour == pLeft ? -1 : pNeighbour == pRight ? 1 : 0;
+                //             voxel.position.y += pNeighbour == pBelow ? -1 : pNeighbour == pAbove ? 1 : 0;
+                //             voxel.position.z += pNeighbour == pForward ? -1 : pNeighbour == pBack ? 1 : 0;
+                //             std::swap(*pNeighbour, index);
+                //             continue;
+                //         }
+                //     }
+                // }
 
                 if (pBelow)
                 {
