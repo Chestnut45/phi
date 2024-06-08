@@ -34,15 +34,6 @@ namespace Phi
             // Grab empty grid value
             int empty = voxelGrid.GetEmptyValue();
 
-            // Initialize neighbour index pointers
-            // NOTE: Initialized to nullptr each iteration, don't worry
-            int* pBelow;
-            int* pAbove;
-            int* pLeft;
-            int* pRight;
-            int* pForward;
-            int* pBack;
-
             // Iterate all voxels
             for (auto& voxel : voxels)
             {
@@ -57,13 +48,13 @@ namespace Phi
                 // Grab current voxel index reference
                 int& index = voxelGrid(gridX, gridY, gridZ);
 
-                // Reset neighbour index pointers
-                pBelow = (voxel.position.y > aabb.min.y) ? &voxelGrid(gridX, gridY - 1, gridZ) : nullptr;
-                pAbove = (voxel.position.y < aabb.max.y - 1) ? &voxelGrid(gridX, gridY + 1, gridZ) : nullptr;
-                pLeft = (voxel.position.x > aabb.min.x) ? &voxelGrid(gridX - 1, gridY, gridZ) : nullptr;
-                pRight = (voxel.position.x < aabb.max.x - 1) ? &voxelGrid(gridX + 1, gridY, gridZ) : nullptr;
-                pForward = (voxel.position.z > aabb.min.z) ? &voxelGrid(gridX, gridY, gridZ - 1) : nullptr;
-                pBack = (voxel.position.z < aabb.max.z - 1) ? &voxelGrid(gridX, gridY, gridZ + 1) : nullptr;
+                // Initialize neighbour index pointers
+                int* pBelow = (voxel.position.y > aabb.min.y) ? &voxelGrid(gridX, gridY - 1, gridZ) : nullptr;
+                int* pAbove = (voxel.position.y < aabb.max.y - 1) ? &voxelGrid(gridX, gridY + 1, gridZ) : nullptr;
+                int* pLeft = (voxel.position.x > aabb.min.x) ? &voxelGrid(gridX - 1, gridY, gridZ) : nullptr;
+                int* pRight = (voxel.position.x < aabb.max.x - 1) ? &voxelGrid(gridX + 1, gridY, gridZ) : nullptr;
+                int* pForward = (voxel.position.z > aabb.min.z) ? &voxelGrid(gridX, gridY, gridZ - 1) : nullptr;
+                int* pBack = (voxel.position.z < aabb.max.z - 1) ? &voxelGrid(gridX, gridY, gridZ + 1) : nullptr;
 
                 // Calculate and distribute pressure
 
@@ -117,9 +108,12 @@ namespace Phi
                     if (*pBelow == empty)
                     {
                         // Move due to pressure
-                        voxel.position.y--;
-                        std::swap(*pBelow, index);
-                        continue;
+                        if (deltaPressure > 1.0f)
+                        {
+                            voxel.position.y--;
+                            std::swap(*pBelow, index);
+                            continue;
+                        }
                     }
                     else
                     {
