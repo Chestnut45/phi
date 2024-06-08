@@ -117,8 +117,11 @@ namespace Phi
                         }
                         
                         // Distribute flow or move
-                        voxel.pressure -= flow;
-                        if (vNeighbour) vNeighbour->pressure += flow;
+                        if (vNeighbour)
+                        {
+                            voxel.pressure -= flow;
+                            vNeighbour->pressure += flow;
+                        }
                         else
                         {
                             // Move if there is an empty spot below or if pressure says so
@@ -127,9 +130,9 @@ namespace Phi
                                 voxel.position.x += pNeighbour == pLeft ? -1 : pNeighbour == pRight ? 1 : 0;
                                 voxel.position.y += pNeighbour == pBelow ? -1 : pNeighbour == pAbove ? 1 : 0;
                                 voxel.position.z += pNeighbour == pForward ? -1 : pNeighbour == pBack ? 1 : 0;
-                                // voxel.pressure = 0.0f;
+                                voxel.pressure = 0.0f;
                                 std::swap(index, *pNeighbour);
-                                // continue;
+                                continue;
                             }
                         }
                     }
