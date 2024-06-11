@@ -17,6 +17,8 @@ high priority:
 - improved camera controls
 - transparent voxel rendering (transparent pbr materials?)
 - full noise editor (fractal, domain warp, etc.)
+- finalize CA fluid simulation
+- voxel particles (off-grid, momentum based)
 - chunk generation
     - noise parameters
     - feature types? (rivers, waterfalls, flora, mountains, etc.)
@@ -57,7 +59,6 @@ low priority:
 - physics bodies (rigidbody.cpp, etc.)
 - tunable SSAO (radius, blur, samples, etc.)
 - input buffering
-- voxel particle effects?
 
 optimizations:
 - profile voxel mesh render time
