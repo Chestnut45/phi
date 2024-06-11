@@ -14,6 +14,8 @@ namespace Phi
         glm::ivec3 position{0};
         int material = 0;
         float pressure = 0.0f;
+        float newPressure = 0.0f;
+        bool turn = false;
     };
 
     // A custom component representing an object consisting of grid aligned voxels
@@ -161,5 +163,8 @@ namespace Phi
 
             // Internal mesh component (NON-OWNING)
             VoxelMesh *mesh = nullptr;
+
+            // Simulation turn counter
+            bool simulationTurn = false;
     };
 }

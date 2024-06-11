@@ -24,6 +24,7 @@ namespace Phi
         
         // Reset timer on each successful update
         timeAccum = 0.0f;
+        simulationTurn = !simulationTurn;
 
         // Grab reference to scene material data
         const auto& voxelMaterials = GetNode()->GetScene()->GetVoxelMaterials();
@@ -40,6 +41,13 @@ namespace Phi
             {
                 // Only simulate voxels with a fluid material
                 if (!(voxelMaterials[voxel.material].flags & VoxelMaterial::Flags::Liquid)) continue;
+
+                // Update pressure if necessary
+                if (voxel.turn != simulationTurn)
+                {
+                    voxel.turn = simulationTurn;
+                    voxel.pressure = voxel.newPressure;
+                }
 
                 // Calculate grid position
                 int gridX = voxel.position.x - offset.x;
@@ -85,6 +93,13 @@ namespace Phi
                         // Only distribute pressure between fluids
                         if (vNeighbour && !(voxelMaterials[vNeighbour->material].flags & VoxelMaterial::Flags::Liquid)) continue;
 
+                        // Update pressure
+                        if (vNeighbour && vNeighbour->turn != simulationTurn)
+                        {
+                            vNeighbour->turn = simulationTurn;
+                            vNeighbour->pressure = vNeighbour->newPressure;
+                        }
+
                         // DEBUG: Constants that may become material properties
                         static const int basePressure = 1.0f;
                         static const int maxPressure = 0.01f;
@@ -129,12 +144,12 @@ namespace Phi
                         // Distribute flow
                         if (vNeighbour)
                         {
-                            voxel.pressure -= flow;
-                            vNeighbour->pressure += flow;
+                            voxel.newPressure -= flow;
+                            vNeighbour->newPressure += flow;
                         }
 
                         // Update best path
-                        if ((pNeighbour == pBelow && !vNeighbour) || deltaPressure > maxDeltaPressure)
+                        if ((deltaPressure > maxPressure && deltaPressure > maxDeltaPressure) || pNeighbour == pBelow)
                         {
                             maxDeltaPressure = deltaPressure;
                             pBestPath = pNeighbour;
@@ -149,7 +164,7 @@ namespace Phi
                     voxel.position.x += pBestPath == pLeft ? -1 : pBestPath == pRight ? 1 : 0;
                     voxel.position.y += pBestPath == pBelow ? -1 : pBestPath == pAbove ? 1 : 0;
                     voxel.position.z += pBestPath == pForward ? -1 : pBestPath == pBack ? 1 : 0;
-                    voxel.pressure = 0.0f;
+                    voxel.newPressure = 0.0f;
                     
                     // Update grid
                     std::swap(index, *pBestPath);
