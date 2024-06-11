@@ -104,7 +104,10 @@ namespace Phi
                         static const int basePressure = 1.0f;
                         static const int maxPressure = 0.01f;
 
-                        // TODO: Pressure calculation has to take into account height somehow, and default air value should change
+                        // TODO: Flow should only be calculated when vNeighbour is true
+                        // otherwise, only move based on pressure gradient
+
+                        // Calculate pressure
                         float voxelPressure = voxel.pressure + basePressure;
                         float neighbourPressure = vNeighbour ? vNeighbour->pressure + basePressure : 0.0f;
                         float deltaPressure = voxelPressure - neighbourPressure;
@@ -142,14 +145,17 @@ namespace Phi
                         }
                         
                         // Distribute flow
+                        flow = glm::clamp(flow, voxelPressure * 0.1666f, -neighbourPressure * 0.1666f);
+                        
+                        voxel.newPressure -= flow;
                         if (vNeighbour)
                         {
-                            voxel.newPressure -= flow;
+                            
                             vNeighbour->newPressure += flow;
                         }
 
                         // Update best path
-                        if ((deltaPressure > maxPressure && deltaPressure > maxDeltaPressure) || pNeighbour == pBelow)
+                        if (deltaPressure > maxDeltaPressure)
                         {
                             maxDeltaPressure = deltaPressure;
                             pBestPath = pNeighbour;
@@ -164,7 +170,7 @@ namespace Phi
                     voxel.position.x += pBestPath == pLeft ? -1 : pBestPath == pRight ? 1 : 0;
                     voxel.position.y += pBestPath == pBelow ? -1 : pBestPath == pAbove ? 1 : 0;
                     voxel.position.z += pBestPath == pForward ? -1 : pBestPath == pBack ? 1 : 0;
-                    voxel.newPressure = 0.0f;
+                    // voxel.newPressure = 0.0f;
                     
                     // Update grid
                     std::swap(index, *pBestPath);
