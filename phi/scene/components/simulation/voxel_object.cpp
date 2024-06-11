@@ -80,43 +80,49 @@ namespace Phi
                         // Only distribute pressure between fluids
                         if (vNeighbour && !(voxelMaterials[vNeighbour->material].flags & VoxelMaterial::Flags::Liquid)) continue;
 
+                        // TODO: Pressure calculation has to take into account height somehow, and default air value should change
                         float voxelPressure = voxel.pressure;
                         float neighbourPressure = vNeighbour ? vNeighbour->pressure : 0.0f;
                         float deltaPressure = voxelPressure - neighbourPressure;
 
+                        // DEBUG: Constants that may become material properties
+                        static const int maxMass = 1.0f;
+                        static const int maxCompress = 0.01f;
+
                         if (pNeighbour == pAbove)
                         {
                             // Neighbour is above
-                            if (voxelPressure < 0.01f || neighbourPressure < 0.01f)
+                            if (voxelPressure <= maxMass || neighbourPressure <= maxMass)
                             {
-                                flow = voxelPressure - 0.01f;
+                                flow = voxelPressure - maxMass;
                             }
                             else
                             {
-                                flow = deltaPressure - 0.01f;
+                                flow = (voxelPressure + neighbourPressure) - maxCompress;
                                 flow *= 0.5f;
                             }
                         }
                         else if (pNeighbour == pBelow)
                         {
                             // Neighbour is below
-                            if (voxelPressure < 0.01f || neighbourPressure < 0.01f)
+                            if (voxelPressure <= maxMass || neighbourPressure <= maxMass)
                             {
-                                flow = 0.01f - neighbourPressure;
+                                flow = maxMass - neighbourPressure;
                             }
                             else
                             {
-                                flow = deltaPressure + 0.01f;
+                                flow = (voxelPressure + neighbourPressure) + maxCompress;
                                 flow *= 0.5f;
                             }
                         }
                         else
                         {
                             // Neighbour is same height
-                            flow = deltaPressure * 0.5f;
+                            flow = (voxelPressure + neighbourPressure) * 0.5f;
                         }
                         
                         // Distribute flow or move
+                        
                         if (vNeighbour)
                         {
                             voxel.pressure -= flow;
@@ -124,13 +130,16 @@ namespace Phi
                         }
                         else
                         {
+                            // voxel.pressure -= flow;
+
                             // Move if there is an empty spot below or if pressure says so
-                            if (pNeighbour == pBelow || deltaPressure > 0.01f)
+                            // TODO: delta pressure is the wrong thing to check
+                            if (pNeighbour == pBelow || voxel.pressure > maxMass)
                             {
                                 voxel.position.x += pNeighbour == pLeft ? -1 : pNeighbour == pRight ? 1 : 0;
                                 voxel.position.y += pNeighbour == pBelow ? -1 : pNeighbour == pAbove ? 1 : 0;
                                 voxel.position.z += pNeighbour == pForward ? -1 : pNeighbour == pBack ? 1 : 0;
-                                voxel.pressure = 0.0f;
+                                voxel.pressure = 1.0f;
                                 std::swap(index, *pNeighbour);
                                 continue;
                             }
