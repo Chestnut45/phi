@@ -101,151 +101,153 @@ namespace Phi
 
                 // METHOD 02: Biased branching (bad but fast)
                 // Index to move to (if any)
-                // int* pMoveIndex = nullptr;
-                // int fluidNeighbours = 0;
+                int* pMoveIndex = nullptr;
+                int fluidNeighbours = 0;
 
-                // for (int i = 0; i < 6; ++i)
-                // {
-                //     int* pNeighbour = pNeighbours[i];
-                //     if (pNeighbour)
-                //     {
-                //         // Grab neighbour data if it exists
-                //         Voxel* vNeighbour = *pNeighbour == empty ? nullptr : &voxels[*pNeighbour];
-
-                //         // If neighbour exists
-                //         if (vNeighbour)
-                //         {
-                //             // Neighbour does exist, continue if fluid
-                //             if (voxelMaterials[vNeighbour->material].flags & VoxelMaterial::Flags::Liquid)
-                //             {
-                //                 // Update count
-                //                 fluidNeighbours++;
-                //             }
-                //         }
-                //         else
-                //         {
-                //             // Neighbour does not exist, should we move?
-                //             if (pNeighbour == pBelow)
-                //             {
-                //                 // Move down if possible
-                //                 pMoveIndex = pNeighbour;
-                //             }
-                //             else if (pNeighbour == pAbove)
-                //             {
-                //                 // Move up due to pressure?
-                //             }
-                //             else
-                //             {
-                //                 // Spread out horizontally (unless we can move down)
-                //                 pMoveIndex = (pMoveIndex && pMoveIndex == pBelow) ? pMoveIndex : pNeighbour;
-                //             }
-                //         }
-                //     }
-                // }
-
-                // // Move if we can
-                // if (pMoveIndex && (pMoveIndex == pBelow || fluidNeighbours > 0))
-                // {
-                //     // Update voxel
-                //     voxel.position.x += pMoveIndex == pLeft ? -1 : pMoveIndex == pRight ? 1 : 0;
-                //     voxel.position.y += pMoveIndex == pBelow ? -1 : pMoveIndex == pAbove ? 1 : 0;
-                //     voxel.position.z += pMoveIndex == pForward ? -1 : pMoveIndex == pBack ? 1 : 0;
-                //     std::swap(*pMoveIndex, index);
-                // }
-
-                // METHOD 01: Path of least resistance / pressure distribution
-                float maxFlow = 0.0f;
-                int* pBestPath = nullptr;
+                static RNG rng;
 
                 for (int i = 0; i < 6; ++i)
                 {
                     int* pNeighbour = pNeighbours[i];
                     if (pNeighbour)
                     {
-                        float flow = 0.0f;
+                        // Grab neighbour data if it exists
                         Voxel* vNeighbour = *pNeighbour == empty ? nullptr : &voxels[*pNeighbour];
-                        
-                        // Only distribute pressure between fluids
-                        if (vNeighbour && !(voxelMaterials[vNeighbour->material].flags & VoxelMaterial::Flags::Liquid)) continue;
 
-                        // Update pressure
-                        if (vNeighbour && vNeighbour->turn != simulationTurn)
+                        // If neighbour exists
+                        if (vNeighbour)
                         {
-                            vNeighbour->turn = simulationTurn;
-                            vNeighbour->pressure = vNeighbour->newPressure;
-                        }
-
-                        // TODO: Flow should only be calculated when vNeighbour is true
-                        // otherwise, only move based on pressure gradient
-
-                        // Calculate pressure
-                        float voxelPressure = voxel.pressure + basePressure;
-                        float neighbourPressure = vNeighbour ? vNeighbour->pressure + basePressure : 0.0f;
-                        float deltaPressure = voxelPressure - neighbourPressure;
-
-                        if (pNeighbour == pAbove)
-                        {
-                            // Neighbour is above
-                            if (voxelPressure < basePressure || neighbourPressure < basePressure)
+                            // Neighbour does exist, continue if fluid
+                            if (voxelMaterials[vNeighbour->material].flags & VoxelMaterial::Flags::Liquid)
                             {
-                                flow = voxelPressure - basePressure;
-                            }
-                            else
-                            {
-                                flow = (voxelPressure + neighbourPressure) - maxPressure;
-                                flow *= 0.5f;
-                            }
-                        }
-                        else if (pNeighbour == pBelow)
-                        {
-                            // Neighbour is below
-                            if (voxelPressure < basePressure || neighbourPressure < basePressure)
-                            {
-                                flow = basePressure - neighbourPressure;
-                            }
-                            else
-                            {
-                                flow = (voxelPressure + neighbourPressure) + maxPressure;
-                                flow *= 0.5f;
+                                // Update count
+                                fluidNeighbours++;
                             }
                         }
                         else
                         {
-                            // Neighbour is same height
-                            flow = (voxelPressure + neighbourPressure) * 0.5f;
-                        }
-                        
-                        // Distribute flow
-                        // flow *= 0.1666f;
-                        flow = glm::clamp(flow, voxelPressure * 0.1666f, -neighbourPressure * 0.1666f);
-                        
-                        if (vNeighbour)
-                        {
-                            voxel.newPressure -= flow;
-                            vNeighbour->newPressure += flow;
-                        }
-
-                        // Update best path
-                        if (pNeighbour == pBelow || (flow > maxFlow && pNeighbour != pAbove && !vNeighbour))
-                        {
-                            maxFlow = flow;
-                            pBestPath = pNeighbour;
+                            // Neighbour does not exist, should we move?
+                            if (pNeighbour == pBelow)
+                            {
+                                // Move down if possible
+                                pMoveIndex = pNeighbour;
+                            }
+                            else if (pNeighbour == pAbove)
+                            {
+                                // Move up due to pressure?
+                            }
+                            else
+                            {
+                                // Spread out horizontally
+                                pMoveIndex = pMoveIndex ? pMoveIndex : rng.FlipCoin() ? pNeighbour : pMoveIndex;
+                            }
                         }
                     }
                 }
 
-                // Move to area with the greatest pressure difference
-                if (pBestPath && *pBestPath == empty)
+                // Move if we can
+                if (pMoveIndex)
                 {
                     // Update voxel
-                    voxel.position.x += pBestPath == pLeft ? -1 : pBestPath == pRight ? 1 : 0;
-                    voxel.position.y += pBestPath == pBelow ? -1 : pBestPath == pAbove ? 1 : 0;
-                    voxel.position.z += pBestPath == pForward ? -1 : pBestPath == pBack ? 1 : 0;
-                    // voxel.newPressure = 0.0f;
-                    
-                    // Update grid
-                    std::swap(index, *pBestPath);
+                    voxel.position.x += pMoveIndex == pLeft ? -1 : pMoveIndex == pRight ? 1 : 0;
+                    voxel.position.y += pMoveIndex == pBelow ? -1 : pMoveIndex == pAbove ? 1 : 0;
+                    voxel.position.z += pMoveIndex == pForward ? -1 : pMoveIndex == pBack ? 1 : 0;
+                    std::swap(*pMoveIndex, index);
                 }
+
+                // METHOD 01: Path of least resistance / pressure distribution
+                // float maxFlow = 0.0f;
+                // int* pBestPath = nullptr;
+
+                // for (int i = 0; i < 6; ++i)
+                // {
+                //     int* pNeighbour = pNeighbours[i];
+                //     if (pNeighbour)
+                //     {
+                //         float flow = 0.0f;
+                //         Voxel* vNeighbour = *pNeighbour == empty ? nullptr : &voxels[*pNeighbour];
+                        
+                //         // Only distribute pressure between fluids
+                //         if (vNeighbour && !(voxelMaterials[vNeighbour->material].flags & VoxelMaterial::Flags::Liquid)) continue;
+
+                //         // Update pressure
+                //         if (vNeighbour && vNeighbour->turn != simulationTurn)
+                //         {
+                //             vNeighbour->turn = simulationTurn;
+                //             vNeighbour->pressure = vNeighbour->newPressure;
+                //         }
+
+                //         // TODO: Flow should only be calculated when vNeighbour is true
+                //         // otherwise, only move based on pressure gradient
+
+                //         // Calculate pressure
+                //         float voxelPressure = voxel.pressure + basePressure;
+                //         float neighbourPressure = vNeighbour ? vNeighbour->pressure + basePressure : 0.0f;
+                //         float deltaPressure = voxelPressure - neighbourPressure;
+
+                //         if (pNeighbour == pAbove)
+                //         {
+                //             // Neighbour is above
+                //             if (voxelPressure < basePressure || neighbourPressure < basePressure)
+                //             {
+                //                 flow = voxelPressure - basePressure;
+                //             }
+                //             else
+                //             {
+                //                 flow = (voxelPressure + neighbourPressure) - maxPressure;
+                //                 flow *= 0.5f;
+                //             }
+                //         }
+                //         else if (pNeighbour == pBelow)
+                //         {
+                //             // Neighbour is below
+                //             if (voxelPressure < basePressure || neighbourPressure < basePressure)
+                //             {
+                //                 flow = basePressure - neighbourPressure;
+                //             }
+                //             else
+                //             {
+                //                 flow = (voxelPressure + neighbourPressure) + maxPressure;
+                //                 flow *= 0.5f;
+                //             }
+                //         }
+                //         else
+                //         {
+                //             // Neighbour is same height
+                //             flow = (voxelPressure + neighbourPressure) * 0.5f;
+                //         }
+                        
+                //         // Distribute flow
+                //         // flow *= 0.1666f;
+                //         flow = glm::clamp(flow, voxelPressure * 0.1666f, -neighbourPressure * 0.1666f);
+                        
+                //         if (vNeighbour)
+                //         {
+                //             voxel.newPressure -= flow;
+                //             vNeighbour->newPressure += flow;
+                //         }
+
+                //         // Update best path
+                //         if (pNeighbour == pBelow || (flow > maxFlow && pNeighbour != pAbove && !vNeighbour))
+                //         {
+                //             maxFlow = flow;
+                //             pBestPath = pNeighbour;
+                //         }
+                //     }
+                // }
+
+                // // Move to area with the greatest pressure difference
+                // if (pBestPath && *pBestPath == empty)
+                // {
+                //     // Update voxel
+                //     voxel.position.x += pBestPath == pLeft ? -1 : pBestPath == pRight ? 1 : 0;
+                //     voxel.position.y += pBestPath == pBelow ? -1 : pBestPath == pAbove ? 1 : 0;
+                //     voxel.position.z += pBestPath == pForward ? -1 : pBestPath == pBack ? 1 : 0;
+                //     voxel.newPressure = 0.0f;
+                    
+                //     // Update grid
+                //     std::swap(index, *pBestPath);
+                // }
             }
 
             // DEBUG: Always update mesh
