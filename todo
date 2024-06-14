@@ -9,6 +9,7 @@ high priority:
     - replace
     - resize canvas
     - save / load .vobj
+    - simulation toggles / controls
     - select tool / move tool
     - toggleable arbitrary planes to test against
 - color class (manage internal float representation, cheap convert to hex, rgba, FromHex(string), FromRGBA(float4))
