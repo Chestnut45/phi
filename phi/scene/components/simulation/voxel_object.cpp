@@ -32,6 +32,10 @@ namespace Phi
         // Fluid simulation step
         if (flags & Flags::SimulateFluids)
         {
+            // Debug constants
+            static float basePressure = 1.0f;
+            static float maxPressure = 0.1f;
+
             // Grab empty grid value
             int empty = voxelGrid.GetEmptyValue();
             int h = voxelGrid.GetHeight();
@@ -64,48 +68,14 @@ namespace Phi
                 int* pRight = (voxel.position.x < aabb.max.x - 1) ? &voxelGrid(gridX + 1, gridY, gridZ) : nullptr;
                 int* pForward = (voxel.position.z > aabb.min.z) ? &voxelGrid(gridX, gridY, gridZ - 1) : nullptr;
                 int* pBack = (voxel.position.z < aabb.max.z - 1) ? &voxelGrid(gridX, gridY, gridZ + 1) : nullptr;
+                int* pNeighbours[] = { pBelow, pAbove, pLeft, pRight, pForward, pBack };
 
-                int* pNeighbours[] =
-                {
-                    pBelow, pAbove, pLeft, pRight, pForward, pBack
-                };
-
-                // Calculate and distribute pressure
-
-                // TODO:
-                // - don't prefer any direction
-                // - don't start with any pressure in the system
-                // - add implicit pressure based on gridY value (guaranteed positive)
-                // - flow modelling
-
-                // DEBUG: Constants that may become material properties
-                static const int basePressure = 1.0f;
-                static const int maxPressure = 0.01f;
-
-                // METHOD 03: Pathfinding Pressure
-                
-                // Is moving down possible?
-                // if (pBelow)
-                // {
-                //     // Can we move immediately?
-                //     if (*pBelow == empty)
-                //     {
-                        
-                //     }
-                //     else
-                //     {
-                //         // Grab below neighbour
-                //         Voxel* vBelow = &voxels[*pBelow];
-                //     }
-                // }
-
-                // METHOD 02: Biased branching (bad but fast)
-                // Index to move to (if any)
-                int* pMoveIndex = nullptr;
+                // Pointers to the grid index of each possible move detected
+                int* pMoveInds[6];
+                int possibleMoves = 0;
                 int fluidNeighbours = 0;
 
-                static RNG rng;
-
+                // Iterate all neighbours
                 for (int i = 0; i < 6; ++i)
                 {
                     int* pNeighbour = pNeighbours[i];
@@ -122,6 +92,23 @@ namespace Phi
                             {
                                 // Update count
                                 fluidNeighbours++;
+
+                                // Update pressure
+                                if (vNeighbour->turn != simulationTurn)
+                                {
+                                    vNeighbour->turn = simulationTurn;
+                                    vNeighbour->pressure = vNeighbour->newPressure;
+                                }
+
+                                // Calculate pressure flow
+                                float flow = (voxel.pressure + vNeighbour->pressure);
+                                flow += pNeighbour == pBelow ? maxPressure : pNeighbour == pAbove ? -maxPressure : 0.0f;
+                                flow *= 0.5f;
+                                flow = glm::clamp(flow, voxel.pressure * 0.1666f, -vNeighbour->pressure * 0.1666f);
+
+                                // Distribute pressure
+                                voxel.newPressure -= flow;
+                                vNeighbour->newPressure += flow;
                             }
                         }
                         else
@@ -130,7 +117,7 @@ namespace Phi
                             if (pNeighbour == pBelow)
                             {
                                 // Move down if possible
-                                pMoveIndex = pNeighbour;
+                                pMoveInds[possibleMoves++] = pNeighbour;
                             }
                             else if (pNeighbour == pAbove)
                             {
@@ -139,23 +126,32 @@ namespace Phi
                             else
                             {
                                 // Spread out horizontally
-                                pMoveIndex = pMoveIndex ? pMoveIndex : rng.FlipCoin() ? pNeighbour : pMoveIndex;
+                                pMoveInds[possibleMoves++] = pNeighbour;
                             }
                         }
                     }
                 }
 
                 // Move if we can
-                if (pMoveIndex)
+                if (possibleMoves > 0)
                 {
+                    // RNG used for the fluid simulation
+                    static RNG rng;
+
+                    // Make decision
+                    int* pMoveIndex = pMoveInds[0] != pBelow ? (voxel.pressure > basePressure + maxPressure || fluidNeighbours > 0) ? pMoveInds[rng.NextInt(0, possibleMoves - 1)] : nullptr : pMoveInds[0];
+
                     // Update voxel
-                    voxel.position.x += pMoveIndex == pLeft ? -1 : pMoveIndex == pRight ? 1 : 0;
-                    voxel.position.y += pMoveIndex == pBelow ? -1 : pMoveIndex == pAbove ? 1 : 0;
-                    voxel.position.z += pMoveIndex == pForward ? -1 : pMoveIndex == pBack ? 1 : 0;
-                    std::swap(*pMoveIndex, index);
+                    if (pMoveIndex)
+                    {
+                        voxel.position.x += pMoveIndex == pLeft ? -1 : pMoveIndex == pRight ? 1 : 0;
+                        voxel.position.y += pMoveIndex == pBelow ? -1 : pMoveIndex == pAbove ? 1 : 0;
+                        voxel.position.z += pMoveIndex == pForward ? -1 : pMoveIndex == pBack ? 1 : 0;
+                        std::swap(*pMoveIndex, index);
+                    }
                 }
 
-                // METHOD 01: Path of least resistance / pressure distribution
+                // OLD METHOD 01: Path of least resistance / pressure distribution
                 // float maxFlow = 0.0f;
                 // int* pBestPath = nullptr;
 

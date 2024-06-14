@@ -43,7 +43,7 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
     int grass = scene.GetVoxelMaterialID("grass");
     int water = scene.GetVoxelMaterialID("water");
     Noise noise;
-    noise.SetFrequency(0.1f);
+    noise.SetFrequency(0.04f);
     for (int y = aabb.max.y - 1; y >= aabb.min.y; --y)
     {
         for (int z = aabb.min.z; z < aabb.max.z; ++z)
@@ -59,7 +59,7 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
                     if (noise.Sample(x, y, z) < 0.0f) continue;
                     v.material = grass;
                 }
-                else if (y < aabb.max.y - 3)
+                else if (y < aabb.max.y - 1)
                 {
                     continue;
                 }
