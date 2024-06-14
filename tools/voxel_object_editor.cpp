@@ -73,6 +73,7 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
             }
         }
     }
+    // object->UpdateMesh();
     object->Enable(VoxelObject::Flags::SimulateFluids);
 
     // Default material

@@ -16,28 +16,21 @@ high priority:
     - switch all other engine components to use color class where appropriate (materials, vertex data, etc.)
 - orthographic camera projection
 - improved camera controls
-- transparent voxel rendering (transparent pbr materials?)
+- transparent voxels
+- emissive voxels (bloom + emissive pbr materials?)
 - full noise editor (fractal, domain warp, etc.)
 - finalize CA fluid simulation
 - voxel particles (off-grid, momentum based)
-- chunk generation
-    - noise parameters
-    - feature types? (rivers, waterfalls, flora, mountains, etc.)
-    - structure generation / model stamping
 
 mid priority:
 - gamepad input
 - 3rd person controller
 - animated voxel models
-- decide material tags from sketchbook list (ferromagnetic (magnetizable, attracted to / repelled by magnets), immovable?)
-- decide per-material / per-voxel / per-object flags (asleep, onFire, etc.)
-- ^ {scripting language for custom behaviour / interactions (anything that needs more data than a flag)}
-- is organic growth a separate column, or part of the scriptable behaviour?
 - core engine simulation systems:
     - fire (spread, burn, smoke, ignite, damage, melt, extinguish)
     - electricity (voltage from sources, current flows through voxels depending on conductivity, can magnetize ferromagnetic materials)
     - magnets (monopoles, materials can have base charge, ferromagnetic voxels can be magnetized either by an electromagnet, or impulse charge)
-    - gravity (affects all particles / objects)
+    - physics voxel objects (collision, force accumulation)
     - waves / effects (static / dynamic hitboxes that interact [apply force, adjust state, etc.] with entities or voxels)
     - explosions
     - acid
@@ -57,6 +50,7 @@ low priority:
 - physics bodies (rigidbody.cpp, etc.)
 - tunable SSAO (radius, blur, samples, etc.)
 - input buffering
+- structure generation (WFC)
 
 optimizations:
 - profile voxel mesh render time

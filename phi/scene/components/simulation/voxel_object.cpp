@@ -32,13 +32,8 @@ namespace Phi
         // Fluid simulation step
         if (flags & Flags::SimulateFluids)
         {
-            // Debug constants
-            static float basePressure = 1.0f;
-            static float maxPressure = 0.1f;
-
             // Grab empty grid value
             int empty = voxelGrid.GetEmptyValue();
-            int h = voxelGrid.GetHeight();
 
             // Iterate all voxels
             for (auto& voxel : voxels)
@@ -87,48 +82,13 @@ namespace Phi
                         // If neighbour exists
                         if (vNeighbour)
                         {
-                            // Neighbour does exist, continue if fluid
-                            if (voxelMaterials[vNeighbour->material].flags & VoxelMaterial::Flags::Liquid)
-                            {
-                                // Update count
-                                fluidNeighbours++;
-
-                                // OLD: Pressure distribution testing
-                                // // Update pressure
-                                // if (vNeighbour->turn != simulationTurn)
-                                // {
-                                //     vNeighbour->turn = simulationTurn;
-                                //     vNeighbour->pressure = vNeighbour->newPressure;
-                                // }
-
-                                // // Calculate pressure flow
-                                // float flow = (voxel.pressure + vNeighbour->pressure);
-                                // flow += pNeighbour == pBelow ? maxPressure : pNeighbour == pAbove ? -maxPressure : 0.0f;
-                                // flow *= 0.5f;
-                                // flow = glm::clamp(flow, voxel.pressure * 0.1666f, -vNeighbour->pressure * 0.1666f);
-
-                                // // Distribute pressure
-                                // voxel.newPressure -= flow;
-                                // vNeighbour->newPressure += flow;
-                            }
+                            // Count fluid neighbours
+                            fluidNeighbours += (voxelMaterials[vNeighbour->material].flags & VoxelMaterial::Flags::Liquid);
                         }
                         else
                         {
                             // Neighbour does not exist, should we move?
-                            if (pNeighbour == pBelow)
-                            {
-                                // Move down if possible
-                                pMoveInds[possibleMoves++] = pNeighbour;
-                            }
-                            else if (pNeighbour == pAbove)
-                            {
-                                // Move up due to pressure?
-                            }
-                            else
-                            {
-                                // Spread out horizontally
-                                pMoveInds[possibleMoves++] = pNeighbour;
-                            }
+                            pMoveInds[possibleMoves++] = pNeighbour != pAbove ? pNeighbour : pMoveInds[--possibleMoves];
                         }
                     }
                 }
@@ -141,7 +101,7 @@ namespace Phi
 
                     // Make decision
                     // TODO: Prefer adjacent positions over opposite ones (somewhat mocking surface tension)
-                    int* pMoveIndex = pMoveInds[0] != pBelow ? (fluidNeighbours > 0) ? pMoveInds[rng.NextInt(0, possibleMoves - 1)] : nullptr : pMoveInds[0];
+                    int* pMoveIndex = pMoveInds[0] == pBelow ? pMoveInds[0] : (fluidNeighbours > 0) ? pMoveInds[rng.NextInt(0, possibleMoves - 1)] : nullptr;
 
                     // Update voxel
                     if (pMoveIndex)
