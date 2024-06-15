@@ -29,7 +29,8 @@ void main()
 {
     // TESTING: Discard if transparent
     // TODO: Threshold based on material alpha value
-    if (fragMaterial == 2 && dither2(gl_FragCoord.xy) < 0.0)
+    const float alpha = 1.0;
+    if (fragMaterial == 2 && dither2(gl_FragCoord.xy) > (alpha - 0.5) * 0.75) 
     {
         discard;
     }
