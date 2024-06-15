@@ -52,7 +52,7 @@ void main()
     // Calculate delta and initialize values
     vec2 coords = texCoords;
     vec2 deltaTex = (texCoords - lightPos) * (1 / float(SAMPLES) * density);
-    float dither = dither2(gl_FragCoord.xy / vec2(2));
+    float dither = dither2(gl_FragCoord.xy);
     float illuminationDecay = 1.0;
     vec3 result = vec3(0.0);
 
