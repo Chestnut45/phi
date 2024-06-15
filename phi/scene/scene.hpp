@@ -145,13 +145,13 @@ namespace Phi
 
             // Returns a constant reference to the internal material data
             // for the given ID. If ID is invalid, the default material will be returned instead
-            const PBRMaterial& GetPBRMaterial(int id);
-            const VoxelMaterial& GetVoxelMaterial(int id);
+            const PBRMaterial& GetPBRMaterial(int id) const;
+            const VoxelMaterial& GetVoxelMaterial(int id) const;
             
             // Returns the ID for the given material name, if it exists
             // Returns 0 (the default material) otherwise
-            int GetPBRMaterialID(const std::string& name);
-            int GetVoxelMaterialID(const std::string& name);
+            int GetPBRMaterialID(const std::string& name) const;
+            int GetVoxelMaterialID(const std::string& name) const;
 
             // Loads materials from a YAML file and adds them to the scene
             // NOTE: Currently works with PBRMaterial and VoxelMaterial

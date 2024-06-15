@@ -603,19 +603,19 @@ namespace Phi
         }
     }
 
-    const PBRMaterial& Scene::GetPBRMaterial(int id)
+    const PBRMaterial& Scene::GetPBRMaterial(int id) const
     {
         if (id < 0 || id >= pbrMaterials.size()) return pbrMaterials[0];
         return pbrMaterials[id];
     }
 
-    const VoxelMaterial& Scene::GetVoxelMaterial(int id)
+    const VoxelMaterial& Scene::GetVoxelMaterial(int id) const
     {
         if (id < 0 || id >= voxelMaterials.size()) return voxelMaterials[0];
         return voxelMaterials[id];
     }
 
-    int Scene::GetPBRMaterialID(const std::string& name)
+    int Scene::GetPBRMaterialID(const std::string& name) const
     {
         // Find if the material exists
         const auto& it = pbrMaterialIDs.find(name);
@@ -630,7 +630,7 @@ namespace Phi
         return 0;
     }
 
-    int Scene::GetVoxelMaterialID(const std::string& name)
+    int Scene::GetVoxelMaterialID(const std::string& name) const
     {
         // Find if the material exists
         const auto& it = voxelMaterialIDs.find(name);

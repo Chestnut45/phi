@@ -44,6 +44,7 @@ namespace Phi
                     None = 0,
                     SimulateFluids = 1,
                     SimulateFire = 1 << 1,
+                    UpdateMesh = 1 << 2,
                 };
             };
 
@@ -123,13 +124,6 @@ namespace Phi
             // or nullptr if none exists
             inline VoxelMesh *GetMesh() const { return mesh; }
 
-            // Updates the mesh to match the currently visible voxels of the object
-            // If no mesh exists, one is added to the node first
-            void UpdateMesh();
-
-            // Destroys the internal mesh if one exists
-            void DestroyMesh();
-
             // Returns a const reference to the voxel-space integer AABB
             inline const IAABB &GetAABB() const { return aabb; }
 
@@ -160,8 +154,5 @@ namespace Phi
 
             // Internal mesh component (NON-OWNING)
             VoxelMesh *mesh = nullptr;
-
-            // Simulation turn counter
-            bool simulationTurn = false;
     };
 }

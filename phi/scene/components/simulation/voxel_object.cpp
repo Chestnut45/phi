@@ -6,7 +6,7 @@
 namespace Phi
 {
     VoxelObject::VoxelObject(int width, int height, int depth, const glm::ivec3& offset)
-        : voxelGrid(width, height, depth, -1), offset(offset), flags(Flags::None)
+        : voxelGrid(width, height, depth, -1), offset(offset), flags(Flags::UpdateMesh)
     {
         aabb.min = offset;
         aabb.max = glm::ivec3(width + offset.x, height + offset.y, depth + offset.z);
@@ -24,19 +24,38 @@ namespace Phi
         
         // Reset timer on each successful update
         timeAccum = 0.0f;
-        simulationTurn = !simulationTurn;
 
-        // Grab reference to scene material data
-        const auto& voxelMaterials = GetNode()->GetScene()->GetVoxelMaterials();
+        // Flag expansion
+        const bool updateMesh = (flags | Flags::UpdateMesh) == flags;
+        const bool simulateFluids = (flags | Flags::SimulateFluids) == flags;
 
-        // Grab empty grid value
+        // Create internal mesh if it doesn't exist yet
+        if (!mesh)
+        {
+            mesh = GetNode()->Get<VoxelMesh>();
+            if (!mesh)
+            {
+                mesh = &GetNode()->AddComponent<VoxelMesh>();
+            }
+        }
+
+        // Grab relevant data
         int empty = voxelGrid.GetEmptyValue();
+        const auto& voxelMaterials = GetNode()->GetScene()->GetVoxelMaterials();
+        auto& verts = mesh->Vertices();
+
+        // Clear mesh verts if we are going to update
+        if (updateMesh) verts.clear();
 
         // Iterate all voxels
         for (auto& voxel : voxels)
         {
-            // Only simulate voxels with a fluid material
-            if (voxelMaterials[voxel.material].flags & VoxelMaterial::Flags::Liquid && flags & Flags::SimulateFluids)
+            // Grab material
+            const auto& material = voxelMaterials[voxel.material];
+            const bool isLiquid = (material.flags | VoxelMaterial::Flags::Liquid) == material.flags;
+
+            // Fluid simulation step
+            if (simulateFluids && isLiquid)
             {
                 // Calculate grid position
                 int gridX = voxel.position.x - offset.x;
@@ -73,7 +92,8 @@ namespace Phi
                         if (vNeighbour)
                         {
                             // Count fluid neighbours
-                            fluidNeighbours += (voxelMaterials[vNeighbour->material].flags & VoxelMaterial::Flags::Liquid);
+                            const auto& neighbourMaterialFlags = voxelMaterials[vNeighbour->material].flags;
+                            fluidNeighbours += (neighbourMaterialFlags | VoxelMaterial::Flags::Liquid) == neighbourMaterialFlags;
                         }
                         else
                         {
@@ -91,7 +111,7 @@ namespace Phi
 
                     // Make decision
                     // TODO: Prefer adjacent positions over opposite ones (somewhat mocking surface tension)
-                    int* pMoveIndex = pMoveInds[0] == pBelow ? pMoveInds[0] : (fluidNeighbours > 0) ? pMoveInds[rng.NextInt(0, possibleMoves - 1)] : nullptr;
+                    int* pMoveIndex = (pMoveInds[0] == pBelow) ? pMoveInds[0] : (fluidNeighbours > 0) ? pMoveInds[rng.NextInt(0, possibleMoves - 1)] : nullptr;
 
                     // Update voxel
                     if (pMoveIndex)
@@ -103,10 +123,18 @@ namespace Phi
                     }
                 }
             }
-        }
 
-        // DEBUG: Always update mesh
-        UpdateMesh();
+            if (updateMesh)
+            {
+                // Add the voxel to the new mesh
+                VertexVoxelHalfPrecision vert;
+                vert.x = voxel.position.x;
+                vert.y = voxel.position.y;
+                vert.z = voxel.position.z;
+                vert.material = material.pbrID;
+                verts.push_back(vert);
+            }
+        }
     }
 
     bool VoxelObject::Load(const std::string& path)
@@ -201,8 +229,6 @@ namespace Phi
             // Update AABB
             aabb.min = min;
             aabb.max = max + 1;
-
-            UpdateMesh();
             return true;
         }
         else
@@ -320,39 +346,5 @@ namespace Phi
         }
 
         return std::move(result);
-    }
-
-    void VoxelObject::UpdateMesh()
-    {
-        // Create the mesh if it doesn't exist yet
-        if (!mesh)
-        {
-            mesh = GetNode()->Get<VoxelMesh>();
-            if (!mesh)
-            {
-                mesh = &GetNode()->AddComponent<VoxelMesh>();
-            }
-        }
-
-        // Clear vertices and update mesh
-        auto& verts = mesh->Vertices();
-        verts.clear();
-        const auto& voxelMaterials = GetNode()->GetScene()->GetVoxelMaterials();
-        for (const auto& voxel : voxels)
-        {
-            // TODO: Profile, is visibility culling worth the cost in mesh construction time?
-            VertexVoxelHalfPrecision vert;
-            vert.x = voxel.position.x;
-            vert.y = voxel.position.y;
-            vert.z = voxel.position.z;
-            vert.material = voxelMaterials[voxel.material].pbrID;
-            verts.push_back(vert);
-        }
-    }
-
-    void VoxelObject::DestroyMesh()
-    {
-        GetNode()->RemoveComponent<VoxelMesh>();
-        mesh = nullptr;
     }
 }

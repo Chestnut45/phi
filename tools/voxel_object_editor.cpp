@@ -37,6 +37,7 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
     // Main object
     object = &scene.CreateNode()->AddComponent<VoxelObject>();
     object->Load("data://models/teapot.vobj");
+    object->Enable(VoxelObject::Flags::SimulateFluids);
 
     // DEBUG: Add some water and enable simulation
     const auto& aabb = object->GetAABB();
@@ -73,8 +74,6 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
             }
         }
     }
-    // object->UpdateMesh();
-    object->Enable(VoxelObject::Flags::SimulateFluids);
 
     // Default material
     selectedVoxel.material = water;
@@ -146,7 +145,6 @@ void VoxelObjectEditor::Update(float delta)
             const Voxel& v = it.second;
             object->SetVoxel(v.position.x, v.position.y, v.position.z, v.material);
         }
-        object->UpdateMesh();
         currentEdits.clear();
         
         // Reset the brush mesh
