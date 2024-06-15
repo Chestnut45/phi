@@ -29,25 +29,15 @@ namespace Phi
         // Grab reference to scene material data
         const auto& voxelMaterials = GetNode()->GetScene()->GetVoxelMaterials();
 
-        // Fluid simulation step
-        if (flags & Flags::SimulateFluids)
+        // Grab empty grid value
+        int empty = voxelGrid.GetEmptyValue();
+
+        // Iterate all voxels
+        for (auto& voxel : voxels)
         {
-            // Grab empty grid value
-            int empty = voxelGrid.GetEmptyValue();
-
-            // Iterate all voxels
-            for (auto& voxel : voxels)
+            // Only simulate voxels with a fluid material
+            if (voxelMaterials[voxel.material].flags & VoxelMaterial::Flags::Liquid && flags & Flags::SimulateFluids)
             {
-                // Only simulate voxels with a fluid material
-                if (!(voxelMaterials[voxel.material].flags & VoxelMaterial::Flags::Liquid)) continue;
-
-                // Update pressure if necessary
-                if (voxel.turn != simulationTurn)
-                {
-                    voxel.turn = simulationTurn;
-                    voxel.pressure = voxel.newPressure;
-                }
-
                 // Calculate grid position
                 int gridX = voxel.position.x - offset.x;
                 int gridY = voxel.position.y - offset.y;
@@ -113,10 +103,10 @@ namespace Phi
                     }
                 }
             }
-
-            // DEBUG: Always update mesh
-            UpdateMesh();
         }
+
+        // DEBUG: Always update mesh
+        UpdateMesh();
     }
 
     bool VoxelObject::Load(const std::string& path)
