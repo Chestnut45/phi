@@ -30,17 +30,14 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
     Environment& env = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_old");
     scene.SetActiveEnvironment(env);
 
+    // Brush mesh
+    brushMesh = &scene.CreateNode()->AddComponent<VoxelMesh>();
+    brushMesh->Vertices().push_back(VoxelMesh::Vertex());
+
     // Main object
     object = &scene.CreateNode()->AddComponent<VoxelObject>();
     object->Load("data://models/teapot.vobj");
     object->Enable(VoxelObject::Flags::SimulateFluids);
-
-    // DEBUG: Create the mesh immediately so the brush is always drawn on top
-    object->GetNode()->AddComponent<VoxelMesh>();
-
-    // Brush mesh
-    brushMesh = &scene.CreateNode()->AddComponent<VoxelMesh>();
-    brushMesh->Vertices().push_back(VoxelMesh::Vertex());
 
     // DEBUG: Add some water and enable simulation
     const auto& aabb = object->GetAABB();
@@ -58,21 +55,22 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
                 v.position.x = x;
                 v.position.y = y;
                 v.position.z = z;
-                if (noise.Sample(x, y, z) < 0.0f)
+                if (y < aabb.max.y - 4)
                 {
-                    if (y < aabb.max.y - 4)
+                    if (noise.Sample(x, y, z) < 0.0f)
                     {
                         continue;
                     }
                     else
                     {
-                        v.material = water;
+                        v.material = grass;
                     }
                 }
                 else
                 {
-                    v.material = grass;
+                    v.material = water;
                 }
+                
                 object->SetVoxel(v.position.x, v.position.y, v.position.z, v.material);
             }
         }
