@@ -87,23 +87,27 @@ void PBRMaterialEditor::ShowInterface()
 
     // Editable data
     PBRMaterial mat = scene.GetPBRMaterial(0);
-    glm::vec3 color = mat.color;
+    float colorData[4];
+    colorData[0] = mat.color.r;
+    colorData[1] = mat.color.g;
+    colorData[2] = mat.color.b;
+    colorData[3] = mat.color.a;
     float metallic = mat.metallic;
     float roughness = mat.roughness;
 
     // Edit material data
-    ImGui::ColorEdit3("Color", &color.x);
+    ImGui::ColorEdit4("Color", colorData);
     ImGui::DragFloat("Metallic", &metallic, 0.001f, 0.0f, 1.0f);
     ImGui::DragFloat("Roughness", &roughness, 0.001f, 0.0f, 1.0f);
 
     // Update material data
-    if (color != mat.color || metallic != mat.metallic || roughness != mat.roughness)
-    {
-        mat.color = color;
-        mat.metallic = metallic;
-        mat.roughness = roughness;
-        scene.RegisterMaterial("default", mat);
-    }
+    mat.color.r = colorData[0];
+    mat.color.g = colorData[1];
+    mat.color.b = colorData[2];
+    mat.color.a = colorData[3];
+    mat.metallic = metallic;
+    mat.roughness = roughness;
+    scene.RegisterMaterial("default", mat);
 
     ImGui::End();
 }

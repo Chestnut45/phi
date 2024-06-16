@@ -1,5 +1,7 @@
 #version 460
 
+const int MAX_MATERIALS = 1024;
+
 // Camera uniform block
 layout(std140, binding = 0) uniform CameraBlock
 {
@@ -21,9 +23,21 @@ layout(location = 2) in mat4 iTransform;
 // Locations 3, 4, 5 also consumed by mat4
 layout(location = 6) in uint iMaterial;
 
+struct PBRMaterial
+{
+    vec4 color;
+    vec4 metallicRoughness;
+};
+
+layout(std430, binding = 1) buffer PBRMaterialBlock
+{
+    PBRMaterial pbrMaterials[MAX_MATERIALS];
+};
+
 // Fragment shader outputs
 out vec3 normal;
 out flat uint material;
+out flat float fragAlpha;
 
 void main()
 {
@@ -34,4 +48,5 @@ void main()
     // Send per fragment outputs
     normal = normalize((inverse(transpose(iTransform)) * vec4(vNorm, 1.0)).xyz);
     material = iMaterial;
+    fragAlpha = pbrMaterials[iMaterial].color.a;
 }
