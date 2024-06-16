@@ -21,6 +21,7 @@
 #include "core/structures/experimental/hash_map.hpp"
 
 // OpenGL resources
+#include "graphics/color.hpp"
 #include "graphics/cubemap.hpp"
 #include "graphics/framebuffer.hpp"
 #include "graphics/geometry.hpp"

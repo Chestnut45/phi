@@ -12,17 +12,15 @@ high priority:
     - simulation toggles / controls
     - select tool / move tool
     - toggleable arbitrary planes to test against
-- color class (manage internal float representation, cheap convert to hex, rgba, FromHex(string), FromRGBA(float4))
-    - switch all other engine components to use color class where appropriate (materials, vertex data, etc.)
 - orthographic camera projection
 - improved camera controls
-- transparent voxels
 - emissive voxels (bloom + emissive pbr materials?)
 - full noise editor (fractal, domain warp, etc.)
 - finalize CA fluid simulation
 - voxel particles (off-grid, momentum based)
 
 mid priority:
+- propagate color class through rest of engine
 - gamepad input
 - 3rd person controller
 - animated voxel models

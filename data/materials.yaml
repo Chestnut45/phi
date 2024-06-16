@@ -7,7 +7,7 @@ pbr_materials: [
     },
     {
         name: water,
-        color: {r: 0.05, g: 0.45, b: 0.86, a: 0.5},
+        color: {r: 0.05, g: 0.45, b: 0.86, a: 0.75},
         roughness: 0.8,
         metallic: 0
     },

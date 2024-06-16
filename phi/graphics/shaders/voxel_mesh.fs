@@ -7,6 +7,7 @@ layout(location = 1) out uint gMaterial;
 // Vertex shader inputs
 in vec3 fragPos;
 in flat uint fragMaterial;
+in flat float fragAlpha;
 
 // Helper bayer matrix dithering functions
 // https://www.shadertoy.com/view/4ssfWM
@@ -27,10 +28,8 @@ float bayer128 (vec2 a) { return bayer16(0.125 * a) * 0.015625 + bayer8(a); }
 
 void main()
 {
-    // TESTING: Discard if transparent
-    // TODO: Threshold based on material alpha value
-    const float alpha = 1.0;
-    if (fragMaterial == 2 && dither2(gl_FragCoord.xy) > (alpha - 0.5) * 0.75) 
+    // Apply transparency
+    if (fragAlpha == 0.0 || dither8(gl_FragCoord.xy) > (fragAlpha - 0.5) * 0.984375) 
     {
         discard;
     }

@@ -1,5 +1,7 @@
 #version 460
 
+const int MAX_MATERIALS = 1024;
+
 // Camera uniform block
 layout(std140, binding = 0) uniform CameraBlock
 {
@@ -20,6 +22,17 @@ struct MeshData
     mat4 invTransform;
 };
 
+struct PBRMaterial
+{
+    vec4 color;
+    vec4 metallicRoughness;
+};
+
+layout(std430, binding = 1) buffer PBRMaterialBlock
+{
+    PBRMaterial pbrMaterials[MAX_MATERIALS];
+};
+
 layout(std430, binding = 3) restrict buffer VoxelData
 {
     uvec2 voxelData[];
@@ -33,6 +46,7 @@ layout(std430, binding = 4) restrict buffer InstanceData
 // Fragment outputs
 out vec3 fragPos;
 out flat uint fragMaterial;
+out flat float fragAlpha;
 
 // Vertex shader entrypoint
 void main()
@@ -67,4 +81,5 @@ void main()
     // Fragment outputs
     fragPos = worldPos.xyz;
     fragMaterial = voxelMaterial;
+    fragAlpha = pbrMaterials[voxelMaterial].color.a;
 }
