@@ -2,7 +2,8 @@ design / features
 --------------------------------
 
 high priority:
-- voxel object editor
+- render scene to texture? (custom viewport too messy)
+- voxel object editor gui
     - material loading
     - palette display
     - erase
@@ -14,9 +15,13 @@ high priority:
     - toggleable arbitrary planes to test against
 - orthographic camera projection
 - improved camera controls
+- fire spread / heat distribution simulation
+- finalize fluid dynamics (pressure simulation?)
+- world generation / chunk rework
+    - per-chunk aabb frustum culling
+    - simulation sleeping
+    - full noise editor (fractal, domain warp, etc.)
 - emissive voxels (bloom + emissive pbr materials?)
-- full noise editor (fractal, domain warp, etc.)
-- finalize CA fluid simulation
 - voxel particles (off-grid, momentum based)
 
 mid priority:
