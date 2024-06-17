@@ -23,6 +23,9 @@ high priority:
     - full noise editor (fractal, domain warp, etc.)
 - emissive voxels (bloom + emissive pbr materials?)
 - voxel particles (off-grid, momentum based)
+- entity system (not all nodes are entities, but all entities are nodes)
+    - items (transform, voxel model, item data, aabb/obb)
+    - organisms (transform, voxel object, AI controller, organism data, aabb/obb)
 
 mid priority:
 - propagate color class through rest of engine
