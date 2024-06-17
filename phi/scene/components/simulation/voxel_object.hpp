@@ -120,6 +120,9 @@ namespace Phi
 
             // Mesh management
 
+            // Updates the internal mesh to match the voxel grid
+            void UpdateMesh();
+
             // Returns a pointer to the internal mesh component,
             // or nullptr if none exists
             inline VoxelMesh *GetMesh() const { return mesh; }

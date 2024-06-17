@@ -39,9 +39,9 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
     object->Load("data://models/teapot.vobj");
 
     // DEBUG: Add some water and enable simulation
-    const auto& aabb = object->GetAABB();
     int grass = scene.GetVoxelMaterialID("grass");
     int water = scene.GetVoxelMaterialID("water");
+    const auto& aabb = object->GetAABB();
     Noise noise;
     noise.SetFrequency(0.032f);
     for (int y = aabb.max.y - 1; y >= aabb.min.y; --y)
@@ -74,11 +74,11 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
             }
         }
     }
+    object->UpdateMesh();
 
     // Testing different object configurations
-    // object->Update(1.0f);
-    // object->Disable(VoxelObject::Flags::UpdateMesh);
     object->Enable(VoxelObject::Flags::SimulateFluids);
+    object->Enable(VoxelObject::Flags::UpdateMesh);
 
     // Default material
     selectedVoxel.material = water;

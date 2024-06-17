@@ -6,7 +6,7 @@
 namespace Phi
 {
     VoxelObject::VoxelObject(int width, int height, int depth, const glm::ivec3& offset)
-        : voxelGrid(width, height, depth, -1), offset(offset), flags(Flags::UpdateMesh)
+        : voxelGrid(width, height, depth, -1), offset(offset), flags(Flags::None)
     {
         aabb.min = offset;
         aabb.max = glm::ivec3(width + offset.x, height + offset.y, depth + offset.z);
@@ -29,23 +29,9 @@ namespace Phi
         const bool updateMesh = (flags | Flags::UpdateMesh) == flags;
         const bool simulateFluids = (flags | Flags::SimulateFluids) == flags;
 
-        // Create internal mesh if it doesn't exist yet
-        if (!mesh)
-        {
-            mesh = GetNode()->Get<VoxelMesh>();
-            if (!mesh)
-            {
-                mesh = &GetNode()->AddComponent<VoxelMesh>();
-            }
-        }
-
         // Grab relevant data
         int empty = voxelGrid.GetEmptyValue();
         const auto& voxelMaterials = GetNode()->GetScene()->GetVoxelMaterials();
-        auto& verts = mesh->Vertices();
-
-        // Clear mesh verts if we are going to update
-        if (updateMesh) verts.clear();
 
         // Iterate all voxels
         for (auto& voxel : voxels)
@@ -123,18 +109,9 @@ namespace Phi
                     }
                 }
             }
-
-            if (updateMesh)
-            {
-                // Add the voxel to the new mesh
-                VertexVoxelHalfPrecision vert;
-                vert.x = voxel.position.x;
-                vert.y = voxel.position.y;
-                vert.z = voxel.position.z;
-                vert.material = material.pbrID;
-                verts.push_back(vert);
-            }
         }
+
+        if (updateMesh) UpdateMesh();
     }
 
     bool VoxelObject::Load(const std::string& path)
@@ -346,5 +323,37 @@ namespace Phi
         }
 
         return std::move(result);
+    }
+
+    void VoxelObject::UpdateMesh()
+    {
+        // Create the mesh if it doesn't already exist
+        if (!mesh)
+        {
+            mesh = GetNode()->Get<VoxelMesh>();
+            if (!mesh)
+            {
+                mesh = &GetNode()->AddComponent<VoxelMesh>();
+            }
+        }
+
+        // Grab material list
+        const auto& materials = GetNode()->GetScene()->GetVoxelMaterials();
+
+        // Grab vertex list reference and clear old verts
+        auto& verts = mesh->Vertices();
+        verts.clear();
+
+        // Iterate all voxels
+        for (const Voxel& voxel : voxels)
+        {
+            // Add the voxel to the new mesh
+            VertexVoxelHalfPrecision vert;
+            vert.x = voxel.position.x;
+            vert.y = voxel.position.y;
+            vert.z = voxel.position.z;
+            vert.material = materials[voxel.material].pbrID;
+            verts.push_back(vert);
+        }
     }
 }
