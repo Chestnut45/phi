@@ -12,6 +12,12 @@ pbr_materials: [
         metallic: 0
     },
     {
+        name: lava,
+        color: {r: 1, g: 0.5, b: 0.1, a: 1.0},
+        roughness: 0.8,
+        metallic: 0
+    },
+    {
         name: fungal_stem,
         color: {r: 1.0, g: 0.829, b: 0.64},
         roughness: 0.6,
@@ -107,16 +113,25 @@ voxel_materials: [
     {
         name: grass,
         flags: [solid, flammable],
+        flammability: 1,
         pbr_name: grass
     },
     {
         name: water,
         flags: [liquid],
+        flammability: 0,
         pbr_name: water
+    },
+    {
+        name: lava,
+        flags: [liquid, fire],
+        flammability: 0,
+        pbr_name: lava
     },
     {
         name: silver,
         flags: [solid],
+        flammability: 0,
         pbr_name: silver
     },
 ]

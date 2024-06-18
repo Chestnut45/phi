@@ -44,20 +44,20 @@ namespace Phi
             if (simulateFluids && isLiquid)
             {
                 // Calculate grid position
-                int gridX = voxel.position.x - offset.x;
-                int gridY = voxel.position.y - offset.y;
-                int gridZ = voxel.position.z - offset.z;
+                int gridX = voxel.x - offset.x;
+                int gridY = voxel.y - offset.y;
+                int gridZ = voxel.z - offset.z;
 
                 // Grab current voxel index reference
                 int& index = voxelGrid(gridX, gridY, gridZ);
 
                 // Initialize neighbour index pointers
-                int* pBelow = (voxel.position.y > aabb.min.y) ? &voxelGrid(gridX, gridY - 1, gridZ) : nullptr;
-                int* pAbove = (voxel.position.y < aabb.max.y - 1) ? &voxelGrid(gridX, gridY + 1, gridZ) : nullptr;
-                int* pLeft = (voxel.position.x > aabb.min.x) ? &voxelGrid(gridX - 1, gridY, gridZ) : nullptr;
-                int* pRight = (voxel.position.x < aabb.max.x - 1) ? &voxelGrid(gridX + 1, gridY, gridZ) : nullptr;
-                int* pForward = (voxel.position.z > aabb.min.z) ? &voxelGrid(gridX, gridY, gridZ - 1) : nullptr;
-                int* pBack = (voxel.position.z < aabb.max.z - 1) ? &voxelGrid(gridX, gridY, gridZ + 1) : nullptr;
+                int* pBelow = (voxel.y > aabb.min.y) ? &voxelGrid(gridX, gridY - 1, gridZ) : nullptr;
+                int* pAbove = (voxel.y < aabb.max.y - 1) ? &voxelGrid(gridX, gridY + 1, gridZ) : nullptr;
+                int* pLeft = (voxel.x > aabb.min.x) ? &voxelGrid(gridX - 1, gridY, gridZ) : nullptr;
+                int* pRight = (voxel.x < aabb.max.x - 1) ? &voxelGrid(gridX + 1, gridY, gridZ) : nullptr;
+                int* pForward = (voxel.z > aabb.min.z) ? &voxelGrid(gridX, gridY, gridZ - 1) : nullptr;
+                int* pBack = (voxel.z < aabb.max.z - 1) ? &voxelGrid(gridX, gridY, gridZ + 1) : nullptr;
                 int* pNeighbours[] = { pBelow, pAbove, pLeft, pRight, pForward, pBack };
 
                 // Pointers to the grid index of each possible move detected
@@ -102,9 +102,9 @@ namespace Phi
                     // Update voxel
                     if (pMoveIndex)
                     {
-                        voxel.position.x += pMoveIndex == pLeft ? -1 : pMoveIndex == pRight ? 1 : 0;
-                        voxel.position.y += pMoveIndex == pBelow ? -1 : pMoveIndex == pAbove ? 1 : 0;
-                        voxel.position.z += pMoveIndex == pForward ? -1 : pMoveIndex == pBack ? 1 : 0;
+                        voxel.x += pMoveIndex == pLeft ? -1 : pMoveIndex == pRight ? 1 : 0;
+                        voxel.y += pMoveIndex == pBelow ? -1 : pMoveIndex == pAbove ? 1 : 0;
+                        voxel.z += pMoveIndex == pForward ? -1 : pMoveIndex == pBack ? 1 : 0;
                         std::swap(*pMoveIndex, index);
                     }
                 }
@@ -171,11 +171,11 @@ namespace Phi
 
                     if (zAxisVertical)
                     {
-                        std::istringstream(line) >> voxel.position.x >> voxel.position.z >> voxel.position.y >> voxel.material;
+                        std::istringstream(line) >> voxel.x >> voxel.z >> voxel.y >> voxel.material;
                     }
                     else
                     {
-                        std::istringstream(line) >> voxel.position.x >> voxel.position.y >> voxel.position.z >> voxel.material;
+                        std::istringstream(line) >> voxel.x >> voxel.y >> voxel.z >> voxel.material;
                     }
 
                     // Translate to the currently loaded ID
@@ -183,12 +183,12 @@ namespace Phi
                     
                     // Update min and max coords
                     // TODO: Safety loading empty models?
-                    min.x = voxel.position.x < min.x ? voxel.position.x : min.x;
-                    min.y = voxel.position.y < min.y ? voxel.position.y : min.y;
-                    min.z = voxel.position.z < min.z ? voxel.position.z : min.z;
-                    max.x = voxel.position.x > max.x ? voxel.position.x : max.x;
-                    max.y = voxel.position.y > max.y ? voxel.position.y : max.y;
-                    max.z = voxel.position.z > max.z ? voxel.position.z : max.z;
+                    min.x = voxel.x < min.x ? voxel.x : min.x;
+                    min.y = voxel.y < min.y ? voxel.y : min.y;
+                    min.z = voxel.z < min.z ? voxel.z : min.z;
+                    max.x = voxel.x > max.x ? voxel.x : max.x;
+                    max.y = voxel.y > max.y ? voxel.y : max.y;
+                    max.z = voxel.z > max.z ? voxel.z : max.z;
 
                     // Add to voxel data
                     newVoxels.emplace_back(voxel);
@@ -200,7 +200,7 @@ namespace Phi
             offset = min;
             for (const auto& voxel : newVoxels)
             {
-                SetVoxel(voxel.position.x, voxel.position.y, voxel.position.z, voxel.material);
+                SetVoxel(voxel.x, voxel.y, voxel.z, voxel.material);
             }
 
             // Update AABB
@@ -275,15 +275,24 @@ namespace Phi
                     gridXYZ.y < voxelGrid.GetHeight() &&
                     gridXYZ.z < voxelGrid.GetDepth())
                 {
-                    // Add to visited list
-                    result.visitedVoxels.push_back(xyz);
-
                     // Check for voxel at current position
-                    int voxel = voxelGrid(gridXYZ.x, gridXYZ.y, gridXYZ.z);
-                    if (voxel != voxelGrid.GetEmptyValue())
+                    int& index = voxelGrid(gridXYZ.x, gridXYZ.y, gridXYZ.z);
+
+                    if (index != voxelGrid.GetEmptyValue())
                     {
+                        // We hit a voxel, add to result and stop
+                        result.visitedVoxels.push_back(voxels[index]);
                         result.firstHit = result.visitedVoxels.size() - 1;
                         break;
+                    }
+                    else
+                    {
+                        // We did not hit a voxel, add an empty one to the list
+                        Voxel v;
+                        v.x = xyz.x;
+                        v.y = xyz.y;
+                        v.z = xyz.z;
+                        result.visitedVoxels.push_back(v);
                     }
                 }
 
@@ -349,9 +358,9 @@ namespace Phi
         {
             // Add the voxel to the new mesh
             VertexVoxelHalfPrecision vert;
-            vert.x = voxel.position.x;
-            vert.y = voxel.position.y;
-            vert.z = voxel.position.z;
+            vert.x = voxel.x;
+            vert.y = voxel.y;
+            vert.z = voxel.z;
             vert.material = materials[voxel.material].pbrID;
             verts.push_back(vert);
         }

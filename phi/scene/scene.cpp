@@ -692,7 +692,7 @@ namespace Phi
 
                     // Load properties from node
                     m.name = mat["name"] ? mat["name"].as<std::string>() : "new_material";
-                    m.pbrID = mat["pbr_name"] ? GetPBRMaterialID(mat["pbr_name"].as<std::string>()) : m.pbrID;
+                    m.flammability = mat["flammability"] ? mat["flammability"].as<float>() : m.flammability;
 
                     // Material flag parsing
                     // TODO: This can be faster
@@ -700,7 +700,11 @@ namespace Phi
                     {
                         std::string flagName = flag.as<std::string>();
                         if (flagName == "liquid") m.flags |= VoxelMaterial::Flags::Liquid;
+                        if (flagName == "fire") m.flags |= VoxelMaterial::Flags::Fire;
                     }
+
+                    // Live load the current ID for the named PBR material
+                    m.pbrID = mat["pbr_name"] ? GetPBRMaterialID(mat["pbr_name"].as<std::string>()) : m.pbrID;
 
                     // Add the material to the scene
                     RegisterMaterial(m.name, m);

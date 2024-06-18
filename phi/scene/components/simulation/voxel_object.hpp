@@ -11,8 +11,28 @@ namespace Phi
     // Data for a single voxel
     struct Voxel
     {
-        glm::ivec3 position{0};
-        int material = 0;
+        // Flags for voxel simulation
+        struct Flags
+        {
+            Flags() = delete;
+            typedef uint16_t type;
+            enum : type
+            {
+                None = 0,
+                OnFire = 1,
+            };
+        };
+        
+        // Position in object local space
+        int16_t x = 0;
+        int16_t y = 0;
+        int16_t z = 0;
+
+        // Voxel material index
+        int16_t material = -1;
+
+        // Simulation flags
+        Flags::type flags = Flags::None;
     };
 
     // A custom component representing an object consisting of grid aligned voxels
@@ -52,9 +72,10 @@ namespace Phi
             struct RaycastInfo
             {
                 // Each voxel visited in order
-                std::vector<glm::ivec3> visitedVoxels;
+                // Empty voxels are marked with the material index -1
+                std::vector<Voxel> visitedVoxels;
 
-                // The index of the first solid hit voxel, or -1 if no solid voxels were hit by the ray
+                // Index into visitedVoxels of first voxel hit, or -1 if no intersection occurred
                 int firstHit = -1;
             };
 
@@ -74,7 +95,7 @@ namespace Phi
             // Gets a pointer to the voxel at the object local coordinates provided,
             // or nullptr if the given position is empty
             // NOTE: Does not validate position
-            inline const Voxel* GetVoxel(int x, int y, int z)
+            inline const Voxel* GetVoxel(int16_t x, int16_t y, int16_t z)
             {
                 int index = voxelGrid(x - offset.x, y - offset.y, z - offset.z);
                 return index == -1 ? nullptr : &voxels[index];
@@ -82,13 +103,13 @@ namespace Phi
 
             // Sets the voxel data to a specific material
             // NOTE: Does not validate position
-            inline void SetVoxel(int x, int y, int z, int material)
+            inline void SetVoxel(int16_t x, int16_t y, int16_t z, int16_t material)
             {
                 // Initialize voxel data
                 Voxel voxel;
-                voxel.position.x = x;
-                voxel.position.y = y;
-                voxel.position.z = z;
+                voxel.x = x;
+                voxel.y = y;
+                voxel.z = z;
                 voxel.material = material;
 
                 // Place on grid (update existing or push back)

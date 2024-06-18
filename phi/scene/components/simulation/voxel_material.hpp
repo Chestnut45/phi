@@ -20,7 +20,7 @@ namespace Phi
                 Liquid = 1 << 1,
                 Gas = 1 << 2,
                 Powder = 1 << 3,
-                Flammable = 1 << 4,
+                Fire = 1 << 4,
             };
         };
 
@@ -32,6 +32,7 @@ namespace Phi
 
         // Simulation data
         Flags::type flags;
+        float flammability; // 0 = nonflammable, 1 = catches instantly on contact with fire
 
         // PBR material ID for rendering
         int pbrID;

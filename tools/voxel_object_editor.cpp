@@ -41,6 +41,7 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
     // DEBUG: Add some water and enable simulation
     int grass = scene.GetVoxelMaterialID("grass");
     int water = scene.GetVoxelMaterialID("water");
+    int lava = scene.GetVoxelMaterialID("lava");
     const auto& aabb = object->GetAABB();
     Noise noise;
     noise.SetFrequency(0.032f);
@@ -51,9 +52,9 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
             for (int x = aabb.min.x; x < aabb.max.x; ++x)
             {
                 Voxel v;
-                v.position.x = x;
-                v.position.y = y;
-                v.position.z = z;
+                v.x = x;
+                v.y = y;
+                v.z = z;
                 if (y < aabb.max.y - 4)
                 {
                     if (noise.Sample(x, y, z) < 0.0f)
@@ -67,10 +68,10 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
                 }
                 else
                 {
-                    v.material = water;
+                    v.material = lava;
                 }
                 
-                object->SetVoxel(v.position.x, v.position.y, v.position.z, v.material);
+                object->SetVoxel(v.x, v.y, v.z, v.material);
             }
         }
     }
@@ -120,24 +121,29 @@ void VoxelObjectEditor::Update(float delta)
     VoxelObject::RaycastInfo result = object->Raycast(ray);
     if (result.firstHit != -1)
     {
-        selectedVoxel.position = result.visitedVoxels[result.firstHit > 0 ? result.firstHit - 1 : 0];
+        const Voxel& hitVoxel = result.visitedVoxels[result.firstHit > 0 ? result.firstHit : 0];
+        selectedVoxel.x = hitVoxel.x;
+        selectedVoxel.y = hitVoxel.y;
+        selectedVoxel.z = hitVoxel.z;
     }
+
+    glm::ivec3 selectedPosition = glm::ivec3(selectedVoxel.x, selectedVoxel.y, selectedVoxel.z);
 
     if (input.IsLMBJustDown())
     {
         // Initiate a brush stroke
-        currentEdits[selectedVoxel.position] = selectedVoxel;
+        currentEdits[selectedPosition] = selectedVoxel;
     }
     else if (input.IsLMBHeld())
     {
         // Add voxel if not already added to current stroke
-        if (currentEdits.count(selectedVoxel.position) == 0)
+        if (currentEdits.count(selectedPosition) == 0)
         {
-            currentEdits[selectedVoxel.position] = selectedVoxel;
+            currentEdits[selectedPosition] = selectedVoxel;
             VoxelMesh::Vertex v;
-            v.x = selectedVoxel.position.x;
-            v.y = selectedVoxel.position.y;
-            v.z = selectedVoxel.position.z;
+            v.x = selectedVoxel.x;
+            v.y = selectedVoxel.y;
+            v.z = selectedVoxel.z;
             v.material = selectedVoxel.material;
             brushMesh->Vertices().push_back(v);
         }
@@ -148,7 +154,7 @@ void VoxelObjectEditor::Update(float delta)
         for (const auto& it : currentEdits)
         {
             const Voxel& v = it.second;
-            object->SetVoxel(v.position.x, v.position.y, v.position.z, v.material);
+            object->SetVoxel(v.x, v.y, v.z, v.material);
         }
         currentEdits.clear();
         
@@ -156,9 +162,9 @@ void VoxelObjectEditor::Update(float delta)
         auto& verts = brushMesh->Vertices();
         verts.clear();
         VoxelMesh::Vertex v;
-        v.x = selectedVoxel.position.x;
-        v.y = selectedVoxel.position.y;
-        v.z = selectedVoxel.position.z;
+        v.x = selectedVoxel.x;
+        v.y = selectedVoxel.y;
+        v.z = selectedVoxel.z;
         v.material = selectedVoxel.material;
         verts.push_back(v);
     }
@@ -166,9 +172,9 @@ void VoxelObjectEditor::Update(float delta)
     {
         // Update the brush mesh
         auto& v = brushMesh->Vertices()[0];
-        v.x = selectedVoxel.position.x;
-        v.y = selectedVoxel.position.y;
-        v.z = selectedVoxel.position.z;
+        v.x = selectedVoxel.x;
+        v.y = selectedVoxel.y;
+        v.z = selectedVoxel.z;
         v.material = selectedVoxel.material;
     }
 
