@@ -68,7 +68,7 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
                 }
                 else
                 {
-                    v.material = lava;
+                    v.material = water;
                 }
                 
                 object->SetVoxel(v.x, v.y, v.z, v.material);
@@ -82,7 +82,7 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
     object->Enable(VoxelObject::Flags::UpdateMesh);
 
     // Default material
-    selectedVoxel.material = water;
+    selectedVoxel.material = lava;
 }
 
 VoxelObjectEditor::~VoxelObjectEditor()
@@ -121,7 +121,7 @@ void VoxelObjectEditor::Update(float delta)
     VoxelObject::RaycastInfo result = object->Raycast(ray);
     if (result.firstHit != -1)
     {
-        const Voxel& hitVoxel = result.visitedVoxels[result.firstHit > 0 ? result.firstHit : 0];
+        const Voxel& hitVoxel = result.visitedVoxels[result.firstHit > 0 ? result.firstHit - 1 : 0];
         selectedVoxel.x = hitVoxel.x;
         selectedVoxel.y = hitVoxel.y;
         selectedVoxel.z = hitVoxel.z;

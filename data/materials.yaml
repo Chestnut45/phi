@@ -13,7 +13,7 @@ pbr_materials: [
     },
     {
         name: lava,
-        color: {r: 1, g: 0.5, b: 0.1, a: 1.0},
+        color: {r: 3, g: 1, b: 0.1, a: 1.0},
         roughness: 0.8,
         metallic: 0
     },
@@ -112,8 +112,8 @@ pbr_materials: [
 voxel_materials: [
     {
         name: grass,
-        flags: [solid, flammable],
-        flammability: 1,
+        flags: [solid],
+        flammability: 0.8,
         pbr_name: grass
     },
     {
