@@ -1,6 +1,7 @@
 #include "texture_2d.hpp"
 
 #include <phi/core/file.hpp>
+#include <phi/graphics/framebuffer.hpp>
 
 namespace Phi
 {
@@ -94,5 +95,16 @@ namespace Phi
         // Set active unit and bind texture
         glActiveTexture(GL_TEXTURE0 + texUnit);
         glBindTexture(GL_TEXTURE_2D, textureID);
+    }
+
+    void Texture2D::BlitToScreen(int x, int y, int width, int height) const
+    {
+        static Framebuffer blitFBO;
+        blitFBO.Bind();
+        blitFBO.AttachTexture(this, GL_COLOR_ATTACHMENT0);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        width = width == -1 ? this->width : width;
+        height = height == -1 ? this->height : height;
+        glBlitFramebuffer(0, 0, this->width, this->height, x, y, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
     }
 }

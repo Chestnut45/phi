@@ -17,6 +17,7 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
     input.EnableRawMouseMotion();
 
     // Initialize scene
+    scene.SetRenderMode(Scene::RenderMode::Texture);
 
     // Materials
     scene.LoadMaterials("data://materials.yaml");
@@ -94,7 +95,7 @@ void VoxelObjectEditor::Update(float delta)
     // Manually update scene resolution on window resize
     if (windowResized)
     {
-        scene.SetResolution(wWidth, wHeight);
+        scene.SetResolution(wWidth - toolBarWidth - padding * 2, wHeight - mainBarHeight - padding * 2);
         windowResized = false;
     }
 
@@ -102,21 +103,16 @@ void VoxelObjectEditor::Update(float delta)
     if (input.IsKeyJustDown(GLFW_KEY_ESCAPE)) input.IsMouseCaptured() ? input.ReleaseMouse() : input.CaptureMouse();
 
     // Toggle debug GUI with tilde key
-    if (input.IsKeyJustDown(GLFW_KEY_GRAVE_ACCENT)) showGUI = !showGUI;
-    
-    // Display GUI windows
-    if (showGUI)
-    {
-        ShowDebug();
-        scene.ShowDebug();
-    }
+    if (input.IsKeyJustDown(GLFW_KEY_GRAVE_ACCENT)) showDebug = !showDebug;
+
+    // TODO: Update editor window rectangle
 
     // Grab camera and mouse position
     Camera* cam = scene.GetActiveCamera();
     const glm::vec2& mousePos = input.GetMousePos();
     
     // Update selected position if we hit a solid voxel with the mouse
-    Ray ray = cam->GenerateRay(mousePos.x, mousePos.y);
+    Ray ray = cam->GenerateRay(mousePos.x - toolBarWidth - padding, mousePos.y - mainBarHeight - padding);
     VoxelObject::RaycastInfo result = object->Raycast(ray);
     if (result.firstHit != -1)
     {
@@ -183,5 +179,47 @@ void VoxelObjectEditor::Update(float delta)
 
 void VoxelObjectEditor::Render()
 {
+    // Render the scene to internal texture
     scene.Render();
+
+    // Display the main editor gui
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(ImVec2(wWidth, wHeight));
+    auto windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    ImGui::Begin("Voxel Object Editor", nullptr, windowFlags);
+
+    // Main menu bar
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("New"))
+            {
+            }
+
+            if (ImGui::MenuItem("Load"))
+            {
+            }
+
+            if (ImGui::MenuItem("Save"))
+            {
+            }
+
+            if (ImGui::MenuItem("Save As"))
+            {
+            }
+
+            ImGui::EndMenu();
+        }
+        
+        ImGui::EndMenuBar();
+    }
+
+    Texture2D* sceneTex = scene.GetTexture();
+    ImGui::SetCursorScreenPos(ImVec2(toolBarWidth + padding, mainBarHeight + padding));
+    ImGui::Image(reinterpret_cast<ImTextureID>(sceneTex->GetID()), ImVec2(sceneTex->GetWidth(), sceneTex->GetHeight()), ImVec2(0, 1), ImVec2(1, 0));
+
+    ImGui::End();
+    
+    if (showDebug) ShowDebug();
 }

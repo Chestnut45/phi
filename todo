@@ -2,8 +2,9 @@ design / features
 --------------------------------
 
 high priority:
-- render scene to texture? (custom viewport too messy)
-- voxel object editor gui
+- Rectangle refactor (x, y, w, h) instead of (l, u, r, d)
+- voxel object editor gui design
+    - imgui font icons
     - material loading
     - palette display
     - erase
@@ -35,6 +36,7 @@ high priority:
 
 mid priority:
 - propagate color class through rest of engine
+- scene debug gui rework
 - gamepad input
 - 3rd person controller
 - animated voxel models

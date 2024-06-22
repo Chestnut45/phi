@@ -507,20 +507,8 @@ namespace Phi
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
 
-        // Wireframe pass
-
         // Debug visualizations
         Debug::Instance().FlushShapes();
-
-        // Final blit to default framebuffer
-        // TODO: Optimize this!
-        // NOTES: Potential pipeline stall here... can't blit until rendering has finished
-        if (renderMode == RenderMode::Texture)
-        {
-            // DEBUG Blit to screen right away
-            renderTarget->Unbind(GL_DRAW_FRAMEBUFFER);
-            glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_COLOR_ATTACHMENT0, GL_NEAREST);
-        }
 
         // Lock the camera buffer and move to the next section
         activeCamera->GetUBO()->Lock();
@@ -529,6 +517,9 @@ namespace Phi
         // Clear render queues
         basicMeshRenderQueue.clear();
         voxelMeshRenderQueue.clear();
+
+        // Rebind default framebuffer
+        glBindFramebuffer(GL_FRAMEBUFFER, currentFBO);
     }
 
     void Scene::SetRenderMode(RenderMode mode)

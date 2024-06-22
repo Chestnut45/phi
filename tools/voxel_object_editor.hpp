@@ -49,5 +49,10 @@ class VoxelObjectEditor : public Phi::App
         std::unordered_map<glm::ivec3, Voxel> currentEdits;
 
         // Settings
-        bool showGUI = true;
+        bool showDebug = true;
+
+        // Window element sizes
+        int padding = 4;
+        int toolBarWidth = 128;
+        int mainBarHeight = 64;
 };

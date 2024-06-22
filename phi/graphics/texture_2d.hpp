@@ -47,8 +47,14 @@ namespace Phi
             Texture2D(Texture2D&& other) = delete;
             void operator=(Texture2D&& other) = delete;
 
-            // Binding operations
+            // Binds the texture to the given unit
             void Bind(int texUnit = 0) const;
+
+            // Debug rendering methods
+
+            // Blits the texture to the given screen coordinates of the default framebuffer (bottom left origin)
+            // Width and height default to the texture's width and height
+            void BlitToScreen(int x, int y, int width = -1, int height = -1) const;
 
             // Accessors
             inline GLuint GetID() const { return textureID; };
