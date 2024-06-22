@@ -6,7 +6,7 @@
 namespace Phi
 {
     VoxelObject::VoxelObject(int width, int height, int depth, const glm::ivec3& offset)
-        : voxelGrid(width, height, depth, -1), offset(offset), flags(Flags::None)
+        : voxelGrid(width, height, depth, -1), offset(offset), flags(Flags::UpdateMesh)
     {
         aabb.min = offset;
         aabb.max = glm::ivec3(width + offset.x, height + offset.y, depth + offset.z);
@@ -106,12 +106,13 @@ namespace Phi
                         voxel.y += pMoveIndex == pBelow ? -1 : pMoveIndex == pAbove ? 1 : 0;
                         voxel.z += pMoveIndex == pForward ? -1 : pMoveIndex == pBack ? 1 : 0;
                         std::swap(*pMoveIndex, index);
+                        meshDirty = true;
                     }
                 }
             }
         }
 
-        if (updateMesh) UpdateMesh();
+        if (updateMesh && meshDirty) UpdateMesh();
     }
 
     bool VoxelObject::Load(const std::string& path)
@@ -364,5 +365,8 @@ namespace Phi
             vert.material = materials[voxel.material].pbrID;
             verts.push_back(vert);
         }
+        
+        // Reset flag
+        meshDirty = false;
     }
 }

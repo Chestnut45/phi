@@ -123,6 +123,9 @@ namespace Phi
                 {
                     voxels[index] = voxel;
                 }
+
+                // Set flag
+                meshDirty = true;
             }
 
             // TODO: Remove voxels without rebuilding all indices...
@@ -178,5 +181,6 @@ namespace Phi
 
             // Internal mesh component (NON-OWNING)
             VoxelMesh *mesh = nullptr;
+            bool meshDirty = true;
     };
 }
