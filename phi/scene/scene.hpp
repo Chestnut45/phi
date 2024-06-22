@@ -46,11 +46,11 @@ namespace Phi
             enum class RenderMode
             {
                 // Renders the final image to the default framebuffer with viewport (0, 0, renderWidth, renderHeight)
-                MatchInternalResolution
+                DefaultFBO,
 
-                // TODO: TextureBlit
-                // Renders the final image to a texture at internal rendering resolution,
-                // then blits to the default framebuffer using the scene's viewport
+                // Renders the final image to a texture with the dimensions (0, 0, renderWidth, renderHeight)
+                // Texture is accessible via Scene::GetTexture()
+                Texture
             };
 
             // Reserved internal uniform buffer binding indices
@@ -121,18 +121,21 @@ namespace Phi
 
             // Renders all renderable components in the scene according to
             // render settings and the currently active camera
-            // NOTE: Will render to the framebuffer bound at the start of the call
             void Render();
 
             // Changes the rendering mode
             void SetRenderMode(RenderMode mode);
 
             // Updates the resolution the scene is rendered at
-            // Updates the current active camera's viewport and internal framebuffer texture resolutions
+            // Updates the current active camera's viewport and internal texture resolutions
             // NOTE: Nonpositive (negative or zero) values are rejected (no behaviour)
             // TODO: Add auto setting that updates when the window is resized
             // RATIONALE: Tying the scene's resolution to a window should be opt-in, not opt-out
             void SetResolution(int width, int height);
+
+            // Access to the scene's last rendered frame texture, or nullptr if none exists
+            // NOTE: Only valid when using RenderMode::Texture
+            Texture2D* GetTexture() { return rTexColor; }
 
             // Material management
 
@@ -238,7 +241,7 @@ namespace Phi
             // Render data
 
             // Mode
-            RenderMode renderMode{RenderMode::MatchInternalResolution};
+            RenderMode renderMode{RenderMode::DefaultFBO};
 
             // Internal rendering resolution
             int renderWidth;

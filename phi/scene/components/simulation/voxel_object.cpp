@@ -204,6 +204,8 @@ namespace Phi
                 SetVoxel(voxel.x, voxel.y, voxel.z, voxel.material);
             }
 
+            UpdateMesh();
+
             // Update AABB
             aabb.min = min;
             aabb.max = max + 1;

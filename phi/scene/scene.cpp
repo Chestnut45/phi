@@ -346,9 +346,6 @@ namespace Phi
             VoxelMesh::FlushRenderQueue();
         }
 
-        // Bind the main render target to draw to
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFBO);
-
         // Lighting passes
         
         // Update global light buffer
@@ -381,11 +378,19 @@ namespace Phi
         globalLightBuffer->Write(glm::ivec4(activeLights));
         globalLightBuffer->Write(ambientLight);
 
-        // Blit the geometry buffer's depth and stencil textures to the main render target
+        // Bind the main render target to draw to, and blit the geometry
+        // buffer's depth and stencil textures to the main render target
         // TODO: Is a blit fastest here? Profile...
         switch (renderMode)
         {
-            case RenderMode::MatchInternalResolution:
+            case RenderMode::DefaultFBO:
+                glBindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFBO);
+                glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+                glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+                break;
+            
+            case RenderMode::Texture:
+                renderTarget->Bind(GL_DRAW_FRAMEBUFFER);
                 glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
                 glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
                 break;
@@ -419,7 +424,7 @@ namespace Phi
             glDrawArrays(GL_TRIANGLES, 0, 3);
 
             // Unbind (back to default FBO for lighting)
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFBO);
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderMode == RenderMode::Texture ? renderTarget->GetID() : currentFBO);
 
             // Bind the SSAO texture for the lighting pass
             ssaoScreenTexture->Bind(3);
@@ -432,24 +437,23 @@ namespace Phi
             ssao ? globalLightPBRSSAOShader.Use() : globalLightPBRShader.Use();
             glStencilFunc(GL_EQUAL, (GLint)StencilValue::PBRMaterial, 0xff);
             glDrawArrays(GL_TRIANGLES, 0, 3);
-        }
 
-        // Lock global light buffer
-        globalLightBuffer->Lock();
-        globalLightBuffer->SwapSections();
+            // Lock global light buffer
+            globalLightBuffer->Lock();
+            globalLightBuffer->SwapSections();
 
-        // Point light pass
-        for (auto&&[id, light] : registry.view<PointLight>().each())
-        {
-            light.Render();
+            // Point light pass
+            for (auto&&[id, light] : registry.view<PointLight>().each())
+            {
+                light.Render();
+            }
+            PointLight::FlushRenderQueue(pbrPass);
         }
-        PointLight::FlushRenderQueue(pbrPass);
 
         // Disable stencil testing
         glDisable(GL_STENCIL_TEST);
 
         // Environment pass
-
         if (activeEnvironment) 
         {
             // Render the skybox texture
@@ -463,7 +467,7 @@ namespace Phi
                 activeEnvironment->RenderSun();
 
                 // Apply light scattering post-process effect
-                glBindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFBO);
+                glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderMode == RenderMode::Texture ? renderTarget->GetID() : currentFBO);
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_ONE, GL_ONE);
                 sunlightTexture->Bind(4);
@@ -511,13 +515,12 @@ namespace Phi
         // Final blit to default framebuffer
         // TODO: Optimize this!
         // NOTES: Potential pipeline stall here... can't blit until rendering has finished
-        // switch (renderMode)
-        // {
-        //     case RenderMode::MatchInternalResolution:
-        //         glBlitNamedFramebuffer(renderTarget->GetID(), 0, 0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-        //         break;
-        // }
-        // renderTarget->Unbind();
+        if (renderMode == RenderMode::Texture)
+        {
+            // DEBUG Blit to screen right away
+            renderTarget->Unbind(GL_DRAW_FRAMEBUFFER);
+            glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_COLOR_ATTACHMENT0, GL_NEAREST);
+        }
 
         // Lock the camera buffer and move to the next section
         activeCamera->GetUBO()->Lock();
@@ -848,15 +851,15 @@ namespace Phi
         }
 
         // Create render target textures
-        // rTexColor = new Texture2D(renderWidth, renderHeight, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
-        // rTexDepthStencil = new Texture2D(renderWidth, renderHeight, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+        rTexColor = new Texture2D(renderWidth, renderHeight, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+        rTexDepthStencil = new Texture2D(renderWidth, renderHeight, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
 
         // Create render target FBO and attach textures
-        // renderTarget = new Framebuffer();
-        // renderTarget->Bind();
-        // renderTarget->AttachTexture(rTexColor, GL_COLOR_ATTACHMENT0);
-        // renderTarget->AttachTexture(rTexDepthStencil, GL_DEPTH_STENCIL_ATTACHMENT);
-        // renderTarget->CheckCompleteness();
+        renderTarget = new Framebuffer();
+        renderTarget->Bind();
+        renderTarget->AttachTexture(rTexColor, GL_COLOR_ATTACHMENT0);
+        renderTarget->AttachTexture(rTexDepthStencil, GL_DEPTH_STENCIL_ATTACHMENT);
+        renderTarget->CheckCompleteness();
 
         // Create geometry buffer textures
         gTexNormal = new Texture2D(renderWidth, renderHeight, GL_RGB16_SNORM, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
