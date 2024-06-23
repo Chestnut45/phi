@@ -21,6 +21,7 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     // Add a camera
     node = scene.CreateNode3D();
     Camera& camera = scene.CreateNode3D()->AddComponent<Camera>();
+    camera.SetPosition({0, 0, 16});
     scene.SetActiveCamera(camera);
 
     // Add environment
@@ -588,17 +589,17 @@ void ParticleEffectEditor::ShowEditorWindow()
                 switch (emitter.particleProperties.opacityMode)
                 {
                     case CPUParticleEmitter::OpacityMode::Constant:
-                        ImGui::DragFloat("Opacity", &emitter.particleProperties.opacity, 0.001f, 0.0f, 1.0f);
+                        ImGui::SliderFloat("Opacity", &emitter.particleProperties.opacity, 0.0f, 1.0f);
                         break;
                     
                     case CPUParticleEmitter::OpacityMode::RandomMinMax:
-                        ImGui::DragFloat("Opacity Min", &emitter.particleProperties.opacityMin, 0.001f, 0.0f, 1.0f);
-                        ImGui::DragFloat("Opacity Max", &emitter.particleProperties.opacityMax, 0.001f, 0.0f, 1.0f);
+                        ImGui::SliderFloat("Opacity Min", &emitter.particleProperties.opacityMin, 0.0f, 1.0f);
+                        ImGui::SliderFloat("Opacity Max", &emitter.particleProperties.opacityMax, 0.0f, 1.0f);
                         break;
                     
                     case CPUParticleEmitter::OpacityMode::LerpOverLifetime:
-                        ImGui::DragFloat("Start Opacity", &emitter.particleProperties.startOpacity, 0.001f, 0.0f, 1.0f);
-                        ImGui::DragFloat("End Opacity", &emitter.particleProperties.endOpacity, 0.001f, 0.0f, 1.0f);
+                        ImGui::SliderFloat("Start Opacity", &emitter.particleProperties.startOpacity, 0.0f, 1.0f);
+                        ImGui::SliderFloat("End Opacity", &emitter.particleProperties.endOpacity, 0.0f, 1.0f);
                         break;
                 }
 

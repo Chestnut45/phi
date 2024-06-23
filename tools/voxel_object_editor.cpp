@@ -152,6 +152,7 @@ void VoxelObjectEditor::Update(float delta)
             object->SetVoxel(v.x, v.y, v.z, v.material);
         }
         currentEdits.clear();
+        object->UpdateMesh();
         
         // Reset the brush mesh
         auto& verts = brushMesh->Vertices();
