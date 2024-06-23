@@ -2,7 +2,12 @@ design / features
 --------------------------------
 
 high priority:
-- Rectangle refactor (x, y, w, h) instead of (l, u, r, d)
+- rectangle refactor (x, y, w, h) instead of (l, u, r, d)?
+- environment refactor
+    - optional skybox textures
+    - procedural sky colors
+    - clouds / fog
+    - sun alpha modulation
 - voxel object editor gui design
     - imgui font icons
     - material loading
