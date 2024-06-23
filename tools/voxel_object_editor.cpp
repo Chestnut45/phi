@@ -216,8 +216,11 @@ void VoxelObjectEditor::Render()
     }
 
     Texture2D* sceneTex = scene.GetTexture();
-    ImGui::SetCursorScreenPos(ImVec2(toolBarWidth + padding, mainBarHeight + padding));
-    ImGui::Image(reinterpret_cast<ImTextureID>(sceneTex->GetID()), ImVec2(sceneTex->GetWidth(), sceneTex->GetHeight()), ImVec2(0, 1), ImVec2(1, 0));
+    if (sceneTex)
+    {
+        ImGui::SetCursorScreenPos(ImVec2(toolBarWidth + padding, mainBarHeight + padding));
+        ImGui::Image(reinterpret_cast<ImTextureID>(sceneTex->GetID()), ImVec2(sceneTex->GetWidth(), sceneTex->GetHeight()), ImVec2(0, 1), ImVec2(1, 0));
+    }
 
     ImGui::End();
     
