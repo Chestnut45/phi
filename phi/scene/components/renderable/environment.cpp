@@ -91,6 +91,11 @@ namespace Phi
         sunPos = glm::quat(glm::vec3(0.0f, sunRotation, 0.0f)) * sunPos;
     }
 
+    void Environment::Render()
+    {
+        
+    }
+
     void Environment::RenderSkybox()
     {
         // Bind resources

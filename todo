@@ -2,7 +2,6 @@ design / features
 --------------------------------
 
 high priority:
-- rectangle refactor (x, y, w, h) instead of (l, u, r, d)?
 - environment refactor
     - optional skybox textures
     - procedural sky colors

@@ -42,6 +42,9 @@ namespace Phi
             // Updates the environment, advancing time by delta
             void Update(float delta);
 
+            // Renders the environment to the default framebuffer
+            void Render();
+
             // Renders the skybox texture to the current framebuffer
             void RenderSkybox();
 

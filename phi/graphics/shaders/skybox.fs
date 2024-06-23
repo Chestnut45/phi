@@ -31,10 +31,12 @@ void main()
     vec4 direction = invProj * vec4(texCoords, -1.0, 1.0);
     direction.xyz = mat3(invView) * direction.xyz;
 
-    // Sample both skyboxes
-    vec4 dayTexel = texture(dayCube, direction.xyz);
-    vec4 nightTexel = texture(nightCube, direction.xyz);
+    // // Sample both skyboxes
+    // vec4 dayTexel = texture(dayCube, direction.xyz);
+    // vec4 nightTexel = texture(nightCube, direction.xyz);
 
-    // Mix both samples using the blend factor
-    finalColor = mix(dayTexel, nightTexel, blendFactor);
+    // // Mix both samples using the blend factor
+    // finalColor = mix(dayTexel, nightTexel, blendFactor);
+
+    finalColor = vec4(0, 0, 0, 0);
 }
