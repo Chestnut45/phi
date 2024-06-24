@@ -225,5 +225,9 @@ void VoxelObjectEditor::Render()
 
     ImGui::End();
     
-    if (showDebug) ShowDebug();
+    if (showDebug)
+    {
+        ShowDebug();
+        scene.ShowDebug();
+    }
 }

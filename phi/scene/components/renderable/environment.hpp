@@ -10,6 +10,7 @@
 #include <phi/graphics/vertex_attributes.hpp>
 #include <phi/graphics/shader.hpp>
 #include <phi/scene/components/base_component.hpp>
+#include <phi/scene/components/camera.hpp>
 
 namespace Phi
 {
@@ -43,7 +44,7 @@ namespace Phi
             void Update(float delta);
 
             // Renders the environment to the default framebuffer
-            void Render();
+            void Render(const Camera* camera);
 
             // Renders the skybox texture to the current framebuffer
             void RenderSkybox();

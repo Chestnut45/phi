@@ -3,10 +3,11 @@ design / features
 
 high priority:
 - environment refactor
+    - sky color modulation
+    - sun size consistency
+    - proper horizon calculation (not screen space)
     - optional skybox textures
-    - procedural sky colors
-    - clouds / fog
-    - sun alpha modulation
+    - cleanup scene render (move to environment render)
 - voxel object editor gui design
     - imgui font icons
     - material loading

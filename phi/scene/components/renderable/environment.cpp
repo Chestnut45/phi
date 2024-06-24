@@ -91,12 +91,7 @@ namespace Phi
         sunPos = glm::quat(glm::vec3(0.0f, sunRotation, 0.0f)) * sunPos;
     }
 
-    void Environment::Render()
-    {
-        
-    }
-
-    void Environment::RenderSkybox()
+    void Environment::Render(const Camera* camera)
     {
         // Bind resources
         skyboxShader->Use();
@@ -107,12 +102,23 @@ namespace Phi
         float blendFactor = (1 - sin(timeOfDay * TAU)) / 2.0f;
         skyboxShader->SetUniform("blendFactor", blendFactor);
 
+        // Set sun position in shader
+        glm::vec4 sunPosScreen = camera->GetProj() * camera->GetView() * glm::vec4(sunPos + camera->GetPosition(), 1.0f);
+        glm::vec2 lightPos = glm::vec2(sunPosScreen) / sunPosScreen.w * 0.5f + 0.5f;
+        lightPos *= glm::vec2(camera->GetWidth(), camera->GetHeight()) / glm::vec2(camera->GetHeight());
+        skyboxShader->SetUniform("lightPos", lightPos);
+
         // Draw and unbind
         glDepthFunc(GL_LEQUAL);
         glBindVertexArray(dummyVAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(0);
         glDepthFunc(GL_LESS);
+    }
+
+    void Environment::RenderSkybox()
+    {
+        
     }
 
     void Environment::RenderSun()
