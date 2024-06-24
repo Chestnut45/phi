@@ -464,7 +464,7 @@ namespace Phi
                 // Bind the proper FBO and render the sun
                 sunlightFBO->Bind(GL_DRAW_FRAMEBUFFER);
                 glClear(GL_COLOR_BUFFER_BIT);
-                // activeEnvironment->RenderSun();
+                activeEnvironment->RenderSun();
 
                 // Apply light scattering post-process effect
                 glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderMode == RenderMode::Texture ? renderTarget->GetID() : currentFBO);

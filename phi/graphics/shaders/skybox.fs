@@ -67,13 +67,14 @@ void main()
     vec4 direction = invProj * vec4(texCoords, -1.0, 1.0);
     direction.xyz = mat3(invView) * direction.xyz;
 
-    // // Sample both skyboxes
-    // vec4 dayTexel = texture(dayCube, direction.xyz);
-    // vec4 nightTexel = texture(nightCube, direction.xyz);
+    // Sample both skyboxes
+    vec4 dayTexel = texture(dayCube, direction.xyz);
+    vec4 nightTexel = texture(nightCube, direction.xyz);
 
-    // // Mix both samples using the blend factor
-    // finalColor = mix(dayTexel, nightTexel, blendFactor);
+    // Mix both samples using the blend factor
+    finalColor = mix(dayTexel, nightTexel, blendFactor);
 
-    vec2 uv = gl_FragCoord.xy / (viewport.w * 2.0);
-    finalColor = vec4(getSky(uv) + getSun(uv), 1.0);
+    // DEBUG: Testing new procedural sky
+    // vec2 uv = gl_FragCoord.xy / (viewport.w * 2.0);
+    // finalColor = vec4(getSky(uv) + getSun(uv), 1.0);
 }
