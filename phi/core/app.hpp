@@ -21,6 +21,9 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_stdlib.h>
 
+// Icon font
+#include <thirdparty/imgui/IconsFontAwesome6.h>
+
 #include <glm/glm.hpp>
 
 #include <phi/core/input.hpp>

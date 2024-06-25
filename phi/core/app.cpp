@@ -14,7 +14,7 @@ namespace Phi
         style.Alpha = 1.0f;
         style.DisabledAlpha = 1.0f;
         style.WindowPadding = ImVec2(8.0f, 8.0f);
-        style.WindowRounding = 4.0f;
+        style.WindowRounding = 0.0f;
         style.WindowBorderSize = 0.0f;
         style.WindowMinSize = ImVec2(20.0f, 20.0f);
         style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
@@ -95,6 +95,19 @@ namespace Phi
         style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.2901960909366608f, 0.3019607961177826f, 0.3137255012989044f, 1.0f);
         style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(9.999907888413873e-07f, 9.999899930335232e-07f, 9.999999974752427e-07f, 0.501960813999176f);
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(9.999918120229268e-07f, 9.999899930335232e-07f, 9.999999974752427e-07f, 0.501960813999176f);
+
+        // Load icon font
+        ImGuiIO& io = ImGui::GetIO();
+        io.Fonts->AddFontDefault();
+        float baseFontSize = 20.0f;
+        float iconFontSize = baseFontSize * 2.0f / 3.0f;
+        static const ImWchar iconRange[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
+        ImFontConfig iconConfig;
+        iconConfig.MergeMode = true;
+        iconConfig.PixelSnapH = true;
+        iconConfig.GlyphMinAdvanceX = iconFontSize;
+        iconConfig.GlyphOffset.y = 1;
+        io.Fonts->AddFontFromFileTTF("thirdparty/imgui/" FONT_ICON_FILE_NAME_FAS, iconFontSize, &iconConfig, iconRange);
     }
 
     void ErrorCallback(int error, const char* const description)

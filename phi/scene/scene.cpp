@@ -787,11 +787,12 @@ namespace Phi
             ImGui::Checkbox("Render Sun", &activeEnvironment->renderSun);
             if (activeEnvironment->renderSun)
             {
+                ImGui::ColorEdit3("Color", &activeEnvironment->sunColor.r);
+                ImGui::DragFloat("Ambience", &activeEnvironment->sunAmbient, 0.001f, 0.0f, 1.0f);
                 ImGui::DragFloat("Size", &activeEnvironment->sunSize, 0.1f, 0.0f, 16'384.0f);
                 ImGui::DragFloat("Distance", &activeEnvironment->sunDistance, 0.1f, 0.0f, 16'384.0f);
                 ImGui::DragFloat("Rotation", &activeEnvironment->sunRotation, 0.001f, 0.0f, TAU);
-                ImGui::DragFloat("Ambience", &activeEnvironment->sunAmbient, 0.001f, 0.0f, 1.0f);
-                ImGui::ColorEdit3("Color", &activeEnvironment->sunColor.r);
+                
                 ImGui::Checkbox("God Rays", &activeEnvironment->godRays);
                 if (activeEnvironment->godRays)
                 {

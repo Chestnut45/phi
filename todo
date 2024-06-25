@@ -9,7 +9,6 @@ high priority:
     - optional skybox textures
     - cleanup scene render (move to environment render)
 - voxel object editor gui design
-    - imgui font icons
     - material loading
     - palette display
     - erase

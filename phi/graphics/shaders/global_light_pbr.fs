@@ -144,7 +144,7 @@ void main()
         vec3 specular = ndf * g * f / (4.0 * max(dot(fragNorm, viewDir), 0.0) * max(alignment, 0.0001));
 
         // Ambient lighting
-        vec3 ambient = vec3(lightAmbience) * materialColor;
+        vec3 ambient = lightColor * lightAmbience * materialColor;
 
         // Final color composition
         vec3 kD = (vec3(1.0) - f) * (1.0 - materialMetallic);

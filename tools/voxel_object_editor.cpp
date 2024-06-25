@@ -194,19 +194,19 @@ void VoxelObjectEditor::Render()
     {
         if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("New"))
+            if (ImGui::MenuItem(ICON_FA_FILE " New"))
             {
             }
 
-            if (ImGui::MenuItem("Load"))
+            if (ImGui::MenuItem(ICON_FA_FOLDER " Load"))
             {
             }
 
-            if (ImGui::MenuItem("Save"))
+            if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save"))
             {
             }
 
-            if (ImGui::MenuItem("Save As"))
+            if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save As"))
             {
             }
 
@@ -215,6 +215,21 @@ void VoxelObjectEditor::Render()
         
         ImGui::EndMenuBar();
     }
+
+    // TODO: Better brush settings
+    static int brushSetting = 0;
+    ImGui::RadioButton(ICON_FA_CIRCLE_PLUS " Add", &brushSetting, 0);
+    ImGui::RadioButton(ICON_FA_PAINTBRUSH " Paint", &brushSetting, 1);
+    ImGui::RadioButton(ICON_FA_ERASER " Erase", &brushSetting, 2);
+    
+    static bool showDemo = false;
+    ImGui::Checkbox("Show Demo Window", &showDemo);
+    if (showDemo)
+    {
+        ImGui::ShowDemoWindow();
+    }
+
+    // TODO: Material palette
 
     Texture2D* sceneTex = scene.GetTexture();
     if (sceneTex)
