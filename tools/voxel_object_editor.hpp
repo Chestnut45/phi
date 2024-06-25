@@ -28,8 +28,8 @@ class VoxelObjectEditor : public Phi::App
         enum class BrushMode
         {
             Add,
-            Subtract,
-            Paint
+            Paint,
+            Erase
         };
 
         // Main scene
@@ -49,10 +49,8 @@ class VoxelObjectEditor : public Phi::App
         std::unordered_map<glm::ivec3, Voxel> currentEdits;
 
         // Settings
-        bool showDebug = true;
+        bool showDebug = false;
 
-        // Window element sizes
-        int padding = 4;
-        int toolBarWidth = 128;
-        int mainBarHeight = 64;
+        // Window dimensions
+        int toolBarWidth = 256;
 };

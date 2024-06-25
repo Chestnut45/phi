@@ -756,11 +756,11 @@ namespace Phi
         activeVoxelMap = nullptr;
     }
 
-    void Scene::ShowDebug()
+    void Scene::ShowDebug(int x, int y, int width, int height)
     {
-        ImGui::SetNextWindowPos(ImVec2(renderWidth - 364, renderHeight - 454));
-        ImGui::SetNextWindowSize(ImVec2(360, 450));
-        ImGui::Begin("Scene Debug", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+        ImGui::SetNextWindowPos(ImVec2(x, y));
+        ImGui::SetNextWindowSize(ImVec2(width, height));
+        ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
         ImGui::SeparatorText("Graphics Settings");
         ImGui::Checkbox("SSAO", &ssao);

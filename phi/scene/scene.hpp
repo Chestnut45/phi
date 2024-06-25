@@ -213,7 +213,7 @@ namespace Phi
             const glm::vec3& GetAmbientLight() const { return ambientLight; }
 
             // Shows debug statistics in an ImGui window
-            void ShowDebug();
+            void ShowDebug(int x, int y, int width, int height);
 
             // TODO: Interface for iterating components / nodes directly
 

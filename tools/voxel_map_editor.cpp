@@ -64,7 +64,7 @@ void VoxelMapEditor::Update(float delta)
     if (showGUI)
     {
         ShowDebug();
-        scene.ShowDebug();
+        scene.ShowDebug(wWidth - 360, wHeight - 450, 360, 450);
         ShowInterface();
     }
 
@@ -78,8 +78,8 @@ void VoxelMapEditor::Render()
 
 void VoxelMapEditor::ShowInterface()
 {
-    ImGui::SetNextWindowPos(ImVec2(4, 4));
-    ImGui::SetNextWindowSize(ImVec2(320, wHeight - 8));
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(ImVec2(320, wHeight));
     ImGui::Begin("Voxel Map Editor", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
     // Main menu bar

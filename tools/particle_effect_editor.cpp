@@ -92,7 +92,7 @@ void ParticleEffectEditor::Update(float delta)
     if (showGUI)
     {
         ShowEditorWindow();
-        scene.ShowDebug();
+        scene.ShowDebug(wWidth - 360, wHeight - 450, 360, 450);
         ShowDebug();
     }
 }
@@ -104,9 +104,9 @@ void ParticleEffectEditor::Render()
 
 void ParticleEffectEditor::ShowEditorWindow()
 {
-    ImGui::SetNextWindowPos(ImVec2(4, 4));
-    ImGui::SetNextWindowSize(ImVec2(360, wHeight - 8));
-    ImGui::Begin("Particle Effect Editor", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(ImVec2(360, wHeight));
+    ImGui::Begin("Effect Editor", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
     // Main menu bar
     bool closePopupFlag = false;

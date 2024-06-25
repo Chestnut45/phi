@@ -95,7 +95,7 @@ void VoxelObjectEditor::Update(float delta)
     // Manually update scene resolution on window resize
     if (windowResized)
     {
-        scene.SetResolution(wWidth - toolBarWidth - padding * 2, wHeight - mainBarHeight - padding * 2);
+        scene.SetResolution(wWidth - toolBarWidth, wHeight);
         windowResized = false;
     }
 
@@ -112,7 +112,7 @@ void VoxelObjectEditor::Update(float delta)
     const glm::vec2& mousePos = input.GetMousePos();
     
     // Update selected position if we hit a solid voxel with the mouse
-    Ray ray = cam->GenerateRay(mousePos.x - toolBarWidth - padding, mousePos.y - mainBarHeight - padding);
+    Ray ray = cam->GenerateRay(mousePos.x - toolBarWidth, mousePos.y);
     VoxelObject::RaycastInfo result = object->Raycast(ray);
     if (result.firstHit != -1)
     {
@@ -185,9 +185,9 @@ void VoxelObjectEditor::Render()
 
     // Display the main editor gui
     ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(ImVec2(wWidth, wHeight));
-    auto windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-    ImGui::Begin("Voxel Object Editor", nullptr, windowFlags);
+    ImGui::SetNextWindowSize(ImVec2(toolBarWidth, wHeight));
+    auto windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    ImGui::Begin("Toolbar", nullptr, windowFlags);
 
     // Main menu bar
     if (ImGui::BeginMenuBar())
@@ -216,12 +216,15 @@ void VoxelObjectEditor::Render()
         ImGui::EndMenuBar();
     }
 
-    // TODO: Better brush settings
-    static int brushSetting = 0;
-    ImGui::RadioButton(ICON_FA_CUBE " Add", &brushSetting, 0);
-    ImGui::RadioButton(ICON_FA_PAINTBRUSH " Paint", &brushSetting, 1);
-    ImGui::RadioButton(ICON_FA_ERASER " Erase", &brushSetting, 2);
+    // Brush mode combo
+    int iBrushMode = (int)brushMode;
+    ImGui::Combo("Brush Mode", &iBrushMode,
+                 ICON_FA_CUBE " Add\0"
+                 ICON_FA_BRUSH " Paint\0"
+                 ICON_FA_ERASER " Erase\0");
+    brushMode = (BrushMode)iBrushMode;
     
+    // DEBUG: Testing different imgui methods
     static bool showDemo = false;
     ImGui::Checkbox("Show Demo Window", &showDemo);
     if (showDemo)
@@ -231,18 +234,17 @@ void VoxelObjectEditor::Render()
 
     // TODO: Material palette
 
+    ImGui::End();
+
     Texture2D* sceneTex = scene.GetTexture();
     if (sceneTex)
     {
-        ImGui::SetCursorScreenPos(ImVec2(toolBarWidth + padding, mainBarHeight + padding));
-        ImGui::Image(reinterpret_cast<ImTextureID>(sceneTex->GetID()), ImVec2(sceneTex->GetWidth(), sceneTex->GetHeight()), ImVec2(0, 1), ImVec2(1, 0));
+        sceneTex->BlitToScreen(toolBarWidth, 0);
     }
-
-    ImGui::End();
     
     if (showDebug)
     {
         ShowDebug();
-        scene.ShowDebug();
+        scene.ShowDebug(wWidth - 360, wHeight - 450, 360, 450);
     }
 }

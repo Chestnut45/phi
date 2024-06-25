@@ -320,9 +320,9 @@ namespace Phi
     void App::ShowDebug()
     {
         // Default window positioning
-        ImGui::SetNextWindowPos(ImVec2(wWidth - 260, 4));
-        ImGui::SetNextWindowSize(ImVec2(256, 256));
-        ImGui::Begin("App Debug", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+        ImGui::SetNextWindowPos(ImVec2(wWidth - 256, 0));
+        ImGui::SetNextWindowSize(ImVec2(256, 254));
+        ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
         
         // Performance monitoring
         ImGui::SeparatorText("Performance:");

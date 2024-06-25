@@ -64,7 +64,7 @@ void PBRMaterialEditor::Update(float delta)
     if (showGUI)
     {
         ShowDebug();
-        scene.ShowDebug();
+        scene.ShowDebug(wWidth - 360, wHeight - 450, 360, 450);
         ShowInterface();
     }
 }
@@ -76,8 +76,8 @@ void PBRMaterialEditor::Render()
 
 void PBRMaterialEditor::ShowInterface()
 {
-    ImGui::SetNextWindowPos(ImVec2(4, 4));
-    ImGui::SetNextWindowSize(ImVec2(320, wHeight - 8));
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(ImVec2(320, wHeight));
     ImGui::Begin("PBR Material Editor", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
     ImGui::SeparatorText("Material");
@@ -97,8 +97,8 @@ void PBRMaterialEditor::ShowInterface()
 
     // Edit material data
     ImGui::ColorEdit4("Color", colorData);
-    ImGui::DragFloat("Metallic", &metallic, 0.001f, 0.0f, 1.0f);
-    ImGui::DragFloat("Roughness", &roughness, 0.001f, 0.0f, 1.0f);
+    ImGui::SliderFloat("Metallic", &metallic, 0.0f, 1.0f);
+    ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
 
     // Update material data
     mat.color.r = colorData[0];

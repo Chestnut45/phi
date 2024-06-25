@@ -105,6 +105,6 @@ namespace Phi
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         width = width == -1 ? this->width : width;
         height = height == -1 ? this->height : height;
-        glBlitFramebuffer(0, 0, this->width, this->height, x, y, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        glBlitFramebuffer(0, 0, this->width, this->height, x, y, x + width, y + height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
     }
 }
