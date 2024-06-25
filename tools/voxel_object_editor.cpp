@@ -218,7 +218,7 @@ void VoxelObjectEditor::Render()
 
     // TODO: Better brush settings
     static int brushSetting = 0;
-    ImGui::RadioButton(ICON_FA_CIRCLE_PLUS " Add", &brushSetting, 0);
+    ImGui::RadioButton(ICON_FA_CUBE " Add", &brushSetting, 0);
     ImGui::RadioButton(ICON_FA_PAINTBRUSH " Paint", &brushSetting, 1);
     ImGui::RadioButton(ICON_FA_ERASER " Erase", &brushSetting, 2);
     
