@@ -1,16 +1,14 @@
+TODO: Reorganize all notes / todos / design documents using obsidian (manual backup)
+
 design / features
 --------------------------------
 
 high priority:
-- gBuffer redesign
-    - switch material index texture to albedo/roughness/metallic
-    - emissive texture / PBRMaterial parameter
-    - allows various shader effects to impact color regardless of material
-- voxel object editor gui design
-    - material loading
-    - palette display
-    - erase
-    - replace
+- voxel editor gui design
+    - rename voxel object editor -> voxel editor
+    - ImGui::TextRadioButton extension (where does this fit? polluting ImGui's namespace seems bad...)
+    - material palette (loading, saving, editing voxel and pbr materials [possibly remove pbr link and store voxel visual properties directly?])
+    - brush settings
     - resize canvas
     - save / load .vobj
     - simulation toggles / controls
@@ -19,7 +17,12 @@ high priority:
 - orthographic camera projection
 - improved camera controls
 - fire spread / heat distribution simulation
-- finalize fluid dynamics (pressure simulation?)
+    - fire effect in voxel mesh vertex shader
+    - liquid effect
+    - plasma effect (ridged noise + elapsedTime)
+- finalize fluid dynamics
+    - lighter fluids should float on denser fluids
+    - pressure distribution?
 - world generation / chunk rework
     - per-chunk aabb frustum culling
     - simulation sleeping
@@ -32,13 +35,13 @@ high priority:
 
 mid priority:
 - propagate color class through rest of engine
-- scene debug gui rework
 - environment refactor
     - sky color modulation
     - sun size consistency
     - proper horizon calculation (not screen space)
     - optional skybox textures
     - cleanup scene render (move to environment render)
+    - fog (sky color vs user color?)
 - gamepad input
 - 3rd person controller
 - animated voxel models
@@ -53,13 +56,14 @@ mid priority:
     - weather
 
 low priority:
+- Sprite2D
+- text rendering
+- scene debug gui rework
 - icosphere flat normals
 - move icosphere generation outside of BasicMesh so we can use it to have different LODs for point light proxy geometry
 - better Texture2D constructors
 - binary mode for File IO?
 - EventManager (wait for a good use case before implementing)
-- Sprite2D
-- text rendering
 - audio library choice (likely OpenAL)
 - extend quadtree to octree (may be useful for speeding up raycast queries in voxel editor?)
 - implement rehash / resize + write unit tests for HashMap
@@ -79,8 +83,12 @@ optimizations:
 - aggregate volume broadphase (AABB encompassing all internal volumes useful for complex aggregates, early out)
 
 graphics:
-- HDR rendering with exposure based tone mapping (configurable via scene)
-- pbr bloom (downsampling method)
+- gBuffer redesign
+    - switch material index texture to albedo/roughness/metallic
+    - allows various shader effects to impact color regardless of material
+    - emissive color for PBRMaterial
+    - HDR rendering with exposure based tone mapping after all lighting is done (scene configurable)
+    - pbr bloom (downsampling method)
 - shadow mapping
 - debug visualizations
 - BasicMesh .obj loading
@@ -94,7 +102,7 @@ high priority:
 - voxel raycasting bug (selection incorrect at certain edge cases?)
 
 mid priority:
-- move glew dll in windows from system32 to executable folder?
+- auto-move glew dll in windows to executable folder?
 
 low priority:
 -
