@@ -2,12 +2,9 @@ design / features
 --------------------------------
 
 high priority:
-- environment refactor
-    - sky color modulation
-    - sun size consistency
-    - proper horizon calculation (not screen space)
-    - optional skybox textures
-    - cleanup scene render (move to environment render)
+- gBuffer redesign
+    - switch material index texture to albedo/roughness/metallic
+    - allows various shader effects to impact color regardless of material
 - voxel object editor gui design
     - material loading
     - palette display
@@ -20,12 +17,6 @@ high priority:
     - toggleable arbitrary planes to test against
 - orthographic camera projection
 - improved camera controls
-- on-fire voxel effect (builtin materials to simulate animated effects?)
-    - not clean with deferred, maybe time to consider forward+?
-    - negative material indices for effects? (but point lights require material data...)
-    - switching between builtin materials? (pollutes ID space...)
-    - different gbuffer texture for effects? (MRT, is branching in the vs too high a cost?)
-    - PBR materials extra flag data likely best option...
 - fire spread / heat distribution simulation
 - finalize fluid dynamics (pressure simulation?)
 - world generation / chunk rework
@@ -41,6 +32,12 @@ high priority:
 mid priority:
 - propagate color class through rest of engine
 - scene debug gui rework
+- environment refactor
+    - sky color modulation
+    - sun size consistency
+    - proper horizon calculation (not screen space)
+    - optional skybox textures
+    - cleanup scene render (move to environment render)
 - gamepad input
 - 3rd person controller
 - animated voxel models

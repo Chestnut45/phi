@@ -27,6 +27,9 @@ VoxelObjectEditor::VoxelObjectEditor() : App("Voxel Object Editor", 4, 6)
     camera.SetPosition({0, 16, 128});
     scene.SetActiveCamera(camera);
 
+    // Add a point light to the camera
+    camera.GetNode()->AddComponent<PointLight>();
+
     // DEBUG: Environment
     Environment& env = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_old");
     scene.SetActiveEnvironment(env);
