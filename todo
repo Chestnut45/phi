@@ -4,6 +4,7 @@ design / features
 high priority:
 - gBuffer redesign
     - switch material index texture to albedo/roughness/metallic
+    - emissive texture / PBRMaterial parameter
     - allows various shader effects to impact color regardless of material
 - voxel object editor gui design
     - material loading
