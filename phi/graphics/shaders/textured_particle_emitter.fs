@@ -1,5 +1,7 @@
 #version 460
 
+const float GAMMA = 2.2;
+
 layout(binding = 0) uniform sampler2D textures[16];
 
 in vec3 fragPos;
@@ -12,5 +14,5 @@ out vec4 finalColor;
 void main()
 {
     // NOTE: texID is a dynamically uniform expression because of how the indirect draw calls are structured
-    finalColor = fragColor * texture(textures[texID], uv);
+    finalColor = pow(fragColor * texture(textures[texID], uv), vec4(vec3(GAMMA), 1.0));
 }

@@ -17,7 +17,7 @@ emitters: [
 	particle_properties: {
 		position: {type: random_sphere, center: {x: 0, y: 0, z: 0}, radius: 0.8},
 		velocity: {type: random_min_max, min: {x: -0.8, y: 0.25, z: -0.8}, max: {x: 0.8, y: 3, z: 0.8}, damping: 0},
-		color: {type: lerp_over_lifetime, start_color: {r: 1, g: 0.411765, b: 0}, end_color: {r: 0.803922, g: 0, b: 0}},
+		color: {type: lerp_over_lifetime, start_color: {r: 1, g: 0.318584, b: 0}, end_color: {r: 0.597345, g: 0, b: 0}},
 		size: {type: random_lerp, min: {x: 0.25, y: 0.25}, max: {x: 0.8, y: 0.8}},
 		opacity: {type: lerp_over_lifetime, start_opacity: 1, end_opacity: 0},
 		lifespan: {type: random_min_max, min: 0.5, max: 0.8},
@@ -45,7 +45,7 @@ emitters: [
 	particle_properties: {
 		position: {type: random_sphere, center: {x: 0, y: 0, z: 0}, radius: 0.5},
 		velocity: {type: random_min_max, min: {x: -0.5, y: 2, z: -0.5}, max: {x: 0.5, y: 3.14159, z: 0.5}, damping: 0},
-		color: {type: constant, value: {r: 0.332637, g: 0.332637, b: 0.534314}},
+		color: {type: constant, value: {r: 0.218028, g: 0.218028, b: 0.424779}},
 		size: {type: lerp_over_lifetime, start_size: {x: 0.5, y: 0.5}, end_size: {x: 2, y: 2}},
 		opacity: {type: lerp_over_lifetime, start_opacity: 1, end_opacity: 0},
 		lifespan: {type: constant, value: 4},

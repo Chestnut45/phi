@@ -4,6 +4,7 @@ design / features
 --------------------------------
 
 high priority:
+- particle effect HDR color selection
 - voxel editor gui design
     - ImGui::TextRadioButton extension (where does this fit? polluting ImGui's namespace seems bad...)
     - material palette (loading, saving, editing voxel and pbr materials [possibly remove pbr link and store voxel visual properties directly?])
@@ -81,7 +82,7 @@ optimizations:
 - aggregate volume broadphase (AABB encompassing all internal volumes useful for complex aggregates, early out)
 
 graphics:
-- HDR rendering with exposure based tone mapping after all lighting is done (scene configurable)
+- tone map exposure settings
 - pbr bloom (downsampling method)
 - shadow mapping
 - debug visualizations

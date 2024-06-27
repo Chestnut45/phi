@@ -58,6 +58,8 @@ ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 
     pupilsMesh.SetMaterial("obsidian");
     mesh.GetNode()->AddChild(pupilsMesh.GetNode());
 
+    // mesh.GetNode()->AddComponent<VoxelObject>().Load("data://models/teapot.vobj");
+
     // Log
     Log(name, " initialized");
 }

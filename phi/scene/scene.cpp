@@ -79,10 +79,13 @@ namespace Phi
         lightTransferShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/light_transfer.fs");
         lightTransferShader.Link();
 
-        // Tone map shader
-        toneMapShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/fullscreen_tri.vs");
-        toneMapShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/tone_map.fs");
-        toneMapShader.Link();
+        // Tone map shaders
+        toneMapDefaultFBOShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/fullscreen_tri.vs");
+        toneMapDefaultFBOShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/tone_map_default_fbo.fs");
+        toneMapDefaultFBOShader.Link();
+        toneMapTextureShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/fullscreen_tri.vs");
+        toneMapTextureShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/tone_map_texture.fs");
+        toneMapTextureShader.Link();
 
         // Initialize SSAO data
 
@@ -306,10 +309,6 @@ namespace Phi
         // Only render if we have an active camera
         if (!activeCamera) return;
 
-        // Grab the framebuffer ID (might not be 0)
-        GLint currentFBO = 0;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFBO);
-
         // Set initial rendering state
         glViewport(0, 0, renderWidth, renderHeight);
         glDisable(GL_BLEND);
@@ -386,22 +385,10 @@ namespace Phi
         globalLightBuffer->Write(glm::ivec4(activeLights));
         globalLightBuffer->Write(ambientLight);
 
-        // Bind the main render target to draw to, and blit the geometry
-        // buffer's depth and stencil textures to the main render target
-        switch (renderMode)
-        {
-            case RenderMode::DefaultFBO:
-                glBindFramebuffer(GL_DRAW_FRAMEBUFFER, currentFBO);
-                glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-                glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
-                break;
-            
-            case RenderMode::Texture:
-                renderTarget->Bind(GL_DRAW_FRAMEBUFFER);
-                glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-                glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
-                break;
-        }
+        // Blit the geometry buffer's depth and stencil textures to the main render target
+        renderTarget->Bind(GL_DRAW_FRAMEBUFFER);
+        glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+        glBlitFramebuffer(0, 0, renderWidth, renderHeight, 0, 0, renderWidth, renderHeight, GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 
         // Disable depth testing / writing
         glDepthFunc(GL_ALWAYS);
@@ -432,8 +419,8 @@ namespace Phi
             // Draw fullscreen triangle
             glDrawArrays(GL_TRIANGLES, 0, 3);
 
-            // Unbind (back to default FBO for lighting)
-            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderMode == RenderMode::Texture ? renderTarget->GetID() : currentFBO);
+            // Unbind
+            renderTarget->Bind(GL_DRAW_FRAMEBUFFER);
 
             // Bind the SSAO texture for the lighting pass
             ssaoScreenTexture->Bind(5);
@@ -476,7 +463,7 @@ namespace Phi
                 activeEnvironment->RenderSun();
 
                 // Apply light scattering post-process effect
-                glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderMode == RenderMode::Texture ? renderTarget->GetID() : currentFBO);
+                renderTarget->Bind(GL_DRAW_FRAMEBUFFER);
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_ONE, GL_ONE);
                 sunlightTexture->Bind(5);
@@ -499,7 +486,6 @@ namespace Phi
                 glBindVertexArray(dummyVAO);
                 glDrawArrays(GL_TRIANGLES, 0, 3);
                 glBindVertexArray(0);
-                glDisable(GL_BLEND);
             }
         }
 
@@ -512,19 +498,34 @@ namespace Phi
         }
         CPUParticleEffect::FlushRenderQueue();
 
-        // Tone mapping
+        // Make sure blending state is disabled
+        glDisable(GL_BLEND);
+
+        // Debug visualizations
+        Debug::Instance().FlushShapes();
+
+        // Barrier to ensure all texture writes have finished
         glTextureBarrier();
+        
+        // Final Pass: Tone mapping
+        if (renderMode == RenderMode::DefaultFBO)
+        {
+            renderTarget->Unbind();
+            toneMapDefaultFBOShader.Use();
+        }
+        else
+        {
+            toneMapTextureShader.Use();
+        }
+
+        // Bind and draw
         rTexColor->Bind(6);
-        toneMapShader.Use();
         glBindVertexArray(dummyVAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // Re-enable depth writing / testing
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
-
-        // Debug visualizations
-        Debug::Instance().FlushShapes();
 
         // Lock the camera buffer and move to the next section
         activeCamera->GetUBO()->Lock();

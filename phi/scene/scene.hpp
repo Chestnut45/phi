@@ -256,7 +256,8 @@ namespace Phi
             Texture2D* rTexColor = nullptr;
             Texture2D* rTexDepthStencil = nullptr;
             Texture2D* rTexFinal = nullptr;
-            Shader toneMapShader;
+            Shader toneMapDefaultFBOShader;
+            Shader toneMapTextureShader;
 
             // Geometry framebuffer and textures
             Framebuffer* gBuffer = nullptr;

@@ -146,11 +146,7 @@ void main()
     }
 
     // Add emissive component
-    result += fragEmissive.rgb * fragEmissive.a;
-
-    // DEBUG: Tone mapping
-    // NOTE: Should be done at the end of all lighting passes, not at each pass
-    // result = result / (result + vec3(1.0));
+    result += pow(fragEmissive.rgb, vec3(GAMMA)) * fragEmissive.a;
     
     // Output final accumulation
     finalColor = vec4(result, 1.0);
