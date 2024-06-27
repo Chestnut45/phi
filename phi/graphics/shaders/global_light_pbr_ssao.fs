@@ -150,8 +150,8 @@ void main()
 
     // DEBUG: Tone mapping
     // NOTE: Should be done at the end of all lighting passes, not at each pass
-    result = result / (result + vec3(1.0));
+    // result = result / (result + vec3(1.0));
     
-    // Output final accumulation with gamma correction
-    finalColor = vec4(pow(result, vec3(1.0 / GAMMA)), 1.0);
+    // Output final accumulation
+    finalColor = vec4(result, 1.0);
 }

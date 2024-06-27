@@ -135,7 +135,7 @@ namespace Phi
 
             // Access to the scene's last rendered frame texture, or nullptr if none exists
             // NOTE: Only valid when using RenderMode::Texture
-            Texture2D* GetTexture() { return rTexColor; }
+            Texture2D* GetTexture() { return rTexFinal; }
 
             // Material management
 
@@ -255,6 +255,8 @@ namespace Phi
             Framebuffer* renderTarget = nullptr;
             Texture2D* rTexColor = nullptr;
             Texture2D* rTexDepthStencil = nullptr;
+            Texture2D* rTexFinal = nullptr;
+            Shader toneMapShader;
 
             // Geometry framebuffer and textures
             Framebuffer* gBuffer = nullptr;

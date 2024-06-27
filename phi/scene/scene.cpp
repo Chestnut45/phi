@@ -57,27 +57,32 @@ namespace Phi
         // Global lighting shaders
 
         // PBR
-        globalLightPBRShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light.vs");
+        globalLightPBRShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/fullscreen_tri.vs");
         globalLightPBRShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pbr.fs");
         globalLightPBRShader.Link();
 
         // PBR with SSAO
-        globalLightPBRSSAOShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/global_light.vs");
+        globalLightPBRSSAOShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/fullscreen_tri.vs");
         globalLightPBRSSAOShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/global_light_pbr_ssao.fs");
         globalLightPBRSSAOShader.Link();
 
         // SSAO
-        ssaoShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/ssao_pass.vs");
+        ssaoShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/fullscreen_tri.vs");
         ssaoShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/ssao_pass.fs");
         ssaoShader.Link();
 
         // Light scattering shaders
-        lightScatteringShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/light_scatter.vs");
+        lightScatteringShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/fullscreen_tri.vs");
         lightScatteringShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/light_scatter.fs");
         lightScatteringShader.Link();
-        lightTransferShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/light_scatter.vs");
+        lightTransferShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/fullscreen_tri.vs");
         lightTransferShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/light_transfer.fs");
         lightTransferShader.Link();
+
+        // Tone map shader
+        toneMapShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/fullscreen_tri.vs");
+        toneMapShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/tone_map.fs");
+        toneMapShader.Link();
 
         // Initialize SSAO data
 
@@ -135,6 +140,7 @@ namespace Phi
         delete renderTarget;
         delete rTexColor;
         delete rTexDepthStencil;
+        delete rTexFinal;
 
         // Geometry buffer / textures
         delete gBuffer;
@@ -506,6 +512,13 @@ namespace Phi
         }
         CPUParticleEffect::FlushRenderQueue();
 
+        // Tone mapping
+        glTextureBarrier();
+        rTexColor->Bind(6);
+        toneMapShader.Use();
+        glBindVertexArray(dummyVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
         // Re-enable depth writing / testing
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
@@ -520,9 +533,6 @@ namespace Phi
         // Clear render queues
         basicMeshRenderQueue.clear();
         voxelMeshRenderQueue.clear();
-
-        // Rebind default framebuffer
-        glBindFramebuffer(GL_FRAMEBUFFER, currentFBO);
     }
 
     void Scene::SetRenderMode(RenderMode mode)
@@ -831,6 +841,7 @@ namespace Phi
             // Delete framebuffers and textures if they exist
             delete rTexColor;
             delete rTexDepthStencil;
+            delete rTexFinal;
             delete renderTarget;
 
             delete gBuffer;
@@ -847,16 +858,24 @@ namespace Phi
             delete sunlightTexture;
         }
 
+        // Draw buffer order
+        GLenum drawBuffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
+
         // Create render target textures
-        rTexColor = new Texture2D(renderWidth, renderHeight, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+        rTexColor = new Texture2D(renderWidth, renderHeight, GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
         rTexDepthStencil = new Texture2D(renderWidth, renderHeight, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+        rTexFinal = new Texture2D(renderWidth, renderHeight, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
 
         // Create render target FBO and attach textures
         renderTarget = new Framebuffer();
         renderTarget->Bind();
         renderTarget->AttachTexture(rTexColor, GL_COLOR_ATTACHMENT0);
+        renderTarget->AttachTexture(rTexFinal, GL_COLOR_ATTACHMENT1);
         renderTarget->AttachTexture(rTexDepthStencil, GL_DEPTH_STENCIL_ATTACHMENT);
         renderTarget->CheckCompleteness();
+
+        // Set the draw buffers for the render target
+        glDrawBuffers(2, drawBuffers);
 
         // Create geometry buffer textures
         gTexNormal = new Texture2D(renderWidth, renderHeight, GL_RGB16_SNORM, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
@@ -876,7 +895,6 @@ namespace Phi
         gBuffer->CheckCompleteness();
 
         // Set draw buffers for geometry buffer
-        GLenum drawBuffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
         glDrawBuffers(4, drawBuffers);
 
         // Create SSAO texture

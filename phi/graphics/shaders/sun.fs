@@ -1,5 +1,7 @@
 #version 460
 
+const float GAMMA = 2.2;
+
 // Camera uniform block
 layout(std140, binding = 0) uniform CameraBlock
 {
@@ -24,5 +26,5 @@ out vec4 finalColor;
 
 void main()
 {
-    finalColor = vec4(sunColor, 1.0) * texture(sunTexture, texCoords);
+    finalColor = vec4(pow(sunColor, vec3(GAMMA)), 1.0) * texture(sunTexture, texCoords);
 }

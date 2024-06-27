@@ -1,5 +1,7 @@
 #version 460
 
+const float GAMMA = 2.2;
+
 // Camera uniform block
 layout(std140, binding = 0) uniform CameraBlock
 {
@@ -72,7 +74,7 @@ void main()
     vec4 nightTexel = texture(nightCube, direction.xyz);
 
     // Mix both samples using the blend factor
-    finalColor = mix(dayTexel, nightTexel, blendFactor);
+    finalColor = pow(mix(dayTexel, nightTexel, blendFactor), vec4(GAMMA));
 
     // DEBUG: Testing new procedural sky
     // vec2 uv = gl_FragCoord.xy / (viewport.w * 2.0);
