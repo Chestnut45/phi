@@ -166,6 +166,7 @@ namespace Phi
         else
         {
             geometryPassShader->Use();
+            geometryPassShader->SetUniform("time", (float)glfwGetTime());
         }
 
         // Bind resources
