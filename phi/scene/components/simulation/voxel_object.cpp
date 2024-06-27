@@ -360,7 +360,7 @@ namespace Phi
         for (const Voxel& voxel : voxels)
         {
             // Add the voxel to the new mesh
-            VertexVoxelHalfPrecision vert;
+            VoxelMesh::Vertex vert;
             vert.x = voxel.x;
             vert.y = voxel.y;
             vert.z = voxel.z;

@@ -141,7 +141,7 @@ namespace Phi
 
                     if (x == 0 || y == 0 || z == 0 || x == VoxelChunk::CHUNK_DIM - 1 || y == VoxelChunk::CHUNK_DIM - 1 || z == VoxelChunk::CHUNK_DIM - 1)
                     {
-                        VertexVoxelHalfPrecision vert;
+                        VoxelMesh::Vertex vert;
                         vert.x = position.x;
                         vert.y = position.y;
                         vert.z = position.z;
@@ -158,7 +158,7 @@ namespace Phi
                         chunk->voxelGrid(x, y, z - 1) == 0 ||
                         chunk->voxelGrid(x, y, z + 1) == 0)
                     {
-                        VertexVoxelHalfPrecision vert;
+                        VoxelMesh::Vertex vert;
                         vert.x = position.x;
                         vert.y = position.y;
                         vert.z = position.z;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <vector>
 #include <string>
 
@@ -24,8 +25,11 @@ namespace Phi
             // Constants
             static inline const size_t MAX_VOXELS = 1'048'576;
 
-            // Typedefs
-            typedef VertexVoxelHalfPrecision Vertex;
+            // Vertex format
+            struct Vertex
+            {
+                int16_t x, y, z, material;
+            };
 
             // Creates an empty voxel mesh
             VoxelMesh();

@@ -87,15 +87,4 @@ namespace Phi
         GLfloat x, y, z;
         GLfloat u, v;
     };
-
-    struct VertexVoxel
-    {
-        GLint x, y, z, material;
-    };
-
-    struct VertexVoxelHalfPrecision
-    {
-        GLshort x, y, z;
-        GLushort material;
-    };
 }

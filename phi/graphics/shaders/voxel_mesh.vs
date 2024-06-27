@@ -98,7 +98,7 @@ void main()
     // Grab voxel data
     uvec2 voxel = voxelData[voxelIndex];
     ivec3 voxelPos = ivec3(bitfieldExtract(int(voxel.x), 0, 16), bitfieldExtract(int(voxel.x), 16, 16), bitfieldExtract(int(voxel.y), 0, 16));
-    uint voxelMaterial = bitfieldExtract(voxel.y, 16, 16);
+    int voxelMaterial = bitfieldExtract(int(voxel.y), 16, 16);
 
     // Mirroring hack (render only 3 faces per voxel)
     
@@ -117,25 +117,35 @@ void main()
     // Set position
     gl_Position = viewProj * worldPos;
 
-    // Material data
-    PBRMaterial material = pbrMaterials[voxelMaterial];
-
-    // Initialize albedo
-    vec4 albedo = material.color;
-    vec4 emissive = material.emissive;
-
-    // DEBUG: Fire effect testing
-    if (voxelMaterial == 2)
+    // Special effects
+    vec4 albedo;
+    vec4 emissive;
+    vec2 metallicRoughness;
+    if (voxelMaterial == -1)
     {
+        // Fire effect
+
+        // Bias distribution towards red
         float r = random(float(voxelIndex) + time);
         r *= r;
+
+        // Set material properties
         emissive = vec4(mix(vec3(1, 0, 0), vec3(1, 0.5, 0), clamp(r, 0.0, 1.0)), 2.0);
-        albedo.rgb = vec3(0.0);
+        albedo = vec4(0.0, 0.0, 0.0, 1.0);
+        metallicRoughness = vec2(0.0);
+    }
+    else
+    {
+        // Load material
+        PBRMaterial material = pbrMaterials[voxelMaterial];
+        albedo = material.color;
+        emissive = material.emissive;
+        metallicRoughness = material.metallicRoughness.xy;
     }
 
     // Fragment outputs
     fragPos = worldPos.xyz;
     fragAlbedo = albedo;
     fragEmissive = emissive;
-    fragMetallicRoughness = material.metallicRoughness.xy;
+    fragMetallicRoughness = metallicRoughness;
 }

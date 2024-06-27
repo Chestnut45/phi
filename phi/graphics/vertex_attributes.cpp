@@ -81,12 +81,6 @@ namespace Phi
                 AddAttribute(3, GL_FLOAT);
                 AddAttribute(2, GL_FLOAT);
                 break;
-            
-            case VertexFormat::VOXEL:
-                stride = sizeof(VertexVoxel);
-                AddAttribute(3, GL_INT);
-                AddAttribute(1, GL_INT);
-                break;
         }
 
         // Bind index buffer if one was supplied
