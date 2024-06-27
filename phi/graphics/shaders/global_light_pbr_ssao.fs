@@ -12,13 +12,6 @@ struct DirectionalLight
     vec4 directionAmbient;
 };
 
-// PBR material definition
-struct PBRMaterial
-{
-    vec4 color;
-    vec4 metallicRoughness;
-};
-
 // Camera uniform block
 layout(std140, binding = 0) uniform CameraBlock
 {
@@ -42,22 +35,17 @@ layout(std140, binding = 1) uniform GlobalLightBlock
     vec3 ambientLight;
 };
 
-// PBR Material buffer
-layout(std430, binding = 1) buffer PBRMaterialBlock
-{
-    PBRMaterial pbrMaterials[MAX_MATERIALS];
-};
-
 // Geometry buffer texture samplers
 layout(binding = 0) uniform sampler2D gNorm;
-layout(binding = 1) uniform usampler2D gMaterial;
-layout(binding = 2) uniform sampler2D gDepth;
+layout(binding = 1) uniform sampler2D gAlbedo;
+layout(binding = 2) uniform sampler2D gMetallicRoughness;
+layout(binding = 3) uniform sampler2D gDepth;
 
 // SSAO sampler
-layout(binding = 3) uniform sampler2D ssaoTex;
+layout(binding = 4) uniform sampler2D ssaoTex;
 
+// Inputs / outputs
 in vec2 texCoords;
-
 out vec4 finalColor;
 
 // Gets the world position from texCoords and depth
@@ -109,17 +97,17 @@ void main()
     // Grab data from geometry buffer
     float depth = texture(gDepth, texCoords).r;
     vec3 fragNorm = normalize(texture(gNorm, texCoords).xyz);
-    uint materialID = texture(gMaterial, texCoords).r;
+    vec3 fragAlbedo = texture(gAlbedo, texCoords).rgb;
+    vec2 metallicRoughness = texture(gMetallicRoughness, texCoords).rg;
     float occlusion = texture(ssaoTex, texCoords).r;
 
     // Calculate fragment position in world space
     vec3 fragPos = getWorldPos(texCoords, depth);
 
-    // Grab material data
-    PBRMaterial material = pbrMaterials[materialID];
-    vec3 materialColor = pow(material.color.rgb, vec3(GAMMA));
-    float materialMetallic = material.metallicRoughness.x;
-    float materialRoughness = material.metallicRoughness.y;
+    // Material data
+    vec3 materialColor = pow(fragAlbedo, vec3(GAMMA));
+    float materialMetallic = metallicRoughness.x;
+    float materialRoughness = metallicRoughness.y;
 
     // Calculate view direction
     vec3 viewDir = normalize(cameraPos.xyz - fragPos);

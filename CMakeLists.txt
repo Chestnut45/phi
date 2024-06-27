@@ -52,11 +52,11 @@ set(VOXEL_MAP_EDITOR_HEADER ${CMAKE_SOURCE_DIR}/tools/voxel_map_editor.hpp)
 add_executable(voxel_map_editor ${PHI_SOURCE} ${PHI_HEADERS} ${IMGUI_SOURCES} ${VOXEL_MAP_EDITOR_SOURCE} ${VOXEL_MAP_EDITOR_HEADER})
 target_link_libraries(voxel_map_editor yaml-cpp::yaml-cpp glfw glew ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
 
-# Voxel object editor
-set(VOXEL_OBJECT_EDITOR_SOURCE ${CMAKE_SOURCE_DIR}/tools/voxel_object_editor.cpp)
-set(VOXEL_OBJECT_EDITOR_HEADER ${CMAKE_SOURCE_DIR}/tools/voxel_object_editor.hpp)
-add_executable(voxel_object_editor ${PHI_SOURCE} ${PHI_HEADERS} ${IMGUI_SOURCES} ${VOXEL_OBJECT_EDITOR_SOURCE} ${VOXEL_OBJECT_EDITOR_HEADER})
-target_link_libraries(voxel_object_editor yaml-cpp::yaml-cpp glfw glew ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
+# Voxel editor
+set(VOXEL_EDITOR_SOURCE ${CMAKE_SOURCE_DIR}/tools/voxel_editor.cpp)
+set(VOXEL_EDITOR_HEADER ${CMAKE_SOURCE_DIR}/tools/voxel_editor.hpp)
+add_executable(voxel_editor ${PHI_SOURCE} ${PHI_HEADERS} ${IMGUI_SOURCES} ${VOXEL_EDITOR_SOURCE} ${VOXEL_EDITOR_HEADER})
+target_link_libraries(voxel_editor yaml-cpp::yaml-cpp glfw glew ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
 
 
 # TEMPLATES

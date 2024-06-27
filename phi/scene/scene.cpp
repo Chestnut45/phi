@@ -139,7 +139,8 @@ namespace Phi
         // Geometry buffer / textures
         delete gBuffer;
         delete gTexNormal;
-        delete gTexMaterial;
+        delete gTexAlbedo;
+        delete gTexMetallicRoughness;
         delete gTexDepthStencil;
 
         // SSAO resources
@@ -408,8 +409,9 @@ namespace Phi
 
         // Bind the geometry buffer textures
         gTexNormal->Bind(0);
-        gTexMaterial->Bind(1);
-        gTexDepthStencil->Bind(2);
+        gTexAlbedo->Bind(1);
+        gTexMetallicRoughness->Bind(2);
+        gTexDepthStencil->Bind(3);
 
         // SSAO pass (only runs if there are any viable rendered components)
         if (ssao && pbrPass)
@@ -417,7 +419,7 @@ namespace Phi
             // Bind resources
             ssaoFBO->Bind(GL_DRAW_FRAMEBUFFER);
             ssaoKernelUBO->BindBase(GL_UNIFORM_BUFFER, (int)UniformBindingIndex::SSAO);
-            ssaoRotationTexture->Bind(3);
+            ssaoRotationTexture->Bind(4);
             ssaoShader.Use();
 
             // Draw fullscreen triangle
@@ -427,7 +429,7 @@ namespace Phi
             glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderMode == RenderMode::Texture ? renderTarget->GetID() : currentFBO);
 
             // Bind the SSAO texture for the lighting pass
-            ssaoScreenTexture->Bind(3);
+            ssaoScreenTexture->Bind(4);
         }
 
         // PBR Materials global lighting pass
@@ -454,7 +456,7 @@ namespace Phi
         glDisable(GL_STENCIL_TEST);
 
         // Environment pass
-        if (activeEnvironment) 
+        if (activeEnvironment)
         {
             // Render the skybox texture
             activeEnvironment->Render(activeCamera);
@@ -832,7 +834,8 @@ namespace Phi
 
             delete gBuffer;
             delete gTexNormal;
-            delete gTexMaterial;
+            delete gTexAlbedo;
+            delete gTexMetallicRoughness;
             delete gTexDepthStencil;
 
             delete ssaoFBO;
@@ -855,20 +858,22 @@ namespace Phi
 
         // Create geometry buffer textures
         gTexNormal = new Texture2D(renderWidth, renderHeight, GL_RGB16_SNORM, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
-        gTexMaterial = new Texture2D(renderWidth, renderHeight, GL_R16UI, GL_RED_INTEGER, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+        gTexAlbedo = new Texture2D(renderWidth, renderHeight, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+        gTexMetallicRoughness = new Texture2D(renderWidth, renderHeight, GL_RG8, GL_RG, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
         gTexDepthStencil = new Texture2D(renderWidth, renderHeight, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
 
         // Create geometry buffer and attach textures
         gBuffer = new Framebuffer();
         gBuffer->Bind();
         gBuffer->AttachTexture(gTexNormal, GL_COLOR_ATTACHMENT0);
-        gBuffer->AttachTexture(gTexMaterial, GL_COLOR_ATTACHMENT1);
+        gBuffer->AttachTexture(gTexAlbedo, GL_COLOR_ATTACHMENT1);
+        gBuffer->AttachTexture(gTexMetallicRoughness, GL_COLOR_ATTACHMENT2);
         gBuffer->AttachTexture(gTexDepthStencil, GL_DEPTH_STENCIL_ATTACHMENT);
         gBuffer->CheckCompleteness();
 
         // Set draw buffers for geometry buffer
-        GLenum drawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-        glDrawBuffers(2, drawBuffers);
+        GLenum drawBuffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+        glDrawBuffers(3, drawBuffers);
 
         // Create SSAO texture
         ssaoScreenTexture = new Texture2D(renderWidth, renderHeight, GL_R8, GL_RED, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);

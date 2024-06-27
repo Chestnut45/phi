@@ -18,23 +18,11 @@ layout(std140, binding = 0) uniform CameraBlock
     vec4 nearFar; // x = near, y = far, z = null, w = null
 };
 
-// PBR material definition
-struct PBRMaterial
-{
-    vec4 color;
-    vec4 metallicRoughness;
-};
-
-// PBR Material buffer
-layout(std430, binding = 1) buffer PBRMaterialBlock
-{
-    PBRMaterial pbrMaterials[MAX_MATERIALS];
-};
-
 // Geometry buffer texture samplers
 layout(binding = 0) uniform sampler2D gNorm;
-layout(binding = 1) uniform usampler2D gMaterial;
-layout(binding = 2) uniform sampler2D gDepth;
+layout(binding = 1) uniform sampler2D gAlbedo;
+layout(binding = 2) uniform sampler2D gMetallicRoughness;
+layout(binding = 3) uniform sampler2D gDepth;
 
 in flat vec3 lightPosWorld;
 in flat vec4 lightColorRadius;
@@ -93,13 +81,13 @@ void main()
     // Grab data from geometry buffer
     float depth = texture(gDepth, texCoords).r;
     vec3 fragNorm = normalize(texture(gNorm, texCoords).xyz);
-    uint materialID = texture(gMaterial, texCoords).r;
+    vec4 fragAlbedo = texture(gAlbedo, texCoords).rgba;
+    vec2 fragMetallicRoughness = texture(gMetallicRoughness, texCoords).rg;
 
-    // Grab material
-    PBRMaterial material = pbrMaterials[materialID];
-    vec3 materialColor = pow(material.color.rgb, vec3(GAMMA));
-    float materialMetallic = material.metallicRoughness.x;
-    float materialRoughness = material.metallicRoughness.y;
+    // Material data
+    vec3 materialColor = pow(fragAlbedo.rgb, vec3(GAMMA));
+    float materialMetallic = fragMetallicRoughness.x;
+    float materialRoughness = fragMetallicRoughness.y;
 
     // Calculate fragment position in world space
     vec3 fragPos = getWorldPos(texCoords, depth);

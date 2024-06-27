@@ -2,12 +2,13 @@
 
 // Geometry buffer outputs
 layout(location = 0) out vec3 gNormal;
-layout(location = 1) out uint gMaterial;
+layout(location = 1) out vec3 gAlbedo;
+layout(location = 2) out vec2 gMetallicRoughness;
 
 // Vertex shader inputs
 in vec3 fragPos;
-in flat uint fragMaterial;
-in flat float fragAlpha;
+in flat vec4 fragAlbedo;
+in flat vec2 fragMetallicRoughness;
 
 // Helper bayer matrix dithering functions
 // https://www.shadertoy.com/view/4ssfWM
@@ -29,7 +30,8 @@ float bayer128 (vec2 a) { return bayer16(0.125 * a) * 0.015625 + bayer8(a); }
 void main()
 {
     // Apply transparency
-    if (fragAlpha == 0.0 || dither8(gl_FragCoord.xy) > (fragAlpha - 0.5) * 0.984375) 
+    float alpha = fragAlbedo.a;
+    if (alpha == 0.0 || dither8(gl_FragCoord.xy) > (alpha - 0.5) * 0.984375) 
     {
         discard;
     }
@@ -37,6 +39,7 @@ void main()
     // Calculate normal from gradient of interpolated position
     gNormal = normalize(cross(dFdx(fragPos), dFdy(fragPos)));
 
-    // Output material directly
-    gMaterial = fragMaterial;
+    // Output material data
+    gAlbedo = fragAlbedo.rgb;
+    gMetallicRoughness = fragMetallicRoughness;
 }

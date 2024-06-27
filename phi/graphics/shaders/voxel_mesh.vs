@@ -45,8 +45,8 @@ layout(std430, binding = 4) restrict buffer InstanceData
 
 // Fragment outputs
 out vec3 fragPos;
-out flat uint fragMaterial;
-out flat float fragAlpha;
+out flat vec4 fragAlbedo;
+out flat vec2 fragMetallicRoughness;
 
 // Vertex shader entrypoint
 void main()
@@ -78,8 +78,11 @@ void main()
     // Set position
     gl_Position = viewProj * worldPos;
 
+    // Material data
+    PBRMaterial material = pbrMaterials[voxelMaterial];
+
     // Fragment outputs
     fragPos = worldPos.xyz;
-    fragMaterial = voxelMaterial;
-    fragAlpha = pbrMaterials[voxelMaterial].color.a;
+    fragAlbedo = material.color;
+    fragMetallicRoughness = material.metallicRoughness.xy;
 }

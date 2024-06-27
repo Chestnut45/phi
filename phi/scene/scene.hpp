@@ -259,7 +259,8 @@ namespace Phi
             // Geometry framebuffer and textures
             Framebuffer* gBuffer = nullptr;
             Texture2D* gTexNormal = nullptr;
-            Texture2D* gTexMaterial = nullptr;
+            Texture2D* gTexAlbedo = nullptr;
+            Texture2D* gTexMetallicRoughness = nullptr;
             Texture2D* gTexDepthStencil = nullptr;
 
             // SSAO data

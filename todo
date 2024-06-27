@@ -5,7 +5,6 @@ design / features
 
 high priority:
 - voxel editor gui design
-    - rename voxel object editor -> voxel editor
     - ImGui::TextRadioButton extension (where does this fit? polluting ImGui's namespace seems bad...)
     - material palette (loading, saving, editing voxel and pbr materials [possibly remove pbr link and store voxel visual properties directly?])
     - brush settings
@@ -84,8 +83,6 @@ optimizations:
 
 graphics:
 - gBuffer redesign
-    - switch material index texture to albedo/roughness/metallic
-    - allows various shader effects to impact color regardless of material
     - emissive color for PBRMaterial
     - HDR rendering with exposure based tone mapping after all lighting is done (scene configurable)
     - pbr bloom (downsampling method)

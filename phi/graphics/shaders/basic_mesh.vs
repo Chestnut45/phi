@@ -35,9 +35,9 @@ layout(std430, binding = 1) buffer PBRMaterialBlock
 };
 
 // Fragment shader outputs
-out vec3 normal;
-out flat uint material;
-out flat float fragAlpha;
+out vec3 fragNormal;
+out flat vec4 fragAlbedo;
+out flat vec2 fragMetallicRoughness;
 
 void main()
 {
@@ -45,8 +45,11 @@ void main()
     vec4 worldSpacePos = iTransform * vec4(vPos, 1.0);
     gl_Position = viewProj * worldSpacePos;
 
+    // Material Data
+    PBRMaterial material = pbrMaterials[iMaterial];
+
     // Send per fragment outputs
-    normal = normalize((inverse(transpose(iTransform)) * vec4(vNorm, 1.0)).xyz);
-    material = iMaterial;
-    fragAlpha = pbrMaterials[iMaterial].color.a;
+    fragNormal = normalize((inverse(transpose(iTransform)) * vec4(vNorm, 1.0)).xyz);
+    fragAlbedo = material.color;
+    fragMetallicRoughness = material.metallicRoughness.xy;
 }
