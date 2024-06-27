@@ -28,10 +28,14 @@ namespace Phi
         // Flag expansion
         const bool updateMesh = (flags | Flags::UpdateMesh) == flags;
         const bool simulateFluids = (flags | Flags::SimulateFluids) == flags;
+        const bool simulateFire = (flags | Flags::SimulateFire) == flags;
 
         // Grab relevant data
         int empty = voxelGrid.GetEmptyValue();
         const auto& voxelMaterials = GetNode()->GetScene()->GetVoxelMaterials();
+
+        // RNG used by the simulation
+        static RNG rng;
 
         // Iterate all voxels
         for (auto& voxel : voxels)
@@ -39,6 +43,56 @@ namespace Phi
             // Grab material
             const auto& material = voxelMaterials[voxel.material];
             const bool isLiquid = (material.flags | VoxelMaterial::Flags::Liquid) == material.flags;
+            const bool isFire = (material.flags | VoxelMaterial::Flags::Fire) == material.flags;
+            const bool isOnFire = (voxel.flags | Voxel::Flags::OnFire) == voxel.flags;
+
+            // Fire simulation step
+            if (simulateFire)
+            {
+                if (isFire || isOnFire)
+                {
+                    // Calculate grid position
+                    int gridX = voxel.x - offset.x;
+                    int gridY = voxel.y - offset.y;
+                    int gridZ = voxel.z - offset.z;
+
+                    // Grab current voxel index reference
+                    int& index = voxelGrid(gridX, gridY, gridZ);
+
+                    // Initialize neighbour index pointers
+                    int* pBelow = (voxel.y > aabb.min.y) ? &voxelGrid(gridX, gridY - 1, gridZ) : nullptr;
+                    int* pAbove = (voxel.y < aabb.max.y - 1) ? &voxelGrid(gridX, gridY + 1, gridZ) : nullptr;
+                    int* pLeft = (voxel.x > aabb.min.x) ? &voxelGrid(gridX - 1, gridY, gridZ) : nullptr;
+                    int* pRight = (voxel.x < aabb.max.x - 1) ? &voxelGrid(gridX + 1, gridY, gridZ) : nullptr;
+                    int* pForward = (voxel.z > aabb.min.z) ? &voxelGrid(gridX, gridY, gridZ - 1) : nullptr;
+                    int* pBack = (voxel.z < aabb.max.z - 1) ? &voxelGrid(gridX, gridY, gridZ + 1) : nullptr;
+                    int* pNeighbours[] = { pBelow, pAbove, pLeft, pRight, pForward, pBack };
+
+                    // Iterate all neighbours
+                    for (int i = 0; i < 6; ++i)
+                    {
+                        int* pNeighbour = pNeighbours[i];
+                        if (pNeighbour)
+                        {
+                            // Grab neighbour data if it exists
+                            Voxel* vNeighbour = *pNeighbour == empty ? nullptr : &voxels[*pNeighbour];
+
+                            // If neighbour exists
+                            if (vNeighbour)
+                            {
+                                const float flammability = voxelMaterials[vNeighbour->material].flammability;
+                                float n = rng.NextFloat(0.0f, 1.0f);
+                                if (flammability >= 1.0f || n < flammability)
+                                {
+                                    // Spread
+                                    vNeighbour->flags |= Voxel::Flags::OnFire;
+                                    meshDirty = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             // Fluid simulation step
             if (simulateFluids && isLiquid)
@@ -92,9 +146,6 @@ namespace Phi
                 // Move if we can
                 if (possibleMoves > 0)
                 {
-                    // RNG used for the fluid simulation
-                    static RNG rng;
-
                     // Make decision
                     // TODO: Prefer adjacent positions over opposite ones (somewhat mocking surface tension)
                     int* pMoveIndex = (pMoveInds[0] == pBelow) ? pMoveInds[0] : (fluidNeighbours > 0) ? pMoveInds[rng.NextInt(0, possibleMoves - 1)] : nullptr;
@@ -364,7 +415,7 @@ namespace Phi
             vert.x = voxel.x;
             vert.y = voxel.y;
             vert.z = voxel.z;
-            vert.material = materials[voxel.material].pbrID;
+            vert.material = (voxel.flags == (voxel.flags | Voxel::Flags::OnFire)) ? -1 : materials[voxel.material].pbrID;
             verts.push_back(vert);
         }
         

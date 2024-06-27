@@ -130,7 +130,7 @@ void main()
         r *= r;
 
         // Set material properties
-        emissive = vec4(mix(vec3(1, 0, 0), vec3(1, 0.5, 0), clamp(r, 0.0, 1.0)), 2.0);
+        emissive = vec4(mix(vec3(1, 0, 0), vec3(1, 0.5, 0), clamp(r, 0.0, 1.0)), 4.0);
         albedo = vec4(0.0, 0.0, 0.0, 1.0);
         metallicRoughness = vec2(0.0);
     }

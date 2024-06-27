@@ -82,10 +82,11 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
     // object->UpdateMesh();
 
     // Testing different object configurations
-    // object->Enable(VoxelObject::Flags::SimulateFluids);
+    object->Enable(VoxelObject::Flags::SimulateFluids);
+    object->Enable(VoxelObject::Flags::SimulateFire);
 
     // Default material
-    selectedVoxel.material = scene.GetVoxelMaterialID("water");
+    selectedVoxel.material = scene.GetVoxelMaterialID("lava");
 }
 
 VoxelEditor::~VoxelEditor()
