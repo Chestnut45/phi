@@ -3,12 +3,14 @@
 // Vertex Inputs
 in vec3 fragNormal;
 in flat vec4 fragAlbedo;
+in flat vec4 fragEmissive;
 in flat vec2 fragMetallicRoughness;
 
 // Geometry buffer outputs
 layout(location = 0) out vec3 gNormal;
 layout(location = 1) out vec3 gAlbedo;
-layout(location = 2) out vec2 gMetallicRoughness;
+layout(location = 2) out vec4 gEmissive;
+layout(location = 3) out vec2 gMetallicRoughness;
 
 // Helper bayer matrix dithering functions
 // https://www.shadertoy.com/view/4ssfWM
@@ -39,5 +41,6 @@ void main()
     // Output to geometry buffer directly
     gNormal = fragNormal;
     gAlbedo = fragAlbedo.rgb;
+    gEmissive = fragEmissive;
     gMetallicRoughness = fragMetallicRoughness;
 }

@@ -25,8 +25,8 @@ layout(std140, binding = 2) uniform SSAOBlock
 
 // Geometry buffer texture samplers
 layout(binding = 0) uniform sampler2D gNorm;
-layout(binding = 3) uniform sampler2D gDepth;
-layout(binding = 4) uniform sampler2D ssaoRotation;
+layout(binding = 4) uniform sampler2D gDepth;
+layout(binding = 5) uniform sampler2D ssaoRotation;
 
 in vec2 texCoords;
 

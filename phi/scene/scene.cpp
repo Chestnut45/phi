@@ -140,6 +140,7 @@ namespace Phi
         delete gBuffer;
         delete gTexNormal;
         delete gTexAlbedo;
+        delete gTexEmissive;
         delete gTexMetallicRoughness;
         delete gTexDepthStencil;
 
@@ -381,7 +382,6 @@ namespace Phi
 
         // Bind the main render target to draw to, and blit the geometry
         // buffer's depth and stencil textures to the main render target
-        // TODO: Is a blit fastest here? Profile...
         switch (renderMode)
         {
             case RenderMode::DefaultFBO:
@@ -410,8 +410,9 @@ namespace Phi
         // Bind the geometry buffer textures
         gTexNormal->Bind(0);
         gTexAlbedo->Bind(1);
-        gTexMetallicRoughness->Bind(2);
-        gTexDepthStencil->Bind(3);
+        gTexEmissive->Bind(2);
+        gTexMetallicRoughness->Bind(3);
+        gTexDepthStencil->Bind(4);
 
         // SSAO pass (only runs if there are any viable rendered components)
         if (ssao && pbrPass)
@@ -419,7 +420,7 @@ namespace Phi
             // Bind resources
             ssaoFBO->Bind(GL_DRAW_FRAMEBUFFER);
             ssaoKernelUBO->BindBase(GL_UNIFORM_BUFFER, (int)UniformBindingIndex::SSAO);
-            ssaoRotationTexture->Bind(4);
+            ssaoRotationTexture->Bind(5);
             ssaoShader.Use();
 
             // Draw fullscreen triangle
@@ -429,7 +430,7 @@ namespace Phi
             glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderMode == RenderMode::Texture ? renderTarget->GetID() : currentFBO);
 
             // Bind the SSAO texture for the lighting pass
-            ssaoScreenTexture->Bind(4);
+            ssaoScreenTexture->Bind(5);
         }
 
         // PBR Materials global lighting pass
@@ -472,7 +473,7 @@ namespace Phi
                 glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderMode == RenderMode::Texture ? renderTarget->GetID() : currentFBO);
                 glEnable(GL_BLEND);
                 glBlendFunc(GL_ONE, GL_ONE);
-                sunlightTexture->Bind(4);
+                sunlightTexture->Bind(5);
                 
                 if (activeEnvironment->godRays)
                 {
@@ -550,32 +551,28 @@ namespace Phi
         // Find if the material exists
         const auto& it = pbrMaterialIDs.find(name);
 
+        int id = 0;
         if (it != pbrMaterialIDs.end())
         {
             // Material with provided name exists, replace it
-            pbrMaterials[it->second] = material;
-
-            // Write the new material data to the gpu buffer
-            pbrMaterialBuffer.SetOffset(sizeof(glm::vec4) * 2 * it->second);
-            pbrMaterialBuffer.Write(glm::vec4{material.color.r, material.color.g, material.color.b, material.color.a});
-            pbrMaterialBuffer.Write(glm::vec4{material.metallic, material.roughness, 1.0f, 1.0f});
-
-            return it->second;
+            id = it->second;
+            pbrMaterials[id] = material;
         }
         else
         {
             // Material does not exist, add it and add the ID to the map
-            int id = pbrMaterials.size();
+            id = pbrMaterials.size();
             pbrMaterialIDs[name] = id;
             pbrMaterials.push_back(material);
-
-            // Write the new material data to the gpu buffer
-            pbrMaterialBuffer.SetOffset(sizeof(glm::vec4) * 2 * id);
-            pbrMaterialBuffer.Write(glm::vec4{material.color.r, material.color.g, material.color.b, material.color.a});
-            pbrMaterialBuffer.Write(glm::vec4{material.metallic, material.roughness, 1.0f, 1.0f});
-
-            return id;
         }
+
+        // Write the new material data to the gpu buffer
+        pbrMaterialBuffer.SetOffset(sizeof(glm::vec4) * 3 * id);
+        pbrMaterialBuffer.Write(glm::vec4{material.color.r, material.color.g, material.color.b, material.color.a});
+        pbrMaterialBuffer.Write(glm::vec4{material.emissive.r, material.emissive.g, material.emissive.b, material.emissive.a});
+        pbrMaterialBuffer.Write(glm::vec4{material.metallic, material.roughness, 0.0f, 0.0f});
+
+        return id;
     }
 
     int Scene::RegisterMaterial(const std::string& name, const VoxelMaterial& material)
@@ -666,6 +663,10 @@ namespace Phi
                     m.color.g = mat["color"]["g"] ? mat["color"]["g"].as<float>() : m.color.g;
                     m.color.b = mat["color"]["b"] ? mat["color"]["b"].as<float>() : m.color.b;
                     m.color.a = mat["color"]["a"] ? mat["color"]["a"].as<float>() : m.color.a;
+                    m.emissive.r = mat["emissive"]["r"] ? mat["emissive"]["r"].as<float>() : m.emissive.r;
+                    m.emissive.g = mat["emissive"]["g"] ? mat["emissive"]["g"].as<float>() : m.emissive.g;
+                    m.emissive.b = mat["emissive"]["b"] ? mat["emissive"]["b"].as<float>() : m.emissive.b;
+                    m.emissive.a = mat["emissive"]["a"] ? mat["emissive"]["a"].as<float>() : m.emissive.a;
                     m.metallic = mat["metallic"] ? mat["metallic"].as<float>() : m.metallic;
                     m.roughness = mat["roughness"] ? mat["roughness"].as<float>() : m.roughness;
 
@@ -835,6 +836,7 @@ namespace Phi
             delete gBuffer;
             delete gTexNormal;
             delete gTexAlbedo;
+            delete gTexEmissive;
             delete gTexMetallicRoughness;
             delete gTexDepthStencil;
 
@@ -859,6 +861,7 @@ namespace Phi
         // Create geometry buffer textures
         gTexNormal = new Texture2D(renderWidth, renderHeight, GL_RGB16_SNORM, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
         gTexAlbedo = new Texture2D(renderWidth, renderHeight, GL_RGB8, GL_RGB, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
+        gTexEmissive = new Texture2D(renderWidth, renderHeight, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
         gTexMetallicRoughness = new Texture2D(renderWidth, renderHeight, GL_RG8, GL_RG, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
         gTexDepthStencil = new Texture2D(renderWidth, renderHeight, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);
 
@@ -867,13 +870,14 @@ namespace Phi
         gBuffer->Bind();
         gBuffer->AttachTexture(gTexNormal, GL_COLOR_ATTACHMENT0);
         gBuffer->AttachTexture(gTexAlbedo, GL_COLOR_ATTACHMENT1);
-        gBuffer->AttachTexture(gTexMetallicRoughness, GL_COLOR_ATTACHMENT2);
+        gBuffer->AttachTexture(gTexEmissive, GL_COLOR_ATTACHMENT2);
+        gBuffer->AttachTexture(gTexMetallicRoughness, GL_COLOR_ATTACHMENT3);
         gBuffer->AttachTexture(gTexDepthStencil, GL_DEPTH_STENCIL_ATTACHMENT);
         gBuffer->CheckCompleteness();
 
         // Set draw buffers for geometry buffer
-        GLenum drawBuffers[3] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
-        glDrawBuffers(3, drawBuffers);
+        GLenum drawBuffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
+        glDrawBuffers(4, drawBuffers);
 
         // Create SSAO texture
         ssaoScreenTexture = new Texture2D(renderWidth, renderHeight, GL_R8, GL_RED, GL_UNSIGNED_BYTE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST);

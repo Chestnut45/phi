@@ -28,6 +28,7 @@ struct MeshData
 struct PBRMaterial
 {
     vec4 color;
+    vec4 emissive;
     vec4 metallicRoughness;
 };
 
@@ -49,10 +50,12 @@ layout(std430, binding = 4) restrict buffer InstanceData
 // Fragment outputs
 out vec3 fragPos;
 out flat vec4 fragAlbedo;
+out flat vec4 fragEmissive;
 out flat vec2 fragMetallicRoughness;
 
 // A single iteration of Bob Jenkins' One-At-A-Time hashing algorithm.
-uint hash( uint x ) {
+uint hash(uint x)
+{
     x += ( x << 10u );
     x ^= ( x >>  6u );
     x += ( x <<  3u );
@@ -61,21 +64,28 @@ uint hash( uint x ) {
     return x;
 }
 
-// Construct a float with half-open range [0:1] using low 23 bits.
+// Construct a float with half-open range [0, 1) using low 23 bits
 // All zeroes yields 0.0, all ones yields the next smallest representable value below 1.0.
-float floatConstruct( uint m ) {
-    const uint ieeeMantissa = 0x007FFFFFu; // binary32 mantissa bitmask
-    const uint ieeeOne      = 0x3F800000u; // 1.0 in IEEE binary32
+float floatConstruct(uint m)
+{
+    // IEEE Binary32 Constants
+    const uint ieeeMantissa = 0x007FFFFFu;
+    const uint ieeeOne = 0x3F800000u;
 
-    m &= ieeeMantissa;                     // Keep only mantissa bits (fractional part)
-    m |= ieeeOne;                          // Add fractional part to 1.0
+    // Only keep fractional part
+    m &= ieeeMantissa;
+    m |= ieeeOne;
 
-    float  f = uintBitsToFloat( m );       // Range [1:2]
-    return f - 1.0;                        // Range [0:1]
+    // Adjust to range [0, 1]
+    float f = uintBitsToFloat(m);
+    return f - 1.0;
 }
 
-// Pseudo-random value in half-open range [0:1].
-float random( float x ) { return floatConstruct(hash(floatBitsToUint(x))); }
+// Pseudo-random value in half-open range [0, 1)
+float random(float x)
+{
+    return floatConstruct(hash(floatBitsToUint(x)));
+}
 
 // Vertex shader entrypoint
 void main()
@@ -110,12 +120,22 @@ void main()
     // Material data
     PBRMaterial material = pbrMaterials[voxelMaterial];
 
-    vec4 albedo = vec4(0.0);
-    albedo.rgb = voxelMaterial == 2 ? mix(vec3(1, 0, 0), vec3(1, 1, 0), random(float(voxelIndex) + time)) : material.color.rgb;
-    albedo.a = material.color.a;
+    // Initialize albedo
+    vec4 albedo = material.color;
+    vec4 emissive = material.emissive;
+
+    // DEBUG: Fire effect testing
+    if (voxelMaterial == 2)
+    {
+        float r = random(float(voxelIndex) + time);
+        r *= r;
+        emissive = vec4(mix(vec3(1, 0, 0), vec3(1, 0.5, 0), clamp(r, 0.0, 1.0)), 2.0);
+        albedo.rgb = vec3(0.0);
+    }
 
     // Fragment outputs
     fragPos = worldPos.xyz;
     fragAlbedo = albedo;
+    fragEmissive = emissive;
     fragMetallicRoughness = material.metallicRoughness.xy;
 }

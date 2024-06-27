@@ -21,8 +21,9 @@ layout(std140, binding = 0) uniform CameraBlock
 // Geometry buffer texture samplers
 layout(binding = 0) uniform sampler2D gNorm;
 layout(binding = 1) uniform sampler2D gAlbedo;
-layout(binding = 2) uniform sampler2D gMetallicRoughness;
-layout(binding = 3) uniform sampler2D gDepth;
+// gEmissive not necessary for point lights
+layout(binding = 3) uniform sampler2D gMetallicRoughness;
+layout(binding = 4) uniform sampler2D gDepth;
 
 in flat vec3 lightPosWorld;
 in flat vec4 lightColorRadius;
@@ -81,13 +82,13 @@ void main()
     // Grab data from geometry buffer
     float depth = texture(gDepth, texCoords).r;
     vec3 fragNorm = normalize(texture(gNorm, texCoords).xyz);
-    vec4 fragAlbedo = texture(gAlbedo, texCoords).rgba;
+    vec3 fragAlbedo = texture(gAlbedo, texCoords).rgb;
     vec2 fragMetallicRoughness = texture(gMetallicRoughness, texCoords).rg;
 
     // Material data
-    vec3 materialColor = pow(fragAlbedo.rgb, vec3(GAMMA));
-    float materialMetallic = fragMetallicRoughness.x;
-    float materialRoughness = fragMetallicRoughness.y;
+    vec3 albedo = pow(fragAlbedo, vec3(GAMMA));
+    float metallic = fragMetallicRoughness.x;
+    float roughness = fragMetallicRoughness.y;
 
     // Calculate fragment position in world space
     vec3 fragPos = getWorldPos(texCoords, depth);
@@ -105,12 +106,12 @@ void main()
     float alignment = dot(fragNorm, lightDir);
 
     // Calculate surface reflection at zero
-    vec3 srz = mix(vec3(0.04), materialColor, materialMetallic);
+    vec3 srz = mix(vec3(0.04), albedo, metallic);
     
     // Cook-Torrance BRDF
     vec3 f = fresnelSchlick(max(dot(lightHalfDir, viewDir), 0.0), srz);
-    float ndf = distributionGGX(fragNorm, lightHalfDir, materialRoughness);
-    float g = geometrySmith(fragNorm, viewDir, lightDir, materialRoughness);
+    float ndf = distributionGGX(fragNorm, lightHalfDir, roughness);
+    float g = geometrySmith(fragNorm, viewDir, lightDir, roughness);
     vec3 specular = ndf * g * f / (4.0 * max(dot(fragNorm, viewDir), 0.0) * max(alignment, 0.0001));
 
     // Attenuation
@@ -119,9 +120,9 @@ void main()
     attenuation *= attenuation;
 
     // Final color composition
-    vec3 kD = (vec3(1.0) - f) * (1.0 - materialMetallic);
+    vec3 kD = (vec3(1.0) - f) * (1.0 - metallic);
     vec3 radiance = lightColor * attenuation;
-    vec3 result = (kD * materialColor / PI + specular) * radiance * max(alignment, 0.0);
+    vec3 result = (kD * albedo / PI + specular) * radiance * max(alignment, 0.0);
 
     // DEBUG: Tone mapping
     // NOTE: Should be done at the end of all lighting passes, not at each pass

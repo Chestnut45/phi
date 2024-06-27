@@ -16,9 +16,8 @@ high priority:
 - orthographic camera projection
 - improved camera controls
 - fire spread / heat distribution simulation
-    - fire effect in voxel mesh vertex shader
-    - liquid effect
-    - plasma effect (ridged noise + elapsedTime)
+- liquid effect
+- plasma effect (ridged noise + elapsedTime)
 - finalize fluid dynamics
     - lighter fluids should float on denser fluids
     - pressure distribution?
@@ -82,10 +81,8 @@ optimizations:
 - aggregate volume broadphase (AABB encompassing all internal volumes useful for complex aggregates, early out)
 
 graphics:
-- gBuffer redesign
-    - emissive color for PBRMaterial
-    - HDR rendering with exposure based tone mapping after all lighting is done (scene configurable)
-    - pbr bloom (downsampling method)
+- HDR rendering with exposure based tone mapping after all lighting is done (scene configurable)
+- pbr bloom (downsampling method)
 - shadow mapping
 - debug visualizations
 - BasicMesh .obj loading

@@ -2,108 +2,126 @@ pbr_materials: [
     {
         name: grass,
         color: {r: 0.12, g: 0.69, b: 0.16},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.9,
         metallic: 0
     },
     {
         name: water,
         color: {r: 0.05, g: 0.45, b: 0.86, a: 0.75},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.8,
         metallic: 0
     },
     {
         name: lava,
         color: {r: 3, g: 1, b: 0.1, a: 1.0},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.8,
         metallic: 0
     },
     {
         name: fungal_stem,
         color: {r: 1.0, g: 0.829, b: 0.64},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.6,
         metallic: 0
     },
     {
         name: fungal_cap_red,
         color: {r: 0.8, g: 0.01, b: 0.05},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.8,
         metallic: 0
     },
     {
         name: emerald,
         color: {r: 0.24, g: 0.69, b: 0.32},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.2,
         metallic: 0.6
     },
     {
         name: sapphire,
         color: {r: 0.05, g: 0.32, b: 0.73},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.24,
         metallic: 0.7
     },
     {
         name: ruby,
         color: {r: 0.8, g: 0.01, b: 0.25},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.24,
         metallic: 0.24
     },
     {
         name: gold,
         color: {r: 0.75164, g: 0.60648, b: 0.22648},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.4,
         metallic: 0.5
     },
     {
         name: silver,
         color: {r: 0.7, g: 0.7, b: 0.7},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.36,
         metallic: 0.82
     },
     {
         name: iron,
         color: {r: 0.45, g: 0.36, b: 0.36},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.6,
         metallic: 0.64
     },
     {
         name: copper,
         color: {r: 0.7038, g: 0.27048, b: 0.0828},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.65,
         metallic: 0.5
     },
     {
         name: chrome,
         color: {r: 0.4, g: 0.4, b: 0.4},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.15,
         metallic: 1.0
     },
     {
         name: pearl,
         color: {r: 1.0, g: 0.829, b: 0.829},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.4,
         metallic: 0.2
     },
     {
         name: obsidian,
         color: {r: 0.18275, g: 0.17, b: 0.22525},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.2,
         metallic: 0.6
     },
     {
         name: rubber,
         color: {r: 0.6, g: 0.5, b: 0.2},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.92,
         metallic: 0
     },
     {
         name: diamond,
         color: {r: 0.6, g: 0.6, b: 1.0},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.2,
         metallic: 0.8
     },
     {
         name: asteroid,
         color: {r: 0.1, g: 0.05, b: 0.02},
+        emissive: {r: 0, g: 0, b: 0, a: 0},
         roughness: 0.7,
         metallic: 0.2
     },

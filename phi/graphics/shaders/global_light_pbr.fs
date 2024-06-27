@@ -5,13 +5,6 @@ const int MAX_MATERIALS = 1024;
 const float GAMMA = 2.2;
 const float PI = 3.141592653589793238;
 
-// Light structure
-struct DirectionalLight
-{
-    vec4 color;
-    vec4 directionAmbient;
-};
-
 // Camera uniform block
 layout(std140, binding = 0) uniform CameraBlock
 {
@@ -26,20 +19,28 @@ layout(std140, binding = 0) uniform CameraBlock
     vec4 nearFar; // x = near, y = far, z = null, w = null
 };
 
+// Light structure
+struct DirectionalLight
+{
+    vec4 color;
+    vec4 directionAmbient;
+};
+
 // Lighting uniform block
 layout(std140, binding = 1) uniform GlobalLightBlock
 {
     DirectionalLight globalLights[MAX_DIRECTIONAL_LIGHTS];
     int globalLightCount;
-    // 3 bytes padding
+    // 3 bytes padding as per std140 layout rules
     vec3 ambientLight;
 };
 
 // Geometry buffer texture samplers
 layout(binding = 0) uniform sampler2D gNorm;
 layout(binding = 1) uniform sampler2D gAlbedo;
-layout(binding = 2) uniform sampler2D gMetallicRoughness;
-layout(binding = 3) uniform sampler2D gDepth;
+layout(binding = 2) uniform sampler2D gEmissive;
+layout(binding = 3) uniform sampler2D gMetallicRoughness;
+layout(binding = 4) uniform sampler2D gDepth;
 
 // Inputs / outputs
 in vec2 texCoords;
@@ -95,22 +96,23 @@ void main()
     float depth = texture(gDepth, texCoords).r;
     vec3 fragNorm = normalize(texture(gNorm, texCoords).xyz);
     vec3 fragAlbedo = texture(gAlbedo, texCoords).rgb;
-    vec2 metallicRoughness = texture(gMetallicRoughness, texCoords).rg;
+    vec4 fragEmissive = texture(gEmissive, texCoords);
+    vec2 fragMetallicRoughness = texture(gMetallicRoughness, texCoords).rg;
 
     // Calculate fragment position in world space
     vec3 fragPos = getWorldPos(texCoords, depth);
 
     // Material data
-    vec3 materialColor = pow(fragAlbedo, vec3(GAMMA));
-    float materialMetallic = metallicRoughness.x;
-    float materialRoughness = metallicRoughness.y;
+    vec3 albedo = pow(fragAlbedo, vec3(GAMMA));
+    float metallic = fragMetallicRoughness.x;
+    float roughness = fragMetallicRoughness.y;
 
     // Calculate view direction
     vec3 viewDir = normalize(cameraPos.xyz - fragPos);
 
     // Calculate influence from all active global lights
     // Start with the base ambient light of the scene
-    vec3 result = materialColor * ambientLight;
+    vec3 result = albedo * ambientLight;
     for (int i = 0; i < globalLightCount; i++)
     {
         // Grab light information
@@ -123,21 +125,24 @@ void main()
         float alignment = dot(fragNorm, lightDir);
         
         // Calculate surface reflection at zero
-        vec3 srz = mix(vec3(0.04), materialColor, materialMetallic);
+        vec3 srz = mix(vec3(0.04), albedo, metallic);
         
         // Cook-Torrance BRDF
         vec3 f = fresnelSchlick(max(dot(lightHalfDir, viewDir), 0.0), srz);
-        float ndf = distributionGGX(fragNorm, lightHalfDir, materialRoughness);
-        float g = geometrySmith(fragNorm, viewDir, lightDir, materialRoughness);
+        float ndf = distributionGGX(fragNorm, lightHalfDir, roughness);
+        float g = geometrySmith(fragNorm, viewDir, lightDir, roughness);
         vec3 specular = ndf * g * f / (4.0 * max(dot(fragNorm, viewDir), 0.0) * max(alignment, 0.0001));
 
         // Ambient lighting
-        vec3 ambient = lightColor * lightAmbience * materialColor;
+        vec3 ambient = lightColor * lightAmbience * albedo;
 
         // Final color composition
-        vec3 kD = (vec3(1.0) - f) * (1.0 - materialMetallic);
-        result += ambient + (kD * materialColor / PI + specular) * lightColor * max(alignment, 0.0);
+        vec3 kD = (vec3(1.0) - f) * (1.0 - metallic);
+        result += ambient + (kD * albedo / PI + specular) * lightColor * max(alignment, 0.0);
     }
+
+    // Add emissive component
+    result += fragEmissive.rgb * fragEmissive.a;
 
     // DEBUG: Tone mapping
     // NOTE: Should be done at the end of all lighting passes, not at each pass

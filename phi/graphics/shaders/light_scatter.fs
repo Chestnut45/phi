@@ -14,7 +14,7 @@ layout(std140, binding = 0) uniform CameraBlock
     vec4 nearFar; // x = near, y = far, z = null, w = null
 };
 
-layout(binding = 4) uniform sampler2D lightTexture;
+layout(binding = 5) uniform sampler2D lightTexture;
 
 // Constants and uniforms
 const int SAMPLES = 32;

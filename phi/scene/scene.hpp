@@ -260,6 +260,7 @@ namespace Phi
             Framebuffer* gBuffer = nullptr;
             Texture2D* gTexNormal = nullptr;
             Texture2D* gTexAlbedo = nullptr;
+            Texture2D* gTexEmissive = nullptr;
             Texture2D* gTexMetallicRoughness = nullptr;
             Texture2D* gTexDepthStencil = nullptr;
 
@@ -284,7 +285,7 @@ namespace Phi
             // PBR Materials
             std::vector<PBRMaterial> pbrMaterials;
             std::unordered_map<std::string, int> pbrMaterialIDs;
-            GPUBuffer pbrMaterialBuffer{BufferType::Dynamic, MAX_BASIC_MATERIALS * sizeof(glm::vec4) * 2};
+            GPUBuffer pbrMaterialBuffer{BufferType::Dynamic, MAX_BASIC_MATERIALS * sizeof(glm::vec4) * 3};
 
             // Voxel materials
             std::vector<VoxelMaterial> voxelMaterials;

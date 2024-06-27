@@ -26,6 +26,7 @@ layout(location = 6) in uint iMaterial;
 struct PBRMaterial
 {
     vec4 color;
+    vec4 emissive;
     vec4 metallicRoughness;
 };
 
@@ -37,6 +38,7 @@ layout(std430, binding = 1) buffer PBRMaterialBlock
 // Fragment shader outputs
 out vec3 fragNormal;
 out flat vec4 fragAlbedo;
+out flat vec4 fragEmissive;
 out flat vec2 fragMetallicRoughness;
 
 void main()
@@ -51,5 +53,6 @@ void main()
     // Send per fragment outputs
     fragNormal = normalize((inverse(transpose(iTransform)) * vec4(vNorm, 1.0)).xyz);
     fragAlbedo = material.color;
+    fragEmissive = material.emissive;
     fragMetallicRoughness = material.metallicRoughness.xy;
 }

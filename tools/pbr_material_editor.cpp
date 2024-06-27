@@ -87,16 +87,21 @@ void PBRMaterialEditor::ShowInterface()
 
     // Editable data
     PBRMaterial mat = scene.GetPBRMaterial(0);
-    float colorData[4];
+    float colorData[8];
     colorData[0] = mat.color.r;
     colorData[1] = mat.color.g;
     colorData[2] = mat.color.b;
     colorData[3] = mat.color.a;
+    colorData[4] = mat.emissive.r;
+    colorData[5] = mat.emissive.g;
+    colorData[6] = mat.emissive.b;
+    colorData[7] = mat.emissive.a;
     float metallic = mat.metallic;
     float roughness = mat.roughness;
 
     // Edit material data
     ImGui::ColorEdit4("Color", colorData);
+    ImGui::ColorEdit4("Emissive", colorData + 4);
     ImGui::SliderFloat("Metallic", &metallic, 0.0f, 1.0f);
     ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
 
@@ -105,6 +110,10 @@ void PBRMaterialEditor::ShowInterface()
     mat.color.g = colorData[1];
     mat.color.b = colorData[2];
     mat.color.a = colorData[3];
+    mat.emissive.r = colorData[4];
+    mat.emissive.g = colorData[5];
+    mat.emissive.b = colorData[6];
+    mat.emissive.a = colorData[7];
     mat.metallic = metallic;
     mat.roughness = roughness;
     scene.RegisterMaterial("default", mat);
