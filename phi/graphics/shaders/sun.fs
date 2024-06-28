@@ -26,5 +26,5 @@ out vec4 finalColor;
 
 void main()
 {
-    finalColor = vec4(pow(sunColor, vec3(GAMMA)), 1.0) * texture(sunTexture, texCoords);
+    finalColor = pow(vec4(sunColor, 1.0) * texture(sunTexture, texCoords), vec4(GAMMA, GAMMA, GAMMA, 1.0));
 }
