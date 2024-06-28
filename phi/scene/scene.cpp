@@ -46,7 +46,7 @@ namespace Phi
 
         // Create global light buffer
         int gbSize = (MAX_USER_DIRECTIONAL_LIGHTS + 2) * (sizeof(glm::vec4) * 2);
-        int alignedSize = ( UBO_ALIGNMENT == 0 ) ? gbSize : ceil( (float)gbSize / UBO_ALIGNMENT ) * UBO_ALIGNMENT;
+        int alignedSize = ( UBO_ALIGNMENT == 0 ) ? gbSize : ceil( (float)gbSize / (float)UBO_ALIGNMENT ) * UBO_ALIGNMENT;
         globalLightBuffer = new GPUBuffer(BufferType::DynamicDoubleBuffer, alignedSize);
 
         // Empty vertex attributes object for attributeless rendering
@@ -429,14 +429,10 @@ namespace Phi
         // PBR Materials global lighting pass
         if (pbrPass)
         {
-            // Use correct shader based on SSAO state
+            // Global light pass
             ssao ? globalLightPBRSSAOShader.Use() : globalLightPBRShader.Use();
             glStencilFunc(GL_EQUAL, (GLint)StencilValue::PBRMaterial, 0xff);
             glDrawArrays(GL_TRIANGLES, 0, 3);
-
-            // Lock global light buffer
-            globalLightBuffer->Lock();
-            globalLightBuffer->SwapSections();
 
             // Point light pass
             for (auto&&[id, light] : registry.view<PointLight>().each())
@@ -445,6 +441,10 @@ namespace Phi
             }
             PointLight::FlushRenderQueue(pbrPass);
         }
+
+        // Lock global light buffer
+        globalLightBuffer->Lock();
+        globalLightBuffer->SwapSections();
 
         // Disable stencil testing
         glDisable(GL_STENCIL_TEST);

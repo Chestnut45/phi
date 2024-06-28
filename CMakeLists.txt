@@ -34,6 +34,12 @@ file(GLOB_RECURSE PHI_HEADERS ${CMAKE_SOURCE_DIR}/phi/*.h ${CMAKE_SOURCE_DIR}/ph
 # TOOL APPS
 
 
+# Editor
+set(EDITOR_SOURCE ${CMAKE_SOURCE_DIR}/tools/editor.cpp)
+set(EDITOR_HEADER ${CMAKE_SOURCE_DIR}/tools/editor.hpp)
+add_executable(editor ${PHI_SOURCE} ${PHI_HEADERS} ${IMGUI_SOURCES} ${EDITOR_SOURCE} ${EDITOR_HEADER})
+target_link_libraries(editor yaml-cpp::yaml-cpp glfw glew ${OPENGL_LIBRARIES} ${GLFW_LIBRARIES})
+
 # Particle effect editor
 set(PARTICLE_EFFECT_EDITOR_SOURCE ${CMAKE_SOURCE_DIR}/tools/particle_effect_editor.cpp)
 set(PARTICLE_EFFECT_EDITOR_HEADER ${CMAKE_SOURCE_DIR}/tools/particle_effect_editor.hpp)
