@@ -5,7 +5,8 @@
 
 namespace Phi
 {
-    // A material used for simulation with voxel objects
+    // A material describing the physical, chemical, and visual properties of a voxel
+    // Uses the PBR material model
     struct VoxelMaterial
     {
         // Simulation flags for various material behaviours / interactions

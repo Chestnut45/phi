@@ -131,7 +131,7 @@ voxel_materials: [
     {
         name: grass,
         flags: [solid],
-        flammability: 0.01,
+        flammability: 0.45,
         pbr_name: grass
     },
     {

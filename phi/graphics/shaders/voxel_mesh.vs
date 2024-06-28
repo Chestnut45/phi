@@ -114,9 +114,6 @@ void main()
     // Apply mesh transformation to calculate world space position
     vec4 worldPos = meshData[gl_DrawID].transform * vec4(vec3(xyz) + voxelPos, 1.0);
 
-    // Set position
-    gl_Position = viewProj * worldPos;
-
     // Special effects
     vec4 albedo;
     vec4 emissive;
@@ -147,4 +144,7 @@ void main()
     fragAlbedo = albedo;
     fragEmissive = emissive;
     fragMetallicRoughness = metallicRoughness;
+
+    // Set position
+    gl_Position = viewProj * worldPos;
 }

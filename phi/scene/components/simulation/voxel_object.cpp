@@ -42,9 +42,9 @@ namespace Phi
         {
             // Grab material
             const auto& material = voxelMaterials[voxel.material];
-            const bool isLiquid = (material.flags | VoxelMaterial::Flags::Liquid) == material.flags;
-            const bool isFire = (material.flags | VoxelMaterial::Flags::Fire) == material.flags;
-            const bool isOnFire = (voxel.flags | Voxel::Flags::OnFire) == voxel.flags;
+            const bool isLiquid = (bool)(material.flags & VoxelMaterial::Flags::Liquid);
+            const bool isFire = (bool)(material.flags & VoxelMaterial::Flags::Fire);
+            const bool isOnFire = (bool)(voxel.flags & Voxel::Flags::OnFire);
 
             // Fire simulation step
             if (simulateFire)
@@ -72,22 +72,17 @@ namespace Phi
                     for (int i = 0; i < 6; ++i)
                     {
                         int* pNeighbour = pNeighbours[i];
-                        if (pNeighbour)
+                        if (pNeighbour && *pNeighbour != empty)
                         {
-                            // Grab neighbour data if it exists
-                            Voxel* vNeighbour = *pNeighbour == empty ? nullptr : &voxels[*pNeighbour];
-
-                            // If neighbour exists
-                            if (vNeighbour)
+                            // Grab neighbour data
+                            Voxel& vNeighbour = voxels[*pNeighbour];
+                            const float& flammability = voxelMaterials[vNeighbour.material].flammability;
+                            float n = rng.NextFloat(0.0f, 1.0f) * 30;
+                            if (flammability >= 1.0f || n < flammability)
                             {
-                                const float flammability = voxelMaterials[vNeighbour->material].flammability;
-                                float n = rng.NextFloat(0.0f, 1.0f);
-                                if (flammability >= 1.0f || n < flammability)
-                                {
-                                    // Spread
-                                    vNeighbour->flags |= Voxel::Flags::OnFire;
-                                    meshDirty = true;
-                                }
+                                // Spread
+                                vNeighbour.flags |= Voxel::Flags::OnFire;
+                                meshDirty = true;
                             }
                         }
                     }

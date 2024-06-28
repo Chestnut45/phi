@@ -86,7 +86,7 @@ namespace Phi
             bool godRays = true;
             float sunRotation = 0.0f;
             float sunAmbient = 0.032f;
-            float sunSize = 64.0f;
+            float sunSize = 32.0f;
             float sunDistance = 256.0f;
             float exposure = 0.24f;
             float decay = 0.974f;
