@@ -248,7 +248,7 @@ namespace Phi
                 ImGui_ImplOpenGL3_NewFrame();
                 ImGui_ImplGlfw_NewFrame();
                 ImGui::NewFrame();
-                ImGui::DockSpaceOverViewport((const ImGuiViewport*)__null, ImGuiDockNodeFlags_PassthruCentralNode);
+                ImGui::DockSpaceOverViewport(0U, (const ImGuiViewport*)__null, ImGuiDockNodeFlags_PassthruCentralNode);
 
                 // Update and measure time
                 Update(elapsedTime);
