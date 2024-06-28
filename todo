@@ -84,6 +84,7 @@ optimizations:
 graphics:
 - tone map exposure settings
 - pbr bloom (downsampling method)
+- z-buffer unsharp mask for cheaper ssao (low quality option)
 - shadow mapping
 - debug visualizations
 - BasicMesh .obj loading
@@ -100,4 +101,4 @@ mid priority:
 - auto-move glew dll in windows to executable folder?
 
 low priority:
--
+- 

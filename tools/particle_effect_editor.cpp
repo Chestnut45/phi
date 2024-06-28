@@ -514,25 +514,26 @@ void ParticleEffectEditor::ShowEditorWindow()
                     }
                     ImGui::EndCombo();
                 }
+                static const auto colorFlags = ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float;
                 switch (emitter.particleProperties.colorMode)
                 {
                     case CPUParticleEmitter::ColorMode::Constant:
-                        ImGui::ColorEdit3("Color", &emitter.particleProperties.color[0]);
+                        ImGui::ColorEdit3("Color", &emitter.particleProperties.color[0], colorFlags);
                         break;
                     
                     case CPUParticleEmitter::ColorMode::RandomMinMax:
-                        ImGui::ColorEdit3("Color Min", &emitter.particleProperties.colorMin[0]);
-                        ImGui::ColorEdit3("Color Max", &emitter.particleProperties.colorMax[0]);
+                        ImGui::ColorEdit3("Color Min", &emitter.particleProperties.colorMin[0], colorFlags);
+                        ImGui::ColorEdit3("Color Max", &emitter.particleProperties.colorMax[0], colorFlags);
                         break;
                     
                     case CPUParticleEmitter::ColorMode::RandomLerp:
-                        ImGui::ColorEdit3("Color A", &emitter.particleProperties.colorA[0]);
-                        ImGui::ColorEdit3("Color B", &emitter.particleProperties.colorB[0]);
+                        ImGui::ColorEdit3("Color A", &emitter.particleProperties.colorA[0], colorFlags);
+                        ImGui::ColorEdit3("Color B", &emitter.particleProperties.colorB[0], colorFlags);
                         break;
                     
                     case CPUParticleEmitter::ColorMode::LerpOverLifetime:
-                        ImGui::ColorEdit3("Start Color", &emitter.particleProperties.startColor[0]);
-                        ImGui::ColorEdit3("End Color", &emitter.particleProperties.endColor[0]);
+                        ImGui::ColorEdit3("Start Color", &emitter.particleProperties.startColor[0], colorFlags);
+                        ImGui::ColorEdit3("End Color", &emitter.particleProperties.endColor[0], colorFlags);
                         break;
                 }
 
