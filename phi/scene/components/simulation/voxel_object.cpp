@@ -128,7 +128,7 @@ namespace Phi
                         {
                             // Count fluid neighbours
                             const auto& neighbourMaterialFlags = voxelMaterials[vNeighbour->material].flags;
-                            fluidNeighbours += (neighbourMaterialFlags | VoxelMaterial::Flags::Liquid) == neighbourMaterialFlags;
+                            fluidNeighbours += (bool)(neighbourMaterialFlags & VoxelMaterial::Flags::Liquid);
                         }
                         else
                         {
@@ -410,7 +410,7 @@ namespace Phi
             vert.x = voxel.x;
             vert.y = voxel.y;
             vert.z = voxel.z;
-            vert.material = (voxel.flags == (voxel.flags | Voxel::Flags::OnFire)) ? -1 : materials[voxel.material].pbrID;
+            vert.material = (voxel.flags & Voxel::Flags::OnFire) ? -1 : materials[voxel.material].pbrID;
             verts.push_back(vert);
         }
         
