@@ -35,7 +35,7 @@ namespace Phi
         style.ScrollbarRounding = 16.0f;
         style.GrabMinSize = 16.0f;
         style.GrabRounding = 32.0f;
-        style.TabRounding = 0.0f;
+        style.TabRounding = 4.0f;
         style.TabBorderSize = 0.0f;
         style.TabMinWidthForCloseButton = 0.0f;
         style.ColorButtonPosition = ImGuiDir_Right;
