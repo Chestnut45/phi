@@ -4,7 +4,11 @@ design / features
 --------------------------------
 
 high priority:
-- particle effect HDR color selection
+- physics / collision detection design
+    - physics world / voxel world
+    - rigidbody component
+    - obb implementation
+    - capsule implementation
 - voxel editor gui design
     - ImGui::TextRadioButton extension (where does this fit? polluting ImGui's namespace seems bad...)
     - material palette (loading, saving, editing voxel and pbr materials [possibly remove pbr link and store voxel visual properties directly?])
@@ -14,19 +18,18 @@ high priority:
     - simulation toggles / controls
     - select tool / move tool
     - toggleable arbitrary planes to test against
-- orthographic camera projection
-- improved camera controls
-- fire spread / heat distribution simulation
-- liquid effect
-- plasma effect (ridged noise + elapsedTime)
+    - orthographic camera projection
+    - improved camera controls
+- improve fire spread logic (heat distribution simulation?)
+- liquid shader effect
+- plasma shader effect (ridged noise + elapsedTime)
 - finalize fluid dynamics
     - lighter fluids should float on denser fluids
-    - pressure distribution?
+    - full pressure distribution?
 - world generation / chunk rework
     - per-chunk aabb frustum culling
     - simulation sleeping
     - full noise editor (fractal, domain warp, etc.)
-- emissive voxels (bloom + emissive pbr materials?)
 - voxel particles (off-grid, momentum based)
 - entity system (not all nodes are entities, but all entities are nodes)
     - items (transform, voxel model, item data, aabb/obb)
@@ -35,12 +38,6 @@ high priority:
 mid priority:
 - propagate color class through rest of engine
 - environment refactor
-    - sky color modulation
-    - sun size consistency
-    - proper horizon calculation (not screen space)
-    - optional skybox textures
-    - cleanup scene render (move to environment render)
-    - fog (sky color vs user color?)
 - gamepad input
 - 3rd person controller
 - animated voxel models
