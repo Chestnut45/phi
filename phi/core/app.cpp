@@ -95,6 +95,7 @@ namespace Phi
         style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.2901960909366608f, 0.3019607961177826f, 0.3137255012989044f, 1.0f);
         style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(9.999907888413873e-07f, 9.999899930335232e-07f, 9.999999974752427e-07f, 0.501960813999176f);
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(9.999918120229268e-07f, 9.999899930335232e-07f, 9.999999974752427e-07f, 0.501960813999176f);
+        style.Colors[ImGuiCol_TabSelectedOverline] = ImVec4(0.8823529481887817f, 0.7960784435272217f, 0.5607843399047852f, 1.0f);
 
         // Load icon font
         ImGuiIO& io = ImGui::GetIO();
