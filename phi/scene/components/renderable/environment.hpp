@@ -79,7 +79,7 @@ namespace Phi
             // Visual settings
 
             // Sun data
-            glm::vec3 sunColor{9.428f, 2.475f, 0.886f};
+            glm::vec3 sunColor{3.5, 2.0f, 0.9f};
             glm::vec3 sunPos;
             bool renderSun = true;
             bool lensFlare = false;

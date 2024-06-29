@@ -534,6 +534,9 @@ namespace Phi
         // Clear render queues
         basicMeshRenderQueue.clear();
         voxelMeshRenderQueue.clear();
+
+        // Unbind render target
+        renderTarget->Unbind();
     }
 
     void Scene::SetRenderMode(RenderMode mode)

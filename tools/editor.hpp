@@ -25,12 +25,12 @@ class Editor : public Phi::App
         // Main scene
         Scene scene;
 
-        // Settings
-        bool showDebug = true;
-
         // Window rendering methods
-        void DisplayHierarchy();
-        void DisplayInspector();
-        void DisplayCamera();
-        void DisplayResources();
+        void GUIMainMenuBar();
+        void GUISceneHierarchy();
+        void GUIInspector();
+        void GUISceneCamera();
+        void GUIResources();
+        void GUIConsole();
+        void GUIPerformanceStats();
 };

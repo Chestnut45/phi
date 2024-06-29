@@ -126,7 +126,7 @@ void main()
         float r = random(float(voxelIndex) + time);
 
         // Set material properties
-        emissive = vec4(mix(vec3(1, 0, 0), vec3(1, 0.5, 0), r), 8.0);
+        emissive = vec4(mix(vec3(5, 0, 0), vec3(5, 1, 0), r), 1.0);
         albedo = vec4(0.0, 0.0, 0.0, 1.0);
         metallicRoughness = vec2(0.0);
     }

@@ -45,15 +45,12 @@ void Editor::Update(float delta)
     // Manually update scene resolution on window resize
     if (windowResized)
     {
-        scene.SetResolution(wWidth - 256, wHeight);
+        scene.SetResolution(wWidth, wHeight);
         windowResized = false;
     }
 
     // Toggle mouse with escape key
     if (input.IsKeyJustDown(GLFW_KEY_ESCAPE)) input.IsMouseCaptured() ? input.ReleaseMouse() : input.CaptureMouse();
-
-    // Toggle debug GUI with tilde key
-    if (input.IsKeyJustDown(GLFW_KEY_GRAVE_ACCENT)) showDebug = !showDebug;
 
     // Update the voxel world
     scene.Update(delta);
@@ -64,12 +61,24 @@ void Editor::Render()
     // Render the scene to internal texture
     scene.Render();
 
-    // Display the main editor gui
-    static const auto windowFlags = ImGuiWindowFlags_MenuBar;
-    ImGui::Begin("Toolbar", nullptr, windowFlags);
+    // DEBUG: Show ImGui Demo
+    ImGui::ShowDemoWindow();
 
     // Main menu bar
-    if (ImGui::BeginMenuBar())
+    GUIMainMenuBar();
+
+    // Editor Windows
+    GUISceneHierarchy();
+    GUIInspector();
+    GUISceneCamera();
+    GUIResources();
+    GUIConsole();
+    GUIPerformanceStats();
+}
+
+void Editor::GUIMainMenuBar()
+{
+    if (ImGui::BeginMainMenuBar())
     {
         if (ImGui::BeginMenu("File"))
         {
@@ -92,24 +101,47 @@ void Editor::Render()
             ImGui::EndMenu();
         }
         
-        ImGui::EndMenuBar();
+        ImGui::EndMainMenuBar();
     }
-    
-    // DEBUG: Testing different imgui methods
-    static bool showDemo = false;
-    ImGui::Checkbox("Show Demo Window", &showDemo);
-    if (showDemo)
-    {
-        ImGui::ShowDemoWindow();
-    }
+}
 
+void Editor::GUISceneHierarchy()
+{
+    ImGui::Begin("Scene Hierarchy");
     ImGui::End();
+}
 
+void Editor::GUIInspector()
+{
+    ImGui::Begin("Inspector");
+    ImGui::End();
+}
+
+void Editor::GUISceneCamera()
+{
+    ImGui::Begin("Scene Camera");
     Texture2D* sceneTex = scene.GetTexture();
     if (sceneTex)
     {
-        sceneTex->BlitToScreen(256, 0);
+        ImGui::Image(reinterpret_cast<ImTextureID>(sceneTex->GetID()), ImGui::GetContentRegionAvail(), ImVec2(0, 1), ImVec2(1, 0));
     }
-    
-    if (showDebug) ShowDebug();
+    ImGui::End();
+}
+
+void Editor::GUIResources()
+{
+    ImGui::Begin("Resources");
+    ImGui::End();
+}
+
+void Editor::GUIConsole()
+{
+    ImGui::Begin("Console");
+    ImGui::End();
+}
+
+void Editor::GUIPerformanceStats()
+{
+    ImGui::Begin("Performance Statistics");
+    ImGui::End();
 }
