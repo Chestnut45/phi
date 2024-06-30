@@ -42,13 +42,6 @@ Editor::~Editor()
 
 void Editor::Update(float delta)
 {
-    // Manually update scene resolution on window resize
-    if (windowResized)
-    {
-        scene.SetResolution(wWidth, wHeight);
-        windowResized = false;
-    }
-
     // Toggle mouse with escape key
     if (input.IsKeyJustDown(GLFW_KEY_ESCAPE)) input.IsMouseCaptured() ? input.ReleaseMouse() : input.CaptureMouse();
 
@@ -58,9 +51,6 @@ void Editor::Update(float delta)
 
 void Editor::Render()
 {
-    // Render the scene to internal texture
-    scene.Render();
-
     // DEBUG: Show ImGui Demo
     ImGui::ShowDemoWindow();
 
@@ -120,10 +110,21 @@ void Editor::GUIInspector()
 void Editor::GUISceneCamera()
 {
     ImGui::Begin("Scene Camera");
+
+    // Update resolution if necessary
+    glm::ivec2 sceneRes = scene.GetResolution();
+    auto availRes = ImGui::GetContentRegionAvail();
+    if (availRes.x != sceneRes.x || availRes.y != sceneRes.y)
+    {
+        scene.SetResolution(availRes.x, availRes.y);
+    }
+
+    // Render scene and display it
+    scene.Render();
     Texture2D* sceneTex = scene.GetTexture();
     if (sceneTex)
     {
-        ImGui::Image(reinterpret_cast<ImTextureID>(sceneTex->GetID()), ImGui::GetContentRegionAvail(), ImVec2(0, 1), ImVec2(1, 0));
+        ImGui::Image(reinterpret_cast<ImTextureID>(sceneTex->GetID()), ImVec2(sceneTex->GetWidth(), sceneTex->GetHeight()), ImVec2(0, 1), ImVec2(1, 0));
     }
     ImGui::End();
 }

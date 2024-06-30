@@ -133,6 +133,8 @@ namespace Phi
             // RATIONALE: Tying the scene's resolution to a window should be opt-in, not opt-out
             void SetResolution(int width, int height);
 
+            glm::ivec2 GetResolution() const { return glm::ivec2(renderWidth, renderHeight); }
+
             // Access to the scene's last rendered frame texture, or nullptr if none exists
             // NOTE: Only valid when using RenderMode::Texture
             Texture2D* GetTexture() { return rTexFinal; }
