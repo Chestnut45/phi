@@ -13,6 +13,8 @@ int main(int, char**)
 
 Editor::Editor() : App("Phi Engine | Editor", 4, 6)
 {
+    if (!vsync) ToggleVsync();
+    
     // Enable raw mouse if accepted
     input.EnableRawMouseMotion();
 

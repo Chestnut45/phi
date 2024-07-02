@@ -433,18 +433,18 @@ namespace Phi
             ssao ? globalLightPBRSSAOShader.Use() : globalLightPBRShader.Use();
             glStencilFunc(GL_EQUAL, (GLint)StencilValue::PBRMaterial, 0xff);
             glDrawArrays(GL_TRIANGLES, 0, 3);
-
-            // Point light pass
-            for (auto&&[id, light] : registry.view<PointLight>().each())
-            {
-                light.Render();
-            }
-            PointLight::FlushRenderQueue(pbrPass);
         }
 
         // Lock global light buffer
         globalLightBuffer->Lock();
         globalLightBuffer->SwapSections();
+
+        // Point light pass
+        for (auto&&[id, light] : registry.view<PointLight>().each())
+        {
+            light.Render();
+        }
+        PointLight::FlushRenderQueue(pbrPass);
 
         // Disable stencil testing
         glDisable(GL_STENCIL_TEST);

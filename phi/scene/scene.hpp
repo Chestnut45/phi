@@ -296,8 +296,6 @@ namespace Phi
             std::vector<VoxelMaterial> voxelMaterials;
             std::unordered_map<std::string, int> voxelMaterialIDs;
 
-            // TODO: Voxel Materials
-
             // Lighting data
 
             // The ambient light level in the scene

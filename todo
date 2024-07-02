@@ -4,14 +4,22 @@ design / features
 --------------------------------
 
 high priority:
-- physics / collision detection design
-    - physics world / voxel world
-    - rigidbody component
-    - obb implementation
-    - capsule implementation
+- scene hierarchy (nodes, components) gui implementation
+    - node names
+    - node ordering
+    - add / remove components
+    - add / remove child nodes
+- environment component inspector implementation (test 2 designs, mostly rip from scene debug)
+- particle effect / emitter inspector gui rewrite (emissive color property and MRT)
+- resources window design (data:// folder tree view)
+    - are materials resources? per project? per scene? (materials.yaml)
+- project settings (project.yaml)
+- PBRMaterial editor (via inspector)
+- VoxelMaterial editor (via inspector)
+    - VoxelMaterial redesign (independant from PBRMaterial)
 - voxel editor gui design
     - ImGui::TextRadioButton extension (where does this fit? polluting ImGui's namespace seems bad...)
-    - material palette (loading, saving, editing voxel and pbr materials [possibly remove pbr link and store voxel visual properties directly?])
+    - voxel material palette / editor
     - brush settings
     - resize canvas
     - save / load .vobj
@@ -36,6 +44,11 @@ high priority:
     - organisms (transform, voxel object, AI controller, organism data, aabb/obb)
 
 mid priority:
+- physics / collision detection design
+    - physics world / voxel world
+    - rigidbody component
+    - obb implementation
+    - capsule implementation
 - propagate color class through rest of engine
 - environment refactor
 - gamepad input
