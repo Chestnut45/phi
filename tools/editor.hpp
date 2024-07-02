@@ -25,7 +25,7 @@ class Editor : public Phi::App
         // Main scene
         Scene scene;
 
-        // Window rendering methods
+        // GUI generation methods
         void GUIMainMenuBar();
         void GUISceneHierarchy();
         void GUIInspector();

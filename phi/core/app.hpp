@@ -32,7 +32,7 @@
 
 namespace Phi
 {
-    // Main app class, handles OpenGL context creation and input
+    // Main app class, handles OpenGL context creation and drives tha main update / render loop
     class App
     {
         public:

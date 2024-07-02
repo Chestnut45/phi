@@ -126,6 +126,7 @@ void Editor::GUISceneCamera()
     {
         ImGui::Image(reinterpret_cast<ImTextureID>(sceneTex->GetID()), ImVec2(sceneTex->GetWidth(), sceneTex->GetHeight()), ImVec2(0, 1), ImVec2(1, 0));
     }
+    
     ImGui::End();
 }
 
