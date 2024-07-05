@@ -11,7 +11,7 @@ int main(int, char**)
     return 0;
 }
 
-Editor::Editor() : App("New Project | Phi Engine Editor", 4, 6)
+Editor::Editor() : App("New Project | Phi Editor", 4, 6)
 {
     // Enable vsync by default
     if (!vsync) ToggleVsync();
@@ -99,8 +99,6 @@ void Editor::GUIMainMenuBar()
 
             ImGui::EndMenu();
         }
-
-        
         
         ImGui::EndMainMenuBar();
     }
