@@ -75,24 +75,32 @@ void Editor::GUIMainMenuBar()
     {
         if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem(ICON_FA_FILE " New"))
+
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Project"))
+        {
+            if (ImGui::MenuItem(ICON_FA_FOLDER_PLUS " New"))
             {
             }
-
-            if (ImGui::MenuItem(ICON_FA_FOLDER " Load"))
+            if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open..."))
             {
             }
-
             if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save"))
             {
             }
-
-            if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save As"))
+            if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save As..."))
+            {
+            }
+            if (ImGui::MenuItem(ICON_FA_GEAR " Properties"))
             {
             }
 
             ImGui::EndMenu();
         }
+
+        
         
         ImGui::EndMainMenuBar();
     }
