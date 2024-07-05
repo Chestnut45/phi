@@ -164,24 +164,18 @@ namespace Phi
     {
         // Create the internal entity
         NodeID id = registry.create();
-
-        // Increase counter
-        nodeCount++;
+        
+        // Generate name
+        std::string name = "Node " + std::to_string(nodeCount++);
 
         // Construct the node and return a pointer
-        return &registry.emplace<Node>(id, this, id);
+        return &registry.emplace<Node>(id, this, id, name);
     }
 
     Node* Scene::CreateNode3D()
     {
-        // Create the internal entity
-        NodeID id = registry.create();
-
-        // Increase counter
-        nodeCount++;
-
         // Construct the node
-        Node* node = &registry.emplace<Node>(id, this, id);
+        Node* node = CreateNode();
 
         // Add a transform
         node->AddComponent<Transform>();

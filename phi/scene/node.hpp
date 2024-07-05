@@ -18,9 +18,9 @@ namespace Phi
     // any component by inheriting from BaseComponent to get access to the node
     // the component is attached to, and then GetParent() / GetChildren() to traverse
     // 
-    // NOTE: Do not instantiate this class directly! For now it is a bug that the
-    // constructor is public (it has to be for the internal registry to be able to
-    // construct nodes in-place, which is noticeably faster, especially in heavily
+    // NOTE: Do not instantiate this class directly! Instead, use the Scene::CreateNode*() methods.
+    // Consider it a bug that the constructor is public (it has to be for the internal registry to
+    // be able to construct nodes in-place, which is noticeably faster, especially in heavily
     // dynamic scenes with lots of nodes being created / deleted constantly)
     class Node
     {
@@ -28,7 +28,7 @@ namespace Phi
         public:
             
             // TODO: Should be private...
-            Node(Scene* scene, NodeID id);
+            Node(Scene* scene, NodeID id, const std::string& name);
 
             ~Node();
 
@@ -43,6 +43,7 @@ namespace Phi
             // Component management
 
             // Constructs a component in-place and assigns it to the node
+            // NOTE: Pass your component's constructor arguments directly to this function:
             template <typename T, typename... Args>
             T& AddComponent(Args&&... args)
             {
@@ -101,21 +102,27 @@ namespace Phi
             // Returns a pointer to the parent node, or nullptr if we have none
             Node* GetParent() const;
 
-            // Accessors
+            // Accessors / Mutators
 
             // Gets the id of this node
             NodeID GetID() const { return id; };
 
+            // Gets the name of this node
+            const std::string& GetName() const { return name; }
+
+            // Sets the name of this node
+            void SetName(const std::string& name) { this->name = name; }
+
             // Gets the scene that this node belongs to
-            Scene* GetScene() const { return scene; };
+            Scene* GetScene() const { return scene; }
 
             // Gets the list of children nodes by id
-            const std::vector<Node*>& GetChildren() const { return children; };
+            const std::vector<Node*>& GetChildren() const { return children; }
         
         // Data / implementation
         private:
 
-            // Pointer stability guarantee for components
+            // Pointer stability guarantee for nodes
             static constexpr auto in_place_delete = true;
 
             // Reference to the scene this node belongs to
@@ -123,6 +130,9 @@ namespace Phi
 
             // Unique identifier
             const NodeID id{entt::null};
+
+            // Name
+            std::string name;
             
             // Hierarchy data
             Node* parent = nullptr;

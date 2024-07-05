@@ -27,6 +27,9 @@
 #include <phi/scene/components/simulation/voxel_map.hpp>
 #include <phi/scene/components/simulation/voxel_material.hpp>
 
+// Forward declaration of editor
+class Editor;
+
 namespace Phi
 {
     // Forward declare node class
@@ -328,7 +331,11 @@ namespace Phi
             friend class Node;
 
             // Necessary for directional lights to be able to activate / deactivate
+            // TODO: Change light component API
             friend class DirectionalLight;
+
+            // Necessary for editor to function
+            friend class ::Editor;
         
         // Experimental features
         private:

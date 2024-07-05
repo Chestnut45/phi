@@ -11,8 +11,9 @@ int main(int, char**)
     return 0;
 }
 
-Editor::Editor() : App("Phi Engine | Editor", 4, 6)
+Editor::Editor() : App("New Project | Phi Engine Editor", 4, 6)
 {
+    // Enable vsync by default
     if (!vsync) ToggleVsync();
     
     // Enable raw mouse if accepted
@@ -100,6 +101,16 @@ void Editor::GUIMainMenuBar()
 void Editor::GUISceneHierarchy()
 {
     ImGui::Begin("Scene Hierarchy");
+
+    // Iterate all nodes in the scene
+    for (auto&&[_, node] : scene.registry.view<Node>().each())
+    {
+        if (node.GetParent() == nullptr)
+        {
+            ImGui::Text(ICON_FA_CIRCLE " %s", node.GetName().c_str());
+        }
+    }
+
     ImGui::End();
 }
 

@@ -2,10 +2,11 @@
 
 namespace Phi
 {
-    Node::Node(Scene* scene, NodeID id)
+    Node::Node(Scene* scene, NodeID id, const std::string& name)
         :
         scene(scene),
-        id(id)
+        id(id),
+        name(name)
     {
     }
 
