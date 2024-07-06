@@ -4,6 +4,14 @@ design / features
 --------------------------------
 
 high priority:
+
+- editor projects
+    - project settings (project.yaml)
+    - template app, cmake generation
+    - editor / project build process (bundle gcc/g++? request c++20 compiler from user?)
+    - support custom components in scene editor? (virtual Update(), ShowEditorGUI())
+    - forward entt::iterable_adaptor to user for component / NodeID iteration
+    - script component design
 - scene hierarchy (nodes, components) gui implementation
     - node names
     - node ordering
@@ -13,9 +21,6 @@ high priority:
 - particle effect / emitter inspector gui rewrite (emissive color property and MRT)
 - resources window design (data:// folder tree view)
     - are materials resources? per project? per scene? (materials.yaml)
-- project settings (project.yaml)
-- PBRMaterial editor (via inspector)
-- VoxelMaterial editor (via inspector)
     - VoxelMaterial redesign (independant from PBRMaterial)
 - voxel editor gui design
     - ImGui::TextRadioButton extension (where does this fit? polluting ImGui's namespace seems bad...)
@@ -28,6 +33,7 @@ high priority:
     - toggleable arbitrary planes to test against
     - orthographic camera projection
     - improved camera controls
+
 - improve fire spread logic (heat distribution simulation?)
 - liquid shader effect
 - plasma shader effect (ridged noise + elapsedTime)

@@ -87,12 +87,6 @@ void Editor::GUIMainMenuBar()
             if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open..."))
             {
             }
-            if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save"))
-            {
-            }
-            if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save As..."))
-            {
-            }
             if (ImGui::MenuItem(ICON_FA_GEAR " Properties"))
             {
             }
