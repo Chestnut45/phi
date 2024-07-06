@@ -1,17 +1,14 @@
-TODO: Reorganize all notes / todos / design documents using obsidian (manual backup)
-
 design / features
 --------------------------------
 
 high priority:
 
-- editor projects
+- full cleanup pass on entire engine (old graphics code needs purging)
+- projects
     - project settings (project.yaml)
-    - template app, cmake generation
-    - editor / project build process (bundle gcc/g++? request c++20 compiler from user?)
-    - support custom components in scene editor? (virtual Update(), ShowEditorGUI())
-    - forward entt::iterable_adaptor to user for component / NodeID iteration
-    - script component design
+    - project template, cmake generation
+- support custom components in scene editor? (virtual Update(), ShowEditorGUI())
+- script component design
 - scene hierarchy gui implementation
 - environment component inspector implementation (test 2 designs, mostly rip from scene debug)
 - particle effect / emitter inspector gui rewrite (emissive color property and MRT)
@@ -29,7 +26,6 @@ high priority:
     - toggleable arbitrary planes to test against
     - orthographic camera projection
     - improved camera controls
-
 - improve fire spread logic (heat distribution simulation?)
 - liquid shader effect
 - plasma shader effect (ridged noise + elapsedTime)

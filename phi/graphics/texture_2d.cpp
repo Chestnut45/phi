@@ -99,12 +99,19 @@ namespace Phi
 
     void Texture2D::BlitToScreen(int x, int y, int width, int height) const
     {
+        // Initialize a single static blit framebuffer to use for all texture blits
         static Framebuffer blitFBO;
+
+        // Attach ourselves to the blit framebuffer
         blitFBO.Bind();
         blitFBO.AttachTexture(this, GL_COLOR_ATTACHMENT0);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+        // Auto-detect width and height of the texture if nothing is passed
         width = width == -1 ? this->width : width;
         height = height == -1 ? this->height : height;
+
+        // Perform the blit
         glBlitFramebuffer(0, 0, this->width, this->height, x, y, x + width, y + height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
     }
 }
