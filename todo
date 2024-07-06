@@ -12,11 +12,7 @@ high priority:
     - support custom components in scene editor? (virtual Update(), ShowEditorGUI())
     - forward entt::iterable_adaptor to user for component / NodeID iteration
     - script component design
-- scene hierarchy (nodes, components) gui implementation
-    - node names
-    - node ordering
-    - add / remove components
-    - add / remove child nodes
+- scene hierarchy gui implementation
 - environment component inspector implementation (test 2 designs, mostly rip from scene debug)
 - particle effect / emitter inspector gui rewrite (emissive color property and MRT)
 - resources window design (data:// folder tree view)

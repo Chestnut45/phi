@@ -220,7 +220,13 @@ namespace Phi
             // Shows debug statistics in an ImGui window
             void ShowDebug(int x, int y, int width, int height);
 
-            // TODO: Interface for iterating components / nodes directly
+            // Access to iterating all components of a given type in the scene
+            // Usage: for (auto&&[NodeID, Component] : scene.Each<Component>()) { ... }
+            template <typename T>
+            constexpr auto Each()
+            {
+                return registry.view<T>().each();
+            }
 
             // Limits
             static inline glm::ivec2 MAX_RESOLUTION = glm::ivec2(4096, 2160);

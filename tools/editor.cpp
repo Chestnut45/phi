@@ -71,23 +71,45 @@ void Editor::Render()
 
 void Editor::GUIMainMenuBar()
 {
+    // Popup flags
+    bool newProjectPopup = false;
+    bool openProjectPopup = false;
     if (ImGui::BeginMainMenuBar())
     {
-        if (ImGui::BeginMenu("File"))
-        {
-
-            ImGui::EndMenu();
-        }
-
         if (ImGui::BeginMenu("Project"))
         {
             if (ImGui::MenuItem(ICON_FA_FOLDER_PLUS " New"))
             {
+                newProjectPopup = true;
             }
-            if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open..."))
+
+            if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open"))
+            {
+                openProjectPopup = true;
+            }
+
+            if (ImGui::MenuItem(ICON_FA_GEAR " Properties (Unimplemented)"))
             {
             }
-            if (ImGui::MenuItem(ICON_FA_GEAR " Properties"))
+
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Scene"))
+        {
+            if (ImGui::MenuItem(ICON_FA_CIRCLE_PLUS " New"))
+            {
+            }
+
+            if (ImGui::MenuItem(ICON_FA_FILE " Load"))
+            {
+            }
+
+            if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save"))
+            {
+            }
+
+            if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save As..."))
             {
             }
 
@@ -96,6 +118,40 @@ void Editor::GUIMainMenuBar()
         
         ImGui::EndMainMenuBar();
     }
+
+    if (newProjectPopup) ImGui::OpenPopup("New Project");
+    if (openProjectPopup) ImGui::OpenPopup("Open Project");
+
+    ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    if (ImGui::BeginPopupModal("New Project", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
+    {
+        ImGui::Text("Select a folder...");
+        ImGui::Separator();
+        if (ImGui::Button("Create Project", ImVec2(128, 0)))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SetItemDefaultFocus();
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel", ImVec2(128, 0))) ImGui::CloseCurrentPopup();
+        ImGui::EndPopup();
+    }
+
+    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    if (ImGui::BeginPopupModal("Open Project", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
+    {
+        ImGui::Text("Select a folder...");
+        ImGui::Separator();
+        if (ImGui::Button("Open Project", ImVec2(128, 0)))
+        {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SetItemDefaultFocus();
+        ImGui::SameLine();
+        if (ImGui::Button("Cancel", ImVec2(128, 0))) ImGui::CloseCurrentPopup();
+        ImGui::EndPopup();
+    }
 }
 
 void Editor::GUISceneHierarchy()
@@ -103,7 +159,7 @@ void Editor::GUISceneHierarchy()
     ImGui::Begin("Scene Hierarchy");
 
     // Iterate all nodes in the scene
-    for (auto&&[_, node] : scene.registry.view<Node>().each())
+    for (auto&&[_, node] : scene.Each<Node>())
     {
         if (node.GetParent() == nullptr)
         {
