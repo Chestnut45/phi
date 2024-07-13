@@ -33,4 +33,7 @@ class Editor : public Phi::App
         void GUIResources();
         void GUIConsole();
         void GUIPerformanceStats();
+
+        // Flag to show debug window
+        bool showDebug = false;
 };

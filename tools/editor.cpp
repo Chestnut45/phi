@@ -48,6 +48,9 @@ void Editor::Update(float delta)
     // Toggle mouse with escape key
     if (input.IsKeyJustDown(GLFW_KEY_ESCAPE)) input.IsMouseCaptured() ? input.ReleaseMouse() : input.CaptureMouse();
 
+    // Toggle debug window with tilde key
+    if (input.IsKeyJustDown(GLFW_KEY_GRAVE_ACCENT)) showDebug = !showDebug;
+
     // Update the voxel world
     scene.Update(delta);
 }
@@ -67,6 +70,9 @@ void Editor::Render()
     GUIResources();
     GUIConsole();
     GUIPerformanceStats();
+
+    // Show debug statistics
+    if (showDebug) ShowDebug();
 }
 
 void Editor::GUIMainMenuBar()
