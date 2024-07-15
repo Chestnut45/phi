@@ -107,7 +107,7 @@ namespace Phi
         iconConfig.MergeMode = true;
         iconConfig.PixelSnapH = true;
         iconConfig.GlyphMinAdvanceX = iconFontSize;
-        iconConfig.GlyphOffset.y = 1;
+        iconConfig.GlyphOffset.y = 1.5f;
         io.Fonts->AddFontFromFileTTF("thirdparty/imgui/" FONT_ICON_FILE_NAME_FAS, iconFontSize, &iconConfig, iconRange);
     }
 

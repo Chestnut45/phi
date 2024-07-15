@@ -165,11 +165,18 @@ void Editor::GUISceneHierarchy()
     ImGui::Begin("Scene Hierarchy");
 
     // Iterate all nodes in the scene
+    // TODO: Ensure consistent order
     for (auto&&[_, node] : scene.Each<Node>())
     {
+        // Only display the top level nodes
         if (node.GetParent() == nullptr)
         {
-            ImGui::Text(ICON_FA_CIRCLE " %s", node.GetName().c_str());
+            // Selectable tree node
+            // TODO: Display components here or in inspector?
+            if (ImGui::TreeNodeEx((void*)0, 0, ICON_FA_CODE_COMMIT " %s", node.GetName().c_str()))
+            {
+                ImGui::TreePop();
+            }
         }
     }
 
