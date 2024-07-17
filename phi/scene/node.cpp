@@ -2,7 +2,7 @@
 
 namespace Phi
 {
-    Node::Node(Scene* scene, NodeID id, const std::string& name)
+    Node::Node(Scene& scene, NodeID id, const std::string& name)
         :
         scene(scene),
         id(id),
@@ -12,11 +12,6 @@ namespace Phi
 
     Node::~Node()
     {
-    }
-
-    void Node::Delete()
-    {
-        scene->Delete(id);
     }
 
     void Node::AddChild(Node* node)

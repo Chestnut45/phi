@@ -354,7 +354,7 @@ namespace Phi
         }
 
         // Retrieve the material ID
-        int materialID = node->GetScene()->GetPBRMaterialID(name);
+        int materialID = node->GetScene().GetPBRMaterialID(name);
 
         if (materialID)
         {

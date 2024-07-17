@@ -19,14 +19,14 @@ namespace Phi
         if (active) Deactivate();
 
         // Grab scene
-        Scene* scene = GetNode()->GetScene();
+        Scene& scene = GetNode()->GetScene();
 
         // Deactivate any existing light in the slot
-        auto current = scene->globalLights[(int)slot];
+        auto current = scene.globalLights[(int)slot];
         if (current) current->Deactivate();
 
         // Set ourselves to be active in the scene
-        scene->globalLights[(int)slot] = this;
+        scene.globalLights[(int)slot] = this;
         this->active = true;
         this->slot = slot;
     }
@@ -36,10 +36,10 @@ namespace Phi
         if (!active) return;
 
         // Get scene
-        Scene* scene = GetNode()->GetScene();
+        Scene& scene = GetNode()->GetScene();
 
         // Remove ourselves from the slot
-        scene->globalLights[(int)slot] = nullptr;
+        scene.globalLights[(int)slot] = nullptr;
         active = false;
     }
 }

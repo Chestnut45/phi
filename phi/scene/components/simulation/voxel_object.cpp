@@ -32,7 +32,7 @@ namespace Phi
 
         // Grab relevant data
         int empty = voxelGrid.GetEmptyValue();
-        const auto& voxelMaterials = GetNode()->GetScene()->GetVoxelMaterials();
+        const auto& voxelMaterials = GetNode()->GetScene().GetVoxelMaterials();
 
         // RNG used by the simulation
         static RNG rng;
@@ -172,7 +172,7 @@ namespace Phi
             std::vector<Voxel> newVoxels;
 
             // Material translation access
-            Scene* scene = GetNode()->GetScene();
+            Scene& scene = GetNode()->GetScene();
 
             // Parse the file
             std::string line;
@@ -207,7 +207,7 @@ namespace Phi
 
                     // Extract the name and load the proper ID for it
                     std::string name = line.substr(line.find_first_of(':') + 2);
-                    loadedMaterialIDs.push_back(scene->GetVoxelMaterialID(name));
+                    loadedMaterialIDs.push_back(scene.GetVoxelMaterialID(name));
                 }
                 
                 // Voxel data parsing
@@ -396,7 +396,7 @@ namespace Phi
         }
 
         // Grab material list
-        const auto& materials = GetNode()->GetScene()->GetVoxelMaterials();
+        const auto& materials = GetNode()->GetScene().GetVoxelMaterials();
 
         // Grab vertex list reference and clear old verts
         auto& verts = mesh->Vertices();

@@ -12,10 +12,10 @@ namespace Phi
     VoxelMap::~VoxelMap()
     {
         // Remove ourself from the scene if active
-        Scene* scene = GetNode()->GetScene();
-        if (scene->GetActiveVoxelMap() == this)
+        Scene& scene = GetNode()->GetScene();
+        if (scene.GetActiveVoxelMap() == this)
         {
-            scene->RemoveVoxelMap();
+            scene.RemoveVoxelMap();
         }
     }
 
@@ -33,7 +33,7 @@ namespace Phi
     void VoxelMap::UpdateChunks()
     {
         // Calculate the current chunk
-        Camera* camera = GetNode()->GetScene()->GetActiveCamera();
+        Camera* camera = GetNode()->GetScene().GetActiveCamera();
         glm::ivec3 currentChunk = camera->GetPosition() / (float)VoxelChunk::CHUNK_DIM;
 
         // Create a sphere to check against in chunk space (1 unit = 1 chunk)
@@ -91,11 +91,11 @@ namespace Phi
         // TODO: Unload chunk if it currently exists
 
         // Grab the current scene
-        Scene* scene = GetNode()->GetScene();
+        Scene& scene = GetNode()->GetScene();
 
         // Create the chunk
         VoxelChunk*& chunk = loadedChunks[chunkID];
-        chunk = &scene->CreateNode()->AddComponent<VoxelChunk>();
+        chunk = &scene.CreateNode()->AddComponent<VoxelChunk>();
 
         // Mesh data container
         std::vector<VoxelMesh::Vertex> voxelData;
@@ -119,7 +119,7 @@ namespace Phi
                         {
                             // This is so insanely slow, obviously
                             // TODO: Preprocess masses, gather material IDs before iteration
-                            chunk->voxelGrid(x, y, z) = scene->GetPBRMaterialID(mass.materialName);
+                            chunk->voxelGrid(x, y, z) = scene.GetPBRMaterialID(mass.materialName);
                         }
                     }
                 }

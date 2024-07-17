@@ -28,7 +28,7 @@ namespace Phi
         public:
             
             // TODO: Should be private...
-            Node(Scene* scene, NodeID id, const std::string& name);
+            Node(Scene& scene, NodeID id, const std::string& name);
 
             ~Node();
 
@@ -48,7 +48,7 @@ namespace Phi
             T& AddComponent(Args&&... args)
             {
                 // Add the component
-                T& component = scene->registry.emplace<T>(id, args...);
+                T& component = scene.registry.emplace<T>(id, args...);
 
                 // Set the node pointer if T is a BaseComponent
                 if constexpr (std::is_base_of_v<BaseComponent, T>)
@@ -63,31 +63,31 @@ namespace Phi
             template <typename T>
             T* Get()
             {
-                return scene->registry.try_get<T>(id);
+                return scene.registry.try_get<T>(id);
             }
 
             // Returns true if the node has all of the given components, or false otherwise
             template <typename... T>
             bool Has()
             {
-                return scene->registry.all_of<T...>(id);
+                return scene.registry.all_of<T...>(id);
             }
 
             template <typename... T>
             bool HasAny()
             {
-                return scene->registry.any_of<T...>(id);
+                return scene.registry.any_of<T...>(id);
             }
 
             // Deletes the given component type from the node, if it exists
             template <typename T>
             void RemoveComponent()
             {
-                scene->registry.remove<T>(id);
+                scene.registry.remove<T>(id);
             }
 
-            // Delete this node from the scene entirely
-            void Delete();
+            // Delete this node and all of its components from the scene entirely
+            inline void Delete() const { scene.Delete(id); }
 
             // Hierarchy management
         
@@ -113,8 +113,8 @@ namespace Phi
             // Sets the name of this node
             void SetName(const std::string& name) { this->name = name; }
 
-            // Gets the scene that this node belongs to
-            Scene* GetScene() const { return scene; }
+            // Gets a reference to the scene that this node belongs to
+            Scene& GetScene() const { return scene; }
 
             // Gets the list of children nodes by id
             const std::vector<Node*>& GetChildren() const { return children; }
@@ -126,22 +126,17 @@ namespace Phi
             static constexpr auto in_place_delete = true;
 
             // Reference to the scene this node belongs to
-            Scene* const scene = nullptr;
+            Scene& scene;
 
-            // Unique identifier
-            const NodeID id{entt::null};
-
-            // Name
+            // Identifiers
+            const NodeID id;
             std::string name;
             
             // Hierarchy data
             Node* parent = nullptr;
             std::vector<Node*> children;
-        
-        // Friends
-        private:
 
-            // Necessary for scenes to be able to create nodes
+            // Necessary for scenes to manage / edit nodes
             friend class Scene;
     };
 }

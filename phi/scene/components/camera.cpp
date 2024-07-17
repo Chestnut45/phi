@@ -30,10 +30,10 @@ namespace Phi
     Camera::~Camera()
     {
         // Ensure we are removed from any active scene on destruction
-        Scene* scene = GetNode()->GetScene();
-        if (scene->GetActiveCamera() == this)
+        Scene& scene = GetNode()->GetScene();
+        if (scene.GetActiveCamera() == this)
         {
-            scene->RemoveCamera();
+            scene.RemoveCamera();
         }
 
         // Delete uniform buffer

@@ -169,7 +169,7 @@ namespace Phi
         std::string name = "Node " + std::to_string(nodeCount++);
 
         // Construct the node and return a pointer
-        return &registry.emplace<Node>(id, this, id, name);
+        return &registry.emplace<Node>(id, *this, id, name);
     }
 
     Node* Scene::CreateNode3D()
@@ -725,7 +725,7 @@ namespace Phi
     void Scene::SetActiveCamera(Camera& camera)
     {
         // Validate the component
-        if (camera.GetNode()->GetScene() == this)
+        if (&camera.GetNode()->GetScene() == this)
         {
             RemoveCamera();
             activeCamera = &camera;
@@ -740,7 +740,7 @@ namespace Phi
     void Scene::SetActiveEnvironment(Environment& environment)
     {
         // Validate the component
-        if (environment.GetNode()->GetScene() == this)
+        if (&environment.GetNode()->GetScene() == this)
         {
             RemoveEnvironment();
             activeEnvironment = &environment;
@@ -755,7 +755,7 @@ namespace Phi
     void Scene::SetActiveVoxelMap(VoxelMap& map)
     {
         // Validate the component
-        if (map.GetNode()->GetScene() == this)
+        if (&map.GetNode()->GetScene() == this)
         {
             RemoveVoxelMap();
             activeVoxelMap = &map;

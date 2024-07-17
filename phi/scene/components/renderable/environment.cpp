@@ -53,10 +53,10 @@ namespace Phi
         refCount--;
 
         // Safely remove ourselves from any active scene
-        Scene* scene = GetNode()->GetScene();
-        if (scene->GetActiveEnvironment() == this)
+        Scene& scene = GetNode()->GetScene();
+        if (scene.GetActiveEnvironment() == this)
         {
-            scene->RemoveEnvironment();
+            scene.RemoveEnvironment();
         }
 
         // If last instance, cleanup static resources
