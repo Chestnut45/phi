@@ -4,11 +4,6 @@ design / features
 high priority:
 
 - full cleanup pass on entire engine (old graphics code needs purging)
-- projects
-    - project settings (project.yaml)
-    - project template, cmake generation
-- support custom components in scene editor? (virtual Update(), ShowEditorGUI())
-- script component design
 - scene hierarchy gui implementation
 - environment component inspector implementation (test 2 designs, mostly rip from scene debug)
 - particle effect / emitter inspector gui rewrite (emissive color property and MRT)
