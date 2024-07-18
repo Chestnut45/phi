@@ -17,28 +17,25 @@ namespace Phi
     // Nodes may also have children, and you can traverse this hierarchy within
     // any component by inheriting from BaseComponent to get access to the node
     // the component is attached to, and then GetParent() / GetChildren() to traverse
-    // 
-    // NOTE: Do not instantiate this class directly! Instead, use the Scene::CreateNode*() methods.
-    // Consider it a bug that the constructor is public (it has to be for the internal registry to
-    // be able to construct nodes in-place, which is noticeably faster, especially in heavily
-    // dynamic scenes with lots of nodes being created / deleted constantly)
     class Node
     {
         // Interface
         public:
             
-            // TODO: Should be private...
+            // NOTE: Do not instantiate this class directly! Instead, use the Scene::CreateNode*() methods.
+            // Consider it a bug that this constructor is public
+            // TODO: Don't use scene registry for node storage? (Pointer stability is a must...)
             Node(Scene& scene, NodeID id, const std::string& name);
 
             ~Node();
 
-            // Default copy constructor/assignment
-            Node(const Node&) = default;
-            Node& operator=(const Node&) = default;
+            // Delete copy constructor/assignment
+            Node(const Node&) = delete;
+            Node& operator=(const Node&) = delete;
 
-            // Default move constructor/assignment
-            Node(Node&& other) = default;
-            Node& operator=(Node&& other) = default;
+            // Delete move constructor/assignment
+            Node(Node&& other) = delete;
+            Node& operator=(Node&& other) = delete;
 
             // Component management
 
