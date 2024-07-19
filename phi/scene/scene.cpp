@@ -79,13 +79,10 @@ namespace Phi
         lightTransferShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/light_transfer.fs");
         lightTransferShader.Link();
 
-        // Tone map shaders
-        toneMapDefaultFBOShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/fullscreen_tri.vs");
-        toneMapDefaultFBOShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/tone_map_default_fbo.fs");
-        toneMapDefaultFBOShader.Link();
-        toneMapTextureShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/fullscreen_tri.vs");
-        toneMapTextureShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/tone_map_texture.fs");
-        toneMapTextureShader.Link();
+        // Tone map shader
+        toneMapShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/fullscreen_tri.vs");
+        toneMapShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/tone_map.fs");
+        toneMapShader.Link();
 
         // Initialize SSAO data
 
@@ -502,17 +499,7 @@ namespace Phi
         glTextureBarrier();
         
         // Final Pass: Tone mapping
-        if (renderMode == RenderMode::DefaultFBO)
-        {
-            renderTarget->Unbind();
-            toneMapDefaultFBOShader.Use();
-        }
-        else
-        {
-            toneMapTextureShader.Use();
-        }
-
-        // Bind and draw
+        toneMapShader.Use();
         rTexColor->Bind(6);
         glBindVertexArray(dummyVAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -868,8 +855,8 @@ namespace Phi
         // Create render target FBO and attach textures
         renderTarget = new Framebuffer();
         renderTarget->Bind();
-        renderTarget->AttachTexture(rTexColor, GL_COLOR_ATTACHMENT0);
-        renderTarget->AttachTexture(rTexFinal, GL_COLOR_ATTACHMENT1);
+        renderTarget->AttachTexture(rTexColor, GL_COLOR_ATTACHMENT1);
+        renderTarget->AttachTexture(rTexFinal, GL_COLOR_ATTACHMENT0);
         renderTarget->AttachTexture(rTexDepthStencil, GL_DEPTH_STENCIL_ATTACHMENT);
         renderTarget->CheckCompleteness();
 
