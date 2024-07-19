@@ -30,15 +30,15 @@ Editor::Editor() : App("New Project | Phi Editor", 4, 6)
     camera.SetPosition({0, 0, 16});
     scene.SetActiveCamera(camera);
 
+    // Add an environment to the scene
+    Environment& env = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_old");
+    scene.SetActiveEnvironment(env);
+
     // Add a point light to the camera
     camera.GetNode()->AddComponent<PointLight>();
 
     // Load default fire effect
     CPUParticleEffect& effect = scene.CreateNode3D()->AddComponent<CPUParticleEffect>("data://effects/fire.effect");
-
-    // Add an environment to the scene
-    Environment& env = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_old");
-    scene.SetActiveEnvironment(env);
 
     // Create mesh
     BasicMesh& mesh = scene.CreateNode3D()->AddComponent<BasicMesh>();
@@ -109,40 +109,21 @@ void Editor::GUIMainMenuBar()
     bool openProjectPopup = false;
     if (ImGui::BeginMainMenuBar())
     {
-        if (ImGui::BeginMenu("Project"))
+        if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem(ICON_FA_FOLDER_PLUS " New"))
-            {
-                newProjectPopup = true;
-            }
-
-            if (ImGui::MenuItem(ICON_FA_FOLDER_OPEN " Open"))
-            {
-                openProjectPopup = true;
-            }
-
-            if (ImGui::MenuItem(ICON_FA_GEAR " Properties (Unimplemented)"))
+            if (ImGui::MenuItem(ICON_FA_VIDEO " New Scene"))
             {
             }
 
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Scene"))
-        {
-            if (ImGui::MenuItem(ICON_FA_CIRCLE_PLUS " New"))
+            if (ImGui::MenuItem(ICON_FA_FILE_VIDEO " Load Scene"))
             {
             }
 
-            if (ImGui::MenuItem(ICON_FA_FILE " Load"))
+            if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save Scene"))
             {
             }
 
-            if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save"))
-            {
-            }
-
-            if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save As..."))
+            if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save Scene As..."))
             {
             }
 
@@ -189,7 +170,41 @@ void Editor::GUIMainMenuBar()
 
 void Editor::GUISceneHierarchy()
 {
-    ImGui::Begin("Scene Hierarchy");
+    // Displays the node as part of the scene hierarchy tree
+    std::function<void(Node&)> DisplayNode = [&](Node& node)
+    {
+        // Build label and flags
+        std::string label = std::string(ICON_FA_CODE_COMMIT) + " " + node.GetName() + "###";
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+
+        // Remove arrow from leaf nodes
+        const auto& children = node.GetChildren();
+        if (children.size() == 0) flags |= ImGuiTreeNodeFlags_Leaf;
+
+        // Highlight selected node
+        if (selectedNode == &node) flags |= ImGuiTreeNodeFlags_Selected;
+        
+        // Display tree node
+        if (ImGui::TreeNodeEx(label.c_str(), flags))
+        {
+            // Mark as selected
+            if (ImGui::IsItemClicked()) selectedNode = &node;
+
+            // Render all child nodes as well
+            for (Node* child : children)
+            {
+                DisplayNode(*child);
+            }
+            ImGui::TreePop();
+        }
+        else
+        {
+            // Mark as selected if not open
+            if (ImGui::IsItemClicked()) selectedNode = &node;
+        }
+    };
+
+    ImGui::Begin("Scene");
 
     // Iterate all nodes in the scene
     // TODO: Ensure consistent order
@@ -198,12 +213,7 @@ void Editor::GUISceneHierarchy()
         // Only display the top level nodes
         if (node.GetParent() == nullptr)
         {
-            // Selectable tree node
-            // TODO: Display components here or in inspector?
-            if (ImGui::TreeNodeEx((void*)0, 0, ICON_FA_CODE_COMMIT " %s", node.GetName().c_str()))
-            {
-                ImGui::TreePop();
-            }
+            DisplayNode(node);
         }
     }
 
@@ -213,12 +223,21 @@ void Editor::GUISceneHierarchy()
 void Editor::GUIInspector()
 {
     ImGui::Begin("Inspector");
+
+    // TODO: Inspect all components of the currently selected node
+    if (selectedNode)
+    {
+        std::string name = selectedNode->GetName();
+        ImGui::InputText("##", &name);
+        if (name != selectedNode->GetName()) selectedNode->SetName(name);
+    }
+    
     ImGui::End();
 }
 
 void Editor::GUISceneCamera()
 {
-    ImGui::Begin("Scene Camera");
+    ImGui::Begin("Camera");
 
     // Update resolution if necessary
     glm::ivec2 sceneRes = scene.GetResolution();
@@ -253,6 +272,6 @@ void Editor::GUIConsole()
 
 void Editor::GUIPerformanceStats()
 {
-    ImGui::Begin("Performance Statistics");
+    ImGui::Begin("Performance");
     ImGui::End();
 }

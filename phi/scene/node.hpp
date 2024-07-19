@@ -22,9 +22,7 @@ namespace Phi
         // Interface
         public:
             
-            // NOTE: Do not instantiate this class directly! Instead, use the Scene::CreateNode*() methods.
-            // Consider it a bug that this constructor is public
-            // TODO: Don't use scene registry for node storage? (Pointer stability is a must...)
+            // NOTE: Do not instantiate this class directly! Use the Scene::CreateNode*() methods instead
             Node(Scene& scene, NodeID id, const std::string& name);
 
             ~Node();

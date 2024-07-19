@@ -25,6 +25,9 @@ class Editor : public Phi::App
         // Main scene
         Scene scene;
 
+        // Scene editor globals
+        static inline Node* selectedNode = nullptr;
+
         // GUI generation methods
         void GUIMainMenuBar();
         void GUISceneHierarchy();
