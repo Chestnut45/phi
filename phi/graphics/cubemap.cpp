@@ -14,6 +14,8 @@ namespace Phi
 
         // Load the face files from the list of filenames
         int width, height, channelCount;
+        // TODO: This should be a parameter
+        stbi_set_flip_vertically_on_load(false);
         for (unsigned int i = 0; i < faces.size(); i++)
         {
             // Load the face image data

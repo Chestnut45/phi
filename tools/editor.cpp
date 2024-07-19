@@ -36,33 +36,33 @@ Editor::Editor() : App("New Project | Phi Editor", 4, 6)
     // Load default fire effect
     CPUParticleEffect& effect = scene.CreateNode3D()->AddComponent<CPUParticleEffect>("data://effects/fire.effect");
 
-    // // Create mesh
-    // BasicMesh& mesh = scene.CreateNode3D()->AddComponent<BasicMesh>();
-    // mesh.AddIcosphere(1.0f, 2);
-    // mesh.AddBox(1.0f, 2.0f, 1.0, glm::vec3(0, -1, 0));
-    // mesh.AddBox(2.0f, 0.5f, 0.5f, glm::vec3(1, -1, 0));
-    // mesh.AddBox(2.0f, 0.5f, 0.5f, glm::vec3(-1, -1, 0));
-    // mesh.AddBox(0.25f, 1.0f, 0.25f, glm::vec3(-0.25f, -2, 0));
-    // mesh.AddBox(0.25f, 1.0f, 0.25f, glm::vec3(0.25f, -2, 0));
-    // mesh.SetMaterial("sapphire");
-
-    // // Add eyes
-    // BasicMesh& eyesMesh = scene.CreateNode3D()->AddComponent<BasicMesh>();
-    // eyesMesh.AddIcosphere(0.5f, 2, glm::vec3(-0.5f, 0.25f, 0.5f));
-    // eyesMesh.AddIcosphere(0.5f, 2, glm::vec3(0.5f, 0.25f, 0.5f));
-    // eyesMesh.SetMaterial("pearl");
-    // mesh.GetNode()->AddChild(eyesMesh.GetNode());
-
-    // // Add pupils to eyes (lol)
-    // BasicMesh& pupilsMesh = scene.CreateNode3D()->AddComponent<BasicMesh>();
-    // pupilsMesh.AddIcosphere(0.25f, 2, glm::vec3(0.5f, 0.25f, 0.9f));
-    // pupilsMesh.AddIcosphere(0.25f, 2, glm::vec3(-0.5f, 0.25f, 0.9f));
-    // pupilsMesh.SetMaterial("obsidian");
-    // mesh.GetNode()->AddChild(pupilsMesh.GetNode());
-
     // Add an environment to the scene
     Environment& env = camera.GetNode()->AddComponent<Environment>("data://textures/skybox_day", "data://textures/skybox_night_old");
     scene.SetActiveEnvironment(env);
+
+    // Create mesh
+    BasicMesh& mesh = scene.CreateNode3D()->AddComponent<BasicMesh>();
+    mesh.AddIcosphere(1.0f, 2);
+    mesh.AddBox(1.0f, 2.0f, 1.0, glm::vec3(0, -1, 0));
+    mesh.AddBox(2.0f, 0.5f, 0.5f, glm::vec3(1, -1, 0));
+    mesh.AddBox(2.0f, 0.5f, 0.5f, glm::vec3(-1, -1, 0));
+    mesh.AddBox(0.25f, 1.0f, 0.25f, glm::vec3(-0.25f, -2, 0));
+    mesh.AddBox(0.25f, 1.0f, 0.25f, glm::vec3(0.25f, -2, 0));
+    mesh.SetMaterial("sapphire");
+
+    // Add eyes
+    BasicMesh& eyesMesh = scene.CreateNode3D()->AddComponent<BasicMesh>();
+    eyesMesh.AddIcosphere(0.5f, 2, glm::vec3(-0.5f, 0.25f, 0.5f));
+    eyesMesh.AddIcosphere(0.5f, 2, glm::vec3(0.5f, 0.25f, 0.5f));
+    eyesMesh.SetMaterial("pearl");
+    mesh.GetNode()->AddChild(eyesMesh.GetNode());
+
+    // Add pupils to eyes (lol)
+    BasicMesh& pupilsMesh = scene.CreateNode3D()->AddComponent<BasicMesh>();
+    pupilsMesh.AddIcosphere(0.25f, 2, glm::vec3(0.5f, 0.25f, 0.9f));
+    pupilsMesh.AddIcosphere(0.25f, 2, glm::vec3(-0.5f, 0.25f, 0.9f));
+    pupilsMesh.SetMaterial("obsidian");
+    mesh.GetNode()->AddChild(pupilsMesh.GetNode());
 }
 
 Editor::~Editor()
