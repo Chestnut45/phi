@@ -227,9 +227,17 @@ void Editor::GUIInspector()
     // TODO: Inspect all components of the currently selected node
     if (selectedNode)
     {
-        std::string name = selectedNode->GetName();
-        ImGui::InputText("##", &name);
-        if (name != selectedNode->GetName()) selectedNode->SetName(name);
+        // Push a unique ID to avoid sync issues
+        ImGui::PushID(selectedNode);
+
+        // Name editor
+        const std::string& name = selectedNode->GetName();
+        std::string newName = name;
+        ImGui::InputText("Name", &newName);
+        if (newName != name) selectedNode->SetName(newName);
+
+        // Pop the selected node's ID off the stack
+        ImGui::PopID();
     }
     
     ImGui::End();

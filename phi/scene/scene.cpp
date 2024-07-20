@@ -499,6 +499,7 @@ namespace Phi
         glTextureBarrier();
         
         // Final Pass: Tone mapping
+        if (renderMode == RenderMode::DefaultFBO) renderTarget->Unbind(GL_DRAW_FRAMEBUFFER);
         toneMapShader.Use();
         rTexColor->Bind(6);
         glBindVertexArray(dummyVAO);
@@ -523,6 +524,13 @@ namespace Phi
     void Scene::SetRenderMode(RenderMode mode)
     {
         renderMode = mode;
+
+        // TODO: This should be cleaner (Ubershaders is the most likely solution...)
+        // Set the proper output location for the tonemap shader
+        glBindFragDataLocation(toneMapShader.GetProgramID(), (renderMode == RenderMode::DefaultFBO) ? 0 : 1, "finalColor");
+        toneMapShader.LoadSource(GL_VERTEX_SHADER, "phi://graphics/shaders/fullscreen_tri.vs");
+        toneMapShader.LoadSource(GL_FRAGMENT_SHADER, "phi://graphics/shaders/tone_map.fs");
+        toneMapShader.Link();
     }
 
     void Scene::SetResolution(int width, int height)
@@ -855,8 +863,8 @@ namespace Phi
         // Create render target FBO and attach textures
         renderTarget = new Framebuffer();
         renderTarget->Bind();
-        renderTarget->AttachTexture(rTexColor, GL_COLOR_ATTACHMENT1);
-        renderTarget->AttachTexture(rTexFinal, GL_COLOR_ATTACHMENT0);
+        renderTarget->AttachTexture(rTexColor, GL_COLOR_ATTACHMENT0);
+        renderTarget->AttachTexture(rTexFinal, GL_COLOR_ATTACHMENT1);
         renderTarget->AttachTexture(rTexDepthStencil, GL_DEPTH_STENCIL_ATTACHMENT);
         renderTarget->CheckCompleteness();
 

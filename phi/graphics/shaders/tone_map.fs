@@ -5,7 +5,11 @@ const float GAMMA = 2.2;
 layout(binding = 6) uniform sampler2D hdrTex;
 
 in vec2 texCoords;
-layout(location = 0) out vec3 finalColor;
+
+// Automatically set by scene
+// Set to location 0 if rendering to default FBO
+// Set to location 1 if rendering to texture
+out vec3 finalColor;
 
 void main()
 {
