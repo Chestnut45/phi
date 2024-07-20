@@ -204,7 +204,9 @@ void Editor::GUISceneHierarchy()
         }
     };
 
-    ImGui::Begin("Scene");
+    // Disable inputs when mouse is captured (scene is playing)
+    ImGuiWindowFlags flags = input.IsMouseCaptured() ? ImGuiWindowFlags_NoInputs : ImGuiWindowFlags_None;
+    ImGui::Begin("Scene", nullptr, flags);
 
     // Iterate all nodes in the scene
     // TODO: Ensure consistent order

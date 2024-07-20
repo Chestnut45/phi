@@ -8,23 +8,16 @@
 
 namespace Phi
 {
-    // Represents a single node within a scene
-    // 
-    // You may attach an arbitrary number of components to each node
-    // 
-    // Components may be any type, but a node may only have 1 component per type
-    // 
-    // Nodes may also have children, and you can traverse this hierarchy within
-    // any component by inheriting from BaseComponent to get access to the node
-    // the component is attached to, and then GetParent() / GetChildren() to traverse
+    // Represents a single node within a scene.
+    // You may attach an arbitrary number of components to each node.
+    // Components may be any type derived from BaseComponent, but a node may only have 1 component per type.
     class Node
     {
         // Interface
         public:
             
-            // NOTE: Do not instantiate this class directly! Use the Scene::CreateNode*() methods instead
+            // NOTE: Do not instantiate nodes directly! Use the Scene::CreateNode*() methods instead
             Node(Scene& scene, NodeID id, const std::string& name);
-
             ~Node();
 
             // Delete copy constructor/assignment
@@ -34,6 +27,14 @@ namespace Phi
             // Delete move constructor/assignment
             Node(Node&& other) = delete;
             Node& operator=(Node&& other) = delete;
+
+            // Node Management
+            
+            NodeID GetID() const { return id; };
+            Scene& GetScene() const { return scene; }
+            const std::string& GetName() const { return name; }
+            void SetName(const std::string& name) { this->name = name; }
+            void Delete() const { scene.Delete(id); }
 
             // Component management
 
@@ -81,9 +82,6 @@ namespace Phi
                 scene.registry.remove<T>(id);
             }
 
-            // Delete this node and all of its components from the scene entirely
-            inline void Delete() const { scene.Delete(id); }
-
             // Hierarchy management
         
             // Adds a node to our list of children
@@ -96,20 +94,6 @@ namespace Phi
 
             // Returns a pointer to the parent node, or nullptr if we have none
             Node* GetParent() const;
-
-            // Accessors / Mutators
-
-            // Gets the id of this node
-            NodeID GetID() const { return id; };
-
-            // Gets the name of this node
-            const std::string& GetName() const { return name; }
-
-            // Sets the name of this node
-            void SetName(const std::string& name) { this->name = name; }
-
-            // Gets a reference to the scene that this node belongs to
-            Scene& GetScene() const { return scene; }
 
             // Gets the list of children nodes by id
             const std::vector<Node*>& GetChildren() const { return children; }

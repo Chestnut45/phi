@@ -218,9 +218,10 @@ namespace Phi
             const glm::vec3& GetAmbientLight() const { return ambientLight; }
 
             // Shows debug statistics in an ImGui window
+            // TODO: Delete this
             void ShowDebug(int x, int y, int width, int height);
 
-            // Access to iterating all components of a given type in the scene
+            // Iterable view of all components of a single given type in the scene
             // Usage: for (auto&&[NodeID, Component] : scene.Each<Component>()) { ... }
             template <typename T>
             constexpr auto Each()
