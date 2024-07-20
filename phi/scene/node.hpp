@@ -38,18 +38,18 @@ namespace Phi
             // Component management
 
             // Constructs a component in-place and assigns it to the node
-            // NOTE: Pass your component's constructor arguments directly to this function:
+            // NOTE: Pass your component's constructor arguments directly to this function
             template <typename T, typename... Args>
             T& AddComponent(Args&&... args)
             {
-                // Add the component
+                // Compile-time check that only BaseComponent derived components are used
+                static_assert(std::is_base_of_v<BaseComponent, T>, "Component Type is not derived from BaseComponent");
+
+                // Add the component and forward constructor arguments
                 T& component = scene.registry.emplace<T>(id, args...);
 
-                // Set the node pointer if T is a BaseComponent
-                if constexpr (std::is_base_of_v<BaseComponent, T>)
-                {
-                    component.SetNode(this);
-                }
+                // Set the node pointer
+                component.node = this;
 
                 return component;
             }
