@@ -2,11 +2,22 @@ design / features
 --------------------------------
 
 high priority:
-
-- full cleanup pass on entire engine (old graphics code needs purging)
-- scene hierarchy gui implementation
+- full cleanup pass on core and graphics
+- base component api design (cleanup all components)
 - environment component inspector implementation (test 2 designs, mostly rip from scene debug)
 - particle effect / emitter inspector gui rewrite (emissive color property and MRT)
+- improve fire spread logic (heat distribution simulation?)
+- liquid shader effect
+- plasma shader effect (ridged noise + elapsedTime)
+- finalize fluid dynamics
+    - lighter fluids should float on denser fluids
+    - full pressure distribution?
+- world generation / chunk rework
+    - per-chunk aabb frustum culling
+    - simulation sleeping
+    - full noise editor (fractal, domain warp, etc.)
+
+mid priority:
 - resources window design (data:// folder tree view)
     - are materials resources? per project? per scene? (materials.yaml)
     - VoxelMaterial redesign (independant from PBRMaterial)
@@ -21,29 +32,16 @@ high priority:
     - toggleable arbitrary planes to test against
     - orthographic camera projection
     - improved camera controls
-- improve fire spread logic (heat distribution simulation?)
-- liquid shader effect
-- plasma shader effect (ridged noise + elapsedTime)
-- finalize fluid dynamics
-    - lighter fluids should float on denser fluids
-    - full pressure distribution?
-- world generation / chunk rework
-    - per-chunk aabb frustum culling
-    - simulation sleeping
-    - full noise editor (fractal, domain warp, etc.)
-- voxel particles (off-grid, momentum based)
-- entity system (not all nodes are entities, but all entities are nodes)
-    - items (transform, voxel model, item data, aabb/obb)
-    - organisms (transform, voxel object, AI controller, organism data, aabb/obb)
-
-mid priority:
 - physics / collision detection design
     - physics world / voxel world
+    - voxel particles (off-grid, momentum based)
     - rigidbody component
     - obb implementation
     - capsule implementation
 - propagate color class through rest of engine
-- environment refactor
+- scene / node serialization
+- cityscape port to scene
+- environment refactor (procedural sky / sun)
 - gamepad input
 - 3rd person controller
 - animated voxel models
