@@ -11,7 +11,7 @@ int main(int, char**)
     return 0;
 }
 
-VoxelEditor::VoxelEditor() : App("Voxel Editor", 4, 6)
+VoxelEditor::VoxelEditor() : App("Voxel Editor", 1280, 720)
 {
     // Enable raw mouse if accepted
     input.EnableRawMouseMotion();

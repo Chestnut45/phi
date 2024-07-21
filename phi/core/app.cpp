@@ -24,7 +24,7 @@ namespace Phi
         style.PopupRounding = 4.0f;
         style.PopupBorderSize = 1.0f;
         style.FramePadding = ImVec2(8.0f, 4.0f);
-        style.FrameRounding = 18.0f;
+        style.FrameRounding = 0.0f;
         style.FrameBorderSize = 0.0f;
         style.ItemSpacing = ImVec2(4.0f, 4.0f);
         style.ItemInnerSpacing = ImVec2(4.0f, 4.0f);
@@ -126,10 +126,8 @@ namespace Phi
         pApp->windowResized = true;
     }
 
-    App::App(const std::string& name, int glMajVer, int glMinVer) : name(name), wWidth(defaultWidth), wHeight(defaultHeight)
+    App::App(const std::string& name, int width, int height) : name(name), wWidth(width), wHeight(height)
     {
-        // TODO: Ensure valid GL version
-
         // Initialize GLFW
         if (!glfwInit())
         {
@@ -142,12 +140,12 @@ namespace Phi
         glfwSetErrorCallback(ErrorCallback);
 
         // Create window
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, glMajVer);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, glMinVer);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_TRUE);
-        pWindow = glfwCreateWindow(defaultWidth, defaultHeight, name.c_str(), NULL, NULL);
+        pWindow = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
         if (!pWindow)
         {
             FatalError("Failed to create window");
@@ -305,7 +303,7 @@ namespace Phi
             // Get window monitor and revert to windowed mode
             GLFWmonitor* monitor = glfwGetWindowMonitor(window);
             const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-            glfwSetWindowMonitor(window, NULL, (mode->width - defaultWidth) / 2, (mode->height - defaultHeight) / 2, defaultWidth, defaultHeight, 0);
+            glfwSetWindowMonitor(window, NULL, (mode->width - wWidth) / 2, (mode->height - wHeight) / 2, wWidth, wHeight, 0);
         }
     }
 

@@ -30,10 +30,17 @@ namespace Phi
 
             // Node Management
             
+            // Returns the ID of the node within its scene
             NodeID GetID() const { return id; };
+
+            // Returns a reference to the scene this node belongs to
             Scene& GetScene() const { return scene; }
+
+            // Name accessor / mutator
             const std::string& GetName() const { return name; }
             void SetName(const std::string& name) { this->name = name; }
+
+            // Deletes the node and all of its components from the scene
             void Delete() const { scene.Delete(id); }
 
             // Component management

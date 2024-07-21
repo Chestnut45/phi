@@ -37,8 +37,8 @@ namespace Phi
     {
         public:
 
-            // Creates an app with the given name and OpenGL version
-            App(const std::string& name, int glMajVer = 4, int glMinVer = 5);
+            // Creates an app with the given name and starting window size
+            App(const std::string& name, int width, int height);
             virtual ~App();
 
             // Main methods
@@ -63,11 +63,9 @@ namespace Phi
 
             // Window details
             GLFWwindow* pWindow;
-            int wWidth = 0;
-            int wHeight = 0;
+            int wWidth;
+            int wHeight;
             bool windowResized = true;
-            static const int defaultWidth = 1280;
-            static const int defaultHeight = 720;
 
             // Timing
             float programLifetime = 0;

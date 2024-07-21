@@ -14,7 +14,7 @@ int main(int, char**)
     return 0;
 }
 
-VoxelMapEditor::VoxelMapEditor() : App("Voxel Map Editor", 4, 6)
+VoxelMapEditor::VoxelMapEditor() : App("Voxel Map Editor", 1280, 720)
 {
     // Enable raw mouse if accepted
     input.EnableRawMouseMotion();

@@ -11,13 +11,16 @@ int main(int, char**)
     return 0;
 }
 
-Editor::Editor() : App("New Project | Phi Editor", 4, 6)
+Editor::Editor() : App("New Project | Phi Editor", 1280, 720)
 {
     // Enable vsync by default
     if (!vsync) ToggleVsync();
     
     // Enable raw mouse if accepted
     input.EnableRawMouseMotion();
+
+    // Register all component types
+    RegisterComponents();
 
     // Initialize scene
     scene.SetRenderMode(Scene::RenderMode::Texture);
@@ -100,6 +103,40 @@ void Editor::Render()
 
     // Show debug statistics
     if (showDebug) ShowDebug();
+}
+
+void Editor::RegisterComponents()
+{
+    // Initialize component names map
+    componentNames[entt::type_id<BasicMesh>().hash()] = "BasicMesh";
+    componentNames[entt::type_id<BoundingSphere>().hash()] = "BoundingSphere";
+    componentNames[entt::type_id<Camera>().hash()] = "Camera";
+    componentNames[entt::type_id<CPUParticleEffect>().hash()] = "CPUParticleEffect";
+    componentNames[entt::type_id<DirectionalLight>().hash()] = "DirectionalLight";
+    componentNames[entt::type_id<Environment>().hash()] = "Environment";
+    componentNames[entt::type_id<PointLight>().hash()] = "PointLight";
+    componentNames[entt::type_id<Transform>().hash()] = "Transform";
+    componentNames[entt::type_id<VoxelChunk>().hash()] = "VoxelChunk";
+    componentNames[entt::type_id<VoxelMap>().hash()] = "VoxelMap";
+    componentNames[entt::type_id<VoxelMesh>().hash()] = "VoxelMesh";
+    componentNames[entt::type_id<VoxelObject>().hash()] = "VoxelObject";
+    
+    // Add one of each component type to the scene to ensure consistent ordering
+    // TODO: A better method might be to have node member functions to generate bitsets of components...
+    Node* n = scene.CreateNode();
+    n->AddComponent<BasicMesh>();
+    n->AddComponent<BoundingSphere>();
+    n->AddComponent<Camera>();
+    n->AddComponent<CPUParticleEffect>();
+    n->AddComponent<DirectionalLight>();
+    n->AddComponent<Environment>("", "");
+    n->AddComponent<PointLight>();
+    n->AddComponent<Transform>();
+    n->AddComponent<VoxelChunk>();
+    n->AddComponent<VoxelMap>();
+    n->AddComponent<VoxelMesh>();
+    n->AddComponent<VoxelObject>();
+    n->Delete();
 }
 
 void Editor::GUIMainMenuBar()
@@ -209,7 +246,6 @@ void Editor::GUISceneHierarchy()
     ImGui::Begin("Scene", nullptr, flags);
 
     // Iterate all nodes in the scene
-    // TODO: Ensure consistent order
     for (auto&&[_, node] : scene.Each<Node>())
     {
         // Only display the top level nodes
@@ -226,17 +262,44 @@ void Editor::GUIInspector()
 {
     ImGui::Begin("Inspector");
 
-    // TODO: Inspect all components of the currently selected node
     if (selectedNode)
     {
         // Push a unique ID to avoid sync issues
         ImGui::PushID(selectedNode);
 
+        ImGui::SeparatorText("Node");
+
         // Name editor
         const std::string& name = selectedNode->GetName();
         std::string newName = name;
-        ImGui::InputText("Name", &newName);
+        ImGuiInputTextFlags flags = ImGuiInputTextFlags_None;
+        ImGui::InputText("Name", &newName, flags);
         if (newName != name) selectedNode->SetName(newName);
+
+        ImGui::SeparatorText("Components");
+
+        // Iterate all component types in the scene
+        for(auto&& current : scene.registry.storage())
+        {
+            // Check if this node has that component
+            if(auto& storage = current.second; storage.contains(selectedNode->GetID()))
+            {
+                // Grab the component's type info
+                entt::id_type id = current.first;
+                const std::string& typeName = componentNames[id];
+
+                // Display the component as long as it has a name
+                if (typeName != "")
+                {
+                    ImGui::PushID(id);
+                    if (ImGui::CollapsingHeader(typeName.c_str(), ImGuiTreeNodeFlags_None))
+                    {
+
+                    }
+                    ImGui::PopID();
+                }
+            }
+        }
 
         // Pop the selected node's ID off the stack
         ImGui::PopID();

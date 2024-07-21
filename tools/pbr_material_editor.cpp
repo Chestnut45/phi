@@ -14,7 +14,7 @@ int main(int, char**)
     return 0;
 }
 
-PBRMaterialEditor::PBRMaterialEditor() : App("PBR Material Editor", 4, 6)
+PBRMaterialEditor::PBRMaterialEditor() : App("PBR Material Editor", 1280, 720)
 {
     // Initialize scene
 

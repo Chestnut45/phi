@@ -13,7 +13,7 @@ int main(int, char**)
     return 0;
 }
 
-ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 4, 6)
+ParticleEffectEditor::ParticleEffectEditor() : App("Particle Effect Editor", 1280, 720)
 {
     // Initialize mouse input
     input.EnableRawMouseMotion();

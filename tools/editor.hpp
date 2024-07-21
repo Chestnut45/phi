@@ -28,7 +28,14 @@ class Editor : public Phi::App
         // Scene editor globals
         static inline Node* selectedNode = nullptr;
 
-        // GUI generation methods
+        // Component name map
+        std::map<entt::id_type, std::string> componentNames;
+
+        // Registers all the components to be used in the editor
+        // NOTE: Edit this when you make a new component type if you want to use it in the editor!
+        void RegisterComponents();
+
+        // GUI methods
         void GUIMainMenuBar();
         void GUISceneHierarchy();
         void GUIInspector();
