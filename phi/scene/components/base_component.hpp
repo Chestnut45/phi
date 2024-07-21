@@ -19,8 +19,7 @@ namespace Phi
             // Must be implemented by any derived component type
             // virtual void Init() = 0;
             // virtual void Update(float delta) = 0;
-            // virtual void Destroy() = 0;
-            // virtual void EditorGUI() = 0;
+            // virtual void InspectorGUI() = 0;
         
         protected:
 

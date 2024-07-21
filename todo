@@ -2,9 +2,10 @@ design / features
 --------------------------------
 
 high priority:
-- full cleanup pass on core and graphics
+
 - base component api design (cleanup all components)
 - environment component inspector implementation (test 2 designs, mostly rip from scene debug)
+- full cleanup pass on core and graphics
 - particle effect / emitter inspector gui rewrite (emissive color property and MRT)
 - improve fire spread logic (heat distribution simulation?)
 - liquid shader effect

@@ -174,7 +174,7 @@ void Editor::GUISceneHierarchy()
     std::function<void(Node&)> DisplayNode = [&](Node& node)
     {
         // Build label and flags
-        std::string label = std::string(ICON_FA_CODE_COMMIT) + " " + node.GetName() + "###";
+        std::string label = std::string(ICON_FA_CIRCLE_NODES) + " " + node.GetName() + "###";
         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 
         // Remove arrow from leaf nodes

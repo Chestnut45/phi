@@ -6,8 +6,6 @@ Phi is a C++ desktop application framework and OpenGL micro-engine meant primari
 
 Phi is still under active development, and is not yet meant to be used for anything other than testing or research purposes as many of the APIs may be subject to frequent changes.
 
-Version 1.0 of the Phi framework is estimated to be ready for release around January 2026.
-
 ## Getting Started
 
 ### Requirements
