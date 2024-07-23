@@ -36,6 +36,9 @@ namespace Phi
 
             ~CPUParticleEffect();
 
+            // DEBUG: Testing BaseComponent interfaces
+            void InspectorGUI() {};
+
             // Delete copy constructor/assignment
             CPUParticleEffect(const CPUParticleEffect&) = delete;
             CPUParticleEffect& operator=(const CPUParticleEffect&) = delete;

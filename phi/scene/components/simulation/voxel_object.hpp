@@ -46,6 +46,9 @@ namespace Phi
             VoxelObject(int width = 32, int height = 32, int depth = 32, const glm::ivec3& offset = glm::ivec3(-16));
             ~VoxelObject();
 
+            // DEBUG: Testing BaseComponent interfaces
+            void InspectorGUI() {};
+
             // Delete copy constructor/assignment
             VoxelObject(const VoxelObject &) = delete;
             VoxelObject &operator=(const VoxelObject &) = delete;

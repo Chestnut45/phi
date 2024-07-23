@@ -18,6 +18,9 @@ namespace Phi
             PointLight();
             ~PointLight();
 
+            // DEBUG: Testing BaseComponent interfaces
+            void InspectorGUI() {};
+
             // Delete copy constructor/assignment
             PointLight(const PointLight&) = delete;
             PointLight& operator=(const PointLight&) = delete;

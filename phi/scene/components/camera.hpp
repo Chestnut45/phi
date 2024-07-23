@@ -28,6 +28,9 @@ namespace Phi
             Camera(int width = 1280, int height = 720);
             ~Camera();
 
+            // DEBUG: Testing BaseComponent interfaces
+            void InspectorGUI() {};
+
             // Delete copy constructor/assignment
             Camera(const Camera&) = delete;
             Camera& operator=(const Camera&) = delete;

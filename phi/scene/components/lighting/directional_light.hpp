@@ -27,6 +27,9 @@ namespace Phi
             DirectionalLight();
             ~DirectionalLight();
 
+            // DEBUG: Testing BaseComponent interfaces
+            void InspectorGUI() {};
+
             // Delete copy constructor/assignment
             DirectionalLight(const DirectionalLight&) = delete;
             DirectionalLight& operator=(const DirectionalLight&) = delete;

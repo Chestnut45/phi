@@ -38,6 +38,9 @@ namespace Phi
             VoxelMesh(const std::vector<Vertex>& voxels);
             ~VoxelMesh();
 
+            // DEBUG: Testing BaseComponent interfaces
+            void InspectorGUI() {};
+
             // Delete copy constructor/assignment
             VoxelMesh(const VoxelMesh&) = delete;
             VoxelMesh& operator=(const VoxelMesh&) = delete;

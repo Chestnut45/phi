@@ -292,9 +292,10 @@ void Editor::GUIInspector()
                 if (typeName != "")
                 {
                     ImGui::PushID(id);
-                    if (ImGui::CollapsingHeader(typeName.c_str(), ImGuiTreeNodeFlags_None))
+                    if (ImGui::CollapsingHeader(typeName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
                     {
-
+                        BaseComponent* component = static_cast<BaseComponent*>(storage.value(selectedNode->GetID()));
+                        component->InspectorGUI();
                     }
                     ImGui::PopID();
                 }

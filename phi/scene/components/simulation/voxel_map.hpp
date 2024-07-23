@@ -44,6 +44,9 @@ namespace Phi
             // Creates an empty voxel map
             VoxelMap();
             ~VoxelMap();
+            
+            // DEBUG: Testing BaseComponent interfaces
+            void InspectorGUI() {};
 
             // Delete copy constructor/assignment
             VoxelMap(const VoxelMap&) = delete;

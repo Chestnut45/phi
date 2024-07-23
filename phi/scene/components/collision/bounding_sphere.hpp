@@ -18,6 +18,9 @@ namespace Phi
             BoundingSphere(const glm::vec3& position, float radius);
             ~BoundingSphere();
 
+            // DEBUG: Testing BaseComponent interfaces
+            void InspectorGUI() {};
+
             // Default copy constructor/assignment
             BoundingSphere(const BoundingSphere&) = default;
             BoundingSphere& operator=(const BoundingSphere&) = default;

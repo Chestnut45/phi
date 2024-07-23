@@ -32,6 +32,9 @@ namespace Phi
             Environment(const std::string& dayMapPath, const std::string& nightMapPath);
             ~Environment();
 
+            // DEBUG: Testing BaseComponent interfaces
+            void InspectorGUI() {};
+
             // Delete copy constructor/assignment
             Environment(const Environment&) = delete;
             Environment& operator=(const Environment&) = delete;

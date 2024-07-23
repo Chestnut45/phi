@@ -19,6 +19,9 @@ namespace Phi
             VoxelChunk();
             ~VoxelChunk();
 
+            // DEBUG: Testing BaseComponent interfaces
+            void InspectorGUI() {};
+
             // Delete copy constructor/assignment
             VoxelChunk(const VoxelChunk&) = delete;
             VoxelChunk& operator=(const VoxelChunk&) = delete;

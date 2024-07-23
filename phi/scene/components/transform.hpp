@@ -16,6 +16,14 @@ namespace Phi
             Transform();
             ~Transform();
 
+            // DEBUG: Testing BaseComponent interfaces
+            void InspectorGUI() {
+                if (ImGui::DragFloat3("Position", &position.x))
+                {
+                    matrixDirty = true;
+                }
+            };
+
             // Default copy constructor/assignment
             Transform(const Transform&) = default;
             Transform& operator=(const Transform&) = default;

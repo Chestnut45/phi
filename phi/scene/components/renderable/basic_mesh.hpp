@@ -27,6 +27,9 @@ namespace Phi
             BasicMesh();
             ~BasicMesh();
 
+            // DEBUG: Testing BaseComponent interfaces
+            void InspectorGUI() {};
+
             // Delete copy constructor/assignment
             BasicMesh(const BasicMesh&) = delete;
             BasicMesh& operator=(const BasicMesh&) = delete;
