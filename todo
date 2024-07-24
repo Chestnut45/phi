@@ -3,9 +3,6 @@ design / features
 
 high priority:
 
-- base component api design (cleanup all components)
-- component inspector implementations
-- code generation for ease of making and editing new components
 - full refactor
     - naming conventions
         - class data member prefixing
@@ -15,7 +12,12 @@ high priority:
     - creators / mutators / accessors division of class declarations
     - friends should be restricted to the same physical component (.cpp, .hpp pair)
     - class definition organization pattern redesign
-    - ...
+    - level numbers to decompose physical components into a hierarchy
+    - incremental testing throughout the entire physical hierarchy
+    - access declarations and private inheritance?
+- base component api design (cleanup all components)
+- component inspector implementations
+- code generation for ease of making and editing new components
 
 mid priority:
 - resources window design (data:// folder tree view)
