@@ -6,7 +6,16 @@ high priority:
 - base component api design (cleanup all components)
 - component inspector implementations
 - code generation for ease of making and editing new components
-- full cleanup pass on core and graphics
+- full refactor
+    - naming conventions
+        - class data member prefixing
+        - consistent CAPS_CASE for enums / constants
+        - camelCase for variables / functions
+    - redundant include guards
+    - creators / mutators / accessors division of class declarations
+    - friends should be restricted to the same physical component (.cpp, .hpp pair)
+    - class definition organization pattern redesign
+    - ...
 
 mid priority:
 - resources window design (data:// folder tree view)
