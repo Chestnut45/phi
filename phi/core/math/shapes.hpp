@@ -27,10 +27,10 @@ namespace Phi
         // Accessors
 
         // Returns the width of this rectangle
-        inline float GetWidth() const { return right - left + 1; };
+        inline float GetWidth() const { return right - left; };
 
         // Returns the height of this rectangle
-        inline float GetHeight() const { return top - bottom + 1; };
+        inline float GetHeight() const { return top - bottom; };
 
         // Data
         float left, top, right, bottom;
@@ -48,10 +48,10 @@ namespace Phi
         // Accessors
 
         // Returns the width of this rectangle
-        inline int GetWidth() const { return right - left + 1; };
+        inline int GetWidth() const { return right - left; };
 
         // Returns the height of this rectangle
-        inline int GetHeight() const { return top - bottom + 1; };
+        inline int GetHeight() const { return top - bottom; };
 
         // Data
         int left, top, right, bottom;
