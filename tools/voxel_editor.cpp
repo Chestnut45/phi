@@ -43,50 +43,50 @@ VoxelEditor::VoxelEditor() : App("Voxel Editor", 1280, 720)
     object->Load("data://models/teapot.vobj");
 
     // DEBUG: Add some water and enable simulation
-    // int grass = scene.GetVoxelMaterialID("grass");
-    // int water = scene.GetVoxelMaterialID("water");
-    // int lava = scene.GetVoxelMaterialID("lava");
-    // const auto& aabb = object->GetAABB();
-    // Noise noise;
-    // noise.SetFrequency(0.032f);
-    // for (int y = aabb.max.y - 1; y >= aabb.min.y; --y)
-    // {
-    //     for (int z = aabb.min.z; z < aabb.max.z; ++z)
-    //     {
-    //         for (int x = aabb.min.x; x < aabb.max.x; ++x)
-    //         {
-    //             Voxel v;
-    //             v.x = x;
-    //             v.y = y;
-    //             v.z = z;
-    //             if (y < aabb.max.y - 4)
-    //             {
-    //                 if (noise.Sample(x, y, z) < 0.0f)
-    //                 {
-    //                     continue;
-    //                 }
-    //                 else
-    //                 {
-    //                     continue;//v.material = grass;
-    //                 }
-    //             }
-    //             else
-    //             {
-    //                 v.material = water;
-    //             }
+    int grass = scene.GetVoxelMaterialID("grass");
+    int water = scene.GetVoxelMaterialID("water");
+    int lava = scene.GetVoxelMaterialID("lava");
+    const auto& aabb = object->GetAABB();
+    Noise noise;
+    noise.SetFrequency(0.032f);
+    for (int y = aabb.max.y - 1; y >= aabb.min.y; --y)
+    {
+        for (int z = aabb.min.z; z < aabb.max.z; ++z)
+        {
+            for (int x = aabb.min.x; x < aabb.max.x; ++x)
+            {
+                Voxel v;
+                v.x = x;
+                v.y = y;
+                v.z = z;
+                if (y < aabb.max.y - 4)
+                {
+                    if (noise.Sample(x, y, z) < 0.0f)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        v.material = grass;
+                    }
+                }
+                else
+                {
+                    v.material = water;
+                }
                 
-    //             object->SetVoxel(v.x, v.y, v.z, v.material);
-    //         }
-    //     }
-    // }
-    // object->UpdateMesh();
+                object->SetVoxel(v.x, v.y, v.z, v.material);
+            }
+        }
+    }
+    object->UpdateMesh();
 
     // Testing different object configurations
-    // object->Enable(VoxelObject::Flags::SimulateFluids);
-    // object->Enable(VoxelObject::Flags::SimulateFire);
+    object->Enable(VoxelObject::Flags::SimulateFluids);
+    object->Enable(VoxelObject::Flags::SimulateFire);
 
     // Default material
-    selectedVoxel.material = scene.GetVoxelMaterialID("water");
+    selectedVoxel.material = scene.GetVoxelMaterialID("lava");
 }
 
 VoxelEditor::~VoxelEditor()
